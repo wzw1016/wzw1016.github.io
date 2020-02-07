@@ -3,7 +3,7 @@
   <entry>
     <title>同步回调与异步回调</title>
     <url>/2020/02/06/%E5%90%8C%E6%AD%A5%E5%9B%9E%E8%B0%83%E4%B8%8E%E5%BC%82%E6%AD%A5%E5%9B%9E%E8%B0%83/</url>
-    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><blockquote>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><blockquote>
 <p>对js回调函数进行归纳总结</p>
 </blockquote>
 <blockquote>
@@ -12,7 +12,7 @@
 <a id="more"></a>
 
 <hr>
-<h1 id="知识准备"><a href="#知识准备" class="headerlink" title="知识准备"></a>知识准备</h1><h2 id="js是单线程的"><a href="#js是单线程的" class="headerlink" title="js是单线程的"></a>js是单线程的</h2><p>所谓“单线程”，就是同一时间只能处理一个任务，如果有多个任务，就必须依次执行。只有当前一个任务执行完了，后一个任务才会执行。  </p>
+<h2 id="知识准备"><a href="#知识准备" class="headerlink" title="知识准备"></a>知识准备</h2><h3 id="js是单线程的"><a href="#js是单线程的" class="headerlink" title="js是单线程的"></a>js是单线程的</h3><h4 id="什么是单线程？"><a href="#什么是单线程？" class="headerlink" title="什么是单线程？"></a>什么是单线程？</h4><p>所谓“单线程”，就是同一时间只能处理一个任务，如果有多个任务，就必须依次执行。只有当前一个任务执行完了，后一个任务才会执行。  </p>
 <figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    alert(<span class="string">'1'</span>)</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'2'</span>)</span><br><span class="line">&#125;)()</span><br></pre></td></tr></table></figure>
 
 <p>执行上面的代码，执行顺序：</p>
@@ -21,24 +21,22 @@
 <li>点击弹窗确定，控制台输出<strong>2。</strong>  </li>
 </ol>
 <p>即<code>console.log(&#39;2&#39;)</code>这条语句会在<code>alert(&#39;1&#39;)</code>执行结束后才开始执行</p>
-<p><strong>为什么JavaScript是单线程？</strong></p>
-<p>JavaScript的单线程，与它的用途有关。作为浏览器脚本语言，JavaScript的主要用途是与用户互动，以及操作DOM。这决定了它只能是单线程，否则会带来很复杂的同步问题。比如，假定JavaScript同时有两个线程，一个线程在某个DOM节点上添加内容，另一个线程删除了这个节点，这时浏览器应该以哪个线程为准？</p>
+<h4 id="为什么JavaScript是单线程？"><a href="#为什么JavaScript是单线程？" class="headerlink" title="为什么JavaScript是单线程？"></a>为什么JavaScript是单线程？</h4><p>JavaScript的单线程，与它的用途有关。作为浏览器脚本语言，JavaScript的主要用途是与用户互动，以及操作DOM。这决定了它只能是单线程，否则会带来很复杂的同步问题。比如，假定JavaScript同时有两个线程，一个线程在某个DOM节点上添加内容，另一个线程删除了这个节点，这时浏览器应该以哪个线程为准？</p>
 <p>所以，为了避免复杂性，从一诞生，JavaScript就是单线程。  </p>
 <hr>
-<h2 id="回调函数"><a href="#回调函数" class="headerlink" title="回调函数"></a>回调函数</h2><p>MDN对回调函数的定义： 被作为实参传入另一函数，并在该外部函数内被调用，用以来完成某些任务的函数，称为<strong>回调函数</strong> 。</p>
+<h3 id="回调函数"><a href="#回调函数" class="headerlink" title="回调函数"></a>回调函数</h3><h4 id="回调函数是什么？"><a href="#回调函数是什么？" class="headerlink" title="回调函数是什么？"></a>回调函数是什么？</h4><p>MDN对回调函数的定义： 被作为实参传入另一函数，并在该外部函数内被调用，用以来完成某些任务的函数，称为<strong>回调函数</strong> 。</p>
 <p>想要弄清楚回调函数，首先要清楚js中的函数，JavaScript中的函数本质是一个对象，准确来说是通过<code>new Function()</code>创建的Function的实例对象。因此我们可以将函数像对象一样存保存在变量中，当然也就可以将保存在变量中的函数通过参数传递给另一个函数，这个作为参数传递的函数，就是<strong>回调函数</strong>。  </p>
 <figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> fn = <span class="function">(<span class="params">a</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(a)</span><br><span class="line">&#125;</span><br><span class="line">setTimeOut(fn(<span class="number">1</span>), <span class="number">1000</span>)</span><br></pre></td></tr></table></figure>
 
 
 
-<p><strong>为什么使用回调函数？</strong></p>
-<p>js的单线程特性，使得所有任务需依次执行，如果前一个任务的执行需要很长时间，那么整个程序的执行时间就都会被拉长。</p>
+<h4 id="为什么使用回调函数？"><a href="#为什么使用回调函数？" class="headerlink" title="为什么使用回调函数？"></a>为什么使用回调函数？</h4><p>js的单线程特性，使得所有任务需依次执行，如果前一个任务的执行需要很长时间，那么整个程序的执行时间就都会被拉长。</p>
 <p> 为了解决这个问题，Javascript语言将任务的执行模式分成两种：<u>同步（Synchronous）</u>和<u>异步（Asynchronous）</u> 。</p>
 <p><strong>同步任务</strong>指的是需要在主线程上排队依次执行的任务，前一个任务结束，才会执行后一个任务。 任务执行的顺序与代码排列的顺序是一致的、同步的，同步任务会导致阻塞；<strong>异步任务</strong>指的是不会阻塞主线程上的下一个同步任务，而是会进入的回调队列（callback queue）的任务。</p>
 <p>而回调函数，正是实现异步编程的方法之一。  </p>
 <hr>
-<h1 id="同步回调与异步回调"><a href="#同步回调与异步回调" class="headerlink" title="同步回调与异步回调"></a>同步回调与异步回调</h1><p>回调函数不等于异步， 同步(阻塞)的场景下也经常用到回调</p>
-<h2 id="同步回调"><a href="#同步回调" class="headerlink" title="同步回调"></a>同步回调</h2><p>立即执行，完全执行完了才会执行下一个任务，不会放入回调队列中</p>
+<h2 id="同步回调与异步回调"><a href="#同步回调与异步回调" class="headerlink" title="同步回调与异步回调"></a>同步回调与异步回调</h2><p>回调函数不等于异步， 同步(阻塞)的场景下也经常用到回调</p>
+<h3 id="同步回调"><a href="#同步回调" class="headerlink" title="同步回调"></a>同步回调</h3><p>立即执行，完全执行完了才会执行下一个任务，不会放入回调队列中</p>
 <p>如：数组遍历相关的回调函数 / Promise的excutor函数</p>
 <p><strong>例：</strong></p>
 <figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> arr = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]</span><br><span class="line">arr.forEach(<span class="function">(<span class="params">item, index</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'遍历的回调'</span>, item, index)</span><br><span class="line">&#125;)</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">'forEach()之后'</span>)</span><br></pre></td></tr></table></figure>
@@ -47,7 +45,7 @@
 <figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 遍历的回调, 1, 0</span></span><br><span class="line"><span class="comment">// 遍历的回调, 2, 1</span></span><br><span class="line"><span class="comment">// 遍历的回调, 3, 2</span></span><br><span class="line"><span class="comment">// forEach()之后</span></span><br></pre></td></tr></table></figure>
 
 <p>执行结果  </p>
-<h2 id="异步回调"><a href="#异步回调" class="headerlink" title="异步回调"></a>异步回调</h2><p>不会立即执行, 会放入回调队列中将来执行</p>
+<h3 id="异步回调"><a href="#异步回调" class="headerlink" title="异步回调"></a>异步回调</h3><p>不会立即执行, 会放入回调队列中将来执行</p>
 <p>如：定时器回调 / ajax回调 / 事件监听回调/ Promise的成功和失败的回调</p>
 <p><strong>例：</strong></p>
 <figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">'回调函数'</span>)</span><br><span class="line">&#125;, <span class="number">0</span>)</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">'setTimeout()之后'</span>)</span><br></pre></td></tr></table></figure>
@@ -57,7 +55,7 @@
 
 <p>执行结果</p>
 <hr>
-<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><ol>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ol>
 <li><a href="http://www.ruanyifeng.com/blog/2014/10/event-loop.html" target="_blank" rel="noopener">JavaScript 运行机制详解：再谈Event Loop</a></li>
 <li><a href="[http://www.ruanyifeng.com/blog/2012/12/asynchronous%EF%BC%BFjavascript.html](http://www.ruanyifeng.com/blog/2012/12/asynchronous＿javascript.html)">Javascript异步编程的4种方法</a></li>
 </ol>
