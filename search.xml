@@ -172,7 +172,10 @@
 </ul>
 <p>这样，就导致了本不必要的性能浪费。  </p>
 <h3 id="为什么会存在这些问题？"><a href="#为什么会存在这些问题？" class="headerlink" title="为什么会存在这些问题？"></a>为什么会存在这些问题？</h3><p>首先我们来看一下 React 的生命周期：</p>
-<p><img src="/.ml//React%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%87%BD%E6%95%B0%E5%9B%BE%E8%A7%A3.jpg" alt="React的生命周期"></p>
+<img src="https://i.loli.net/2020/02/19/gW8yp3ltDoIaznA.jpg" alt="React的生命周期" style="zoom:60%;" />
+
+
+
 <center>图源来自网络</center>
 
 
