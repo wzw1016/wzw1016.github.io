@@ -49,18 +49,20 @@
 
 
 
-  <meta name="description" content="逝者如斯夫 不舍昼夜">
+  <meta name="description" content="React.PureComponent 与 React.Component 很相似。两者的区别在于 React.Component 并未实现 shouldComponentUpdate()，而 React.PureComponent 中以浅层对比 prop 和 state 的方式来实现了该函数。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Component和PureComponent">
 <meta property="og:url" content="http://wzw1016.ml/2020/02/14/Component%E5%92%8CPureComponent/index.html">
 <meta property="og:site_name" content="Wang&#39;s Blog">
-<meta property="og:description" content="逝者如斯夫 不舍昼夜">
+<meta property="og:description" content="React.PureComponent 与 React.Component 很相似。两者的区别在于 React.Component 并未实现 shouldComponentUpdate()，而 React.PureComponent 中以浅层对比 prop 和 state 的方式来实现了该函数。">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://wzw1016.ml/.ml//React%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%87%BD%E6%95%B0%E5%9B%BE%E8%A7%A3.jpg">
 <meta property="article:published_time" content="2020-02-14T15:31:13.000Z">
-<meta property="article:modified_time" content="2020-02-15T03:44:19.629Z">
+<meta property="article:modified_time" content="2020-02-19T13:32:57.549Z">
 <meta property="article:author" content="Vincent">
 <meta property="article:tag" content="性能优化">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://wzw1016.ml/.ml//React%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%87%BD%E6%95%B0%E5%9B%BE%E8%A7%A3.jpg">
 
 <link rel="canonical" href="http://wzw1016.ml/2020/02/14/Component%E5%92%8CPureComponent/">
 
@@ -295,14 +297,14 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>0</span>
+              <span>4.8k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="fa fa-clock-o"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>4 分钟</span>
             </span>
 
         </div>
@@ -314,7 +316,50 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        
+        <blockquote>
+<p><code>React.PureComponent</code> 与 <a href="https://zh-hans.reactjs.org/docs/react-api.html#reactcomponent" target="_blank" rel="noopener"><code>React.Component</code></a> 很相似。两者的区别在于 <a href="https://zh-hans.reactjs.org/docs/react-api.html#reactcomponent" target="_blank" rel="noopener"><code>React.Component</code></a> 并未实现 <a href="https://zh-hans.reactjs.org/docs/react-component.html#shouldcomponentupdate" target="_blank" rel="noopener"><code>shouldComponentUpdate()</code></a>，而 <code>React.PureComponent</code> 中以浅层对比 prop 和 state 的方式来实现了该函数。</p>
+</blockquote>
+<a id="more"></a>
+
+<h2 id="使用Component存在的问题"><a href="#使用Component存在的问题" class="headerlink" title="使用Component存在的问题"></a>使用Component存在的问题</h2><h3 id="例"><a href="#例" class="headerlink" title="例"></a>例</h3><p>我们先来看看下面这段代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 父组件</span><br><span class="line">class A extends React.Component &#123;</span><br><span class="line"></span><br><span class="line">  state &#x3D; &#123;</span><br><span class="line">    m1: &#123;</span><br><span class="line">      count: 1</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  testA &#x3D; () &#x3D;&gt; &#123;</span><br><span class="line">    this.setState(&#123;&#125;)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  render() &#123;</span><br><span class="line">    console.log(&#39;A render()&#39;)</span><br><span class="line">    return (</span><br><span class="line">      &lt;div&gt;</span><br><span class="line">        &lt;h1&gt;A组件: m1.count&#x3D;&#123;this.state.m1.count&#125;&lt;&#x2F;h1&gt;</span><br><span class="line">        &lt;button onClick&#x3D;&#123;this.testA&#125;&gt;test A&lt;&#x2F;button&gt;</span><br><span class="line">        &lt;B m1&#x3D;&#123;this.state.m1&#125;&#x2F;&gt;</span><br><span class="line">      &lt;&#x2F;div&gt;</span><br><span class="line">    )</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 子组件</span><br><span class="line">class B extends React.Component &#123;</span><br><span class="line"></span><br><span class="line">  state &#x3D; &#123;</span><br><span class="line">    m2: &#123;</span><br><span class="line">      count: 2</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  render() &#123;</span><br><span class="line">    console.log(&#39;B render()&#39;)</span><br><span class="line">    return (</span><br><span class="line">      &lt;div&gt;</span><br><span class="line">        &lt;h1&gt;B组件: &lt;&#x2F;h1&gt;</span><br><span class="line">        &lt;div&gt;m2.count&#x3D;&#123;this.state.m2.count&#125;&lt;&#x2F;div&gt;</span><br><span class="line">        &lt;div&gt;m1.count&#x3D;&#123;this.props.m1.count&#125;&lt;&#x2F;div&gt;</span><br><span class="line">      &lt;&#x2F;div&gt;</span><br><span class="line">    )</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">ReactDOM.render(&lt;A&#x2F;&gt;, document.getElementById(&#39;example&#39;))</span><br></pre></td></tr></table></figure>
+
+<p>上面的代码中，组件A是组件B的父组件。同时，组件A将维护的状态 <code>m1</code> 作为B组件的属性传递给他。</p>
+<p>点击 <kbd>test A</kbd>，输出以下内容：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt; A render()</span><br><span class="line">&gt; B render()</span><br></pre></td></tr></table></figure>
+
+<p>我们会发现，此时，即使 A组件 的 <code>state</code> 没有发生变化，A组件也会重新渲染。即使 B组件 的 <code>state</code> 和 <code>props</code> 都没有发生改变，但只要 A组件 重新渲染，B组件 也会重新渲染。</p>
+<p>也就是说，当前使用的继承类 <code>Component</code> 存在这两个问题：</p>
+<ul>
+<li><strong>当前组件 <code>setState()</code>，会重新执行 <code>render()</code>，即使 state 没有任何变化。</strong></li>
+<li><strong>父组件重新 <code>render()</code>, 当前组件也会重新执行 <code>render()</code>, 即使 state 和 <code>porps</code> 没有任何变化。</strong></li>
+</ul>
+<p>这样，就导致了本不必要的性能浪费。  </p>
+<h3 id="为什么会存在这些问题？"><a href="#为什么会存在这些问题？" class="headerlink" title="为什么会存在这些问题？"></a>为什么会存在这些问题？</h3><p>首先我们来看一下 React 的生命周期：</p>
+<p><img src="/.ml//React%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%87%BD%E6%95%B0%E5%9B%BE%E8%A7%A3.jpg" alt="React的生命周期"></p>
+<center>图源来自网络</center>
+
+
+
+<p>从这张图中可以很轻松的看到，组件运行时，无论是父组件重新 <code>render()</code>，还是子组件的 state 发生改变，都会调用 <strong><code>shouldComponentUpdate()</code></strong> 这个方法。 它<strong>接收两个参数：nextProps和nextState</strong>，分别表示新的 props 和新的 state 的值。并且，当函数返回 ture 时，组件会重新调用 <code>render()</code> 进行 update ；当函数返回 false 时，组件不会重新渲染。</p>
+<p>然而，<strong>Component 类的 <code>shouldComponentUpdate()</code> 默认返回 true, 即使数据没有变化 <code>render()</code> 也会重新执行</strong>，这就导致了我们上方的问题。</p>
+<hr>
+<h2 id="解决办法"><a href="#解决办法" class="headerlink" title="解决办法"></a>解决办法</h2><h3 id="重写shouldComponentUpdate"><a href="#重写shouldComponentUpdate" class="headerlink" title="重写shouldComponentUpdate()"></a>重写shouldComponentUpdate()</h3><p>上面我们说，<code>shouldComponentUpdate()</code> 默认返回 true，所以导致了不必要的重新渲染。于是我们可以在<code>shouldComponentUpdate()</code>中加入条件判断，从而优化性能。</p>
+<p>在上面的例子中，我们在</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 父组件</span><br><span class="line">class A extends React.Component &#123;</span><br><span class="line"></span><br><span class="line">  state &#x3D; &#123;</span><br><span class="line">    m1: &#123;</span><br><span class="line">      count: 1</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  testA &#x3D; () &#x3D;&gt; &#123;</span><br><span class="line">    this.setState(&#123;&#125;)</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  shouldComponentUpdate(nextProps, nextState)&#123;</span><br><span class="line">    return nextState.m1 &#x3D;&#x3D;&#x3D; this.state.m1 ? false : true</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  render() &#123;</span><br><span class="line">    console.log(&#39;A render()&#39;)</span><br><span class="line">    return (</span><br><span class="line">      &lt;div&gt;</span><br><span class="line">        &lt;h1&gt;A组件: m1.count&#x3D;&#123;this.state.m1.count&#125;&lt;&#x2F;h1&gt;</span><br><span class="line">        &lt;button onClick&#x3D;&#123;this.testA&#125;&gt;test A&lt;&#x2F;button&gt;</span><br><span class="line">        &lt;B m1&#x3D;&#123;this.state.m1&#125;&#x2F;&gt;</span><br><span class="line">      &lt;&#x2F;div&gt;</span><br><span class="line">    )</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 子组件</span><br><span class="line">class B extends React.Component &#123;</span><br><span class="line"></span><br><span class="line">  state &#x3D; &#123;</span><br><span class="line">    m2: &#123;</span><br><span class="line">      count: 2</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  shouldComponentUpdate(nextProps, nextState)&#123;</span><br><span class="line">    return nextProps.m1 &#x3D;&#x3D;&#x3D; this.props.m1 &amp;&amp; nextState.m2 &#x3D;&#x3D;&#x3D; this.state.m2 ? false : true</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  render() &#123;</span><br><span class="line">    console.log(&#39;B render()&#39;)</span><br><span class="line">    return (</span><br><span class="line">      &lt;div&gt;</span><br><span class="line">        &lt;h1&gt;B组件: &lt;&#x2F;h1&gt;</span><br><span class="line">        &lt;div&gt;m2.count&#x3D;&#123;this.state.m2.count&#125;&lt;&#x2F;div&gt;</span><br><span class="line">        &lt;div&gt;m1.count&#x3D;&#123;this.props.m1.count&#125;&lt;&#x2F;div&gt;</span><br><span class="line">      &lt;&#x2F;div&gt;</span><br><span class="line">    )</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">ReactDOM.render(&lt;A&#x2F;&gt;, document.getElementById(&#39;example&#39;))</span><br></pre></td></tr></table></figure>
+
+<p>可是这样，又有了一个新的问题。当组件的 state 或 props 很多时，这样无疑会非常麻烦。</p>
+<p>所以，我们可以使用 PureComponent 很轻松的解决。</p>
+<h3 id="使用PureComponent"><a href="#使用PureComponent" class="headerlink" title="使用PureComponent"></a>使用PureComponent</h3><p> React中提供了一个 <code>PureComponent</code> 的类，当我们的组件继承于它时，组件更新时就会默认先比较新旧属性和状态，从而决定组件是否更新。</p>
+<p> 不过值得注意的是，<strong><code>PureComponent</code>进行的是浅比较，所以组件状态或属性改变时，都需要返回一个新的对象或数组</strong>。</p>
+<p>就像这样：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 父组件</span><br><span class="line">class A extends React.PureComponent &#123;</span><br><span class="line"></span><br><span class="line">  state &#x3D; &#123;</span><br><span class="line">    m1: &#123;</span><br><span class="line">      count: 1</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  testA &#x3D; () &#x3D;&gt; &#123;</span><br><span class="line">    this.setState(state &#x3D;&gt; (&#123;</span><br><span class="line">      m1: &#123;...state.m1, count: 2&#125;</span><br><span class="line">    &#125;))</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  shouldComponentUpdate(nextProps, nextState)&#123;</span><br><span class="line">    return nextState.m1 &#x3D;&#x3D;&#x3D; this.state.m1 ? false : true</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  render() &#123;</span><br><span class="line">    console.log(&#39;A render()&#39;)</span><br><span class="line">    return (</span><br><span class="line">      &lt;div&gt;</span><br><span class="line">        &lt;h1&gt;A组件: m1.count&#x3D;&#123;this.state.m1.count&#125;&lt;&#x2F;h1&gt;</span><br><span class="line">        &lt;button onClick&#x3D;&#123;this.testA&#125;&gt;test A&lt;&#x2F;button&gt;</span><br><span class="line">        &lt;B m1&#x3D;&#123;this.state.m1&#125;&#x2F;&gt;</span><br><span class="line">      &lt;&#x2F;div&gt;</span><br><span class="line">    )</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 子组件</span><br><span class="line">class B extends React.PureComponent &#123;</span><br><span class="line"></span><br><span class="line">  state &#x3D; &#123;</span><br><span class="line">    m2: &#123;</span><br><span class="line">      count: 2</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  shouldComponentUpdate(nextProps, nextState)&#123;</span><br><span class="line">    return nextProps.m1 &#x3D;&#x3D;&#x3D; this.props.m1 &amp;&amp; nextState.m2 &#x3D;&#x3D;&#x3D; this.state.m2 ? false : true</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  render() &#123;</span><br><span class="line">    console.log(&#39;B render()&#39;)</span><br><span class="line">    return (</span><br><span class="line">      &lt;div&gt;</span><br><span class="line">        &lt;h1&gt;B组件: &lt;&#x2F;h1&gt;</span><br><span class="line">        &lt;div&gt;m2.count&#x3D;&#123;this.state.m2.count&#125;&lt;&#x2F;div&gt;</span><br><span class="line">        &lt;div&gt;m1.count&#x3D;&#123;this.props.m1.count&#125;&lt;&#x2F;div&gt;</span><br><span class="line">      &lt;&#x2F;div&gt;</span><br><span class="line">    )</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">ReactDOM.render(&lt;A&#x2F;&gt;, document.getElementById(&#39;example&#39;))</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ol>
+<li><a href="https://zh-hans.reactjs.org/docs/react-api.html#reactpurecomponent" target="_blank" rel="noopener">React官方文档 —— React.PureComponent</a></li>
+</ol>
+
     </div>
 
     
@@ -416,6 +461,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#使用Component存在的问题"><span class="nav-number">1.</span> <span class="nav-text">使用Component存在的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#例"><span class="nav-number">1.1.</span> <span class="nav-text">例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#为什么会存在这些问题？"><span class="nav-number">1.2.</span> <span class="nav-text">为什么会存在这些问题？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决办法"><span class="nav-number">2.</span> <span class="nav-text">解决办法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#重写shouldComponentUpdate"><span class="nav-number">2.1.</span> <span class="nav-text">重写shouldComponentUpdate()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用PureComponent"><span class="nav-number">2.2.</span> <span class="nav-text">使用PureComponent</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文章"><span class="nav-number">3.</span> <span class="nav-text">参考文章</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -495,12 +541,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-area-chart"></i>
     </span>
-    <span title="站点总字数">11k</span>
+    <span title="站点总字数">16k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">10 分钟</span>
+    <span title="站点阅读时长">14 分钟</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
   </div>
