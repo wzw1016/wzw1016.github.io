@@ -1,6 +1,124 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>JS中的错误(Error)和错误处理</title>
+    <url>/2020/02/20/JS%E4%B8%AD%E7%9A%84%E9%94%99%E8%AF%AFError%E5%92%8C%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/</url>
+    <content><![CDATA[<h2 id="Error实例对象"><a href="#Error实例对象" class="headerlink" title="Error实例对象"></a>Error实例对象</h2><p><code>Error</code> 是 JavaScript 中的错误类，它同时也是一个构造函数，可以用来创建一个错误对象。<code>Error</code> 的实例会在运行发生错误时抛出，<code>Error</code> 对象像其它对象一样，也可以由用户自定义创建。 </p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">let</span> err = <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'error message'</span>)</span><br><span class="line"><span class="built_in">console</span>.log(err) <span class="comment">// Error: error message</span></span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
+
+<h3 id="语法结构"><a href="#语法结构" class="headerlink" title="语法结构"></a>语法结构</h3><blockquote>
+<p><strong>new Error([message])</strong></p>
+</blockquote>
+<ul>
+<li><strong>message</strong>：可选参数，表示出错时的提示信息 。</li>
+</ul>
+<p>JavaScript 语言标准只提到，<code>Error</code> 实例对象有 <code>message</code> 属性，没有提到其他属性 。</p>
+<p>不同执行引擎对 <code>Error</code> 类的实现有所不同， 大多数 JavaScript 引擎，对 <code>Error</code> 实例还提供 <code>name</code> 和 <code>stack</code> 属性，分别表示错误的名称和错误的堆栈，但它们是非标准的，不是每种实现都有。 </p>
+<ul>
+<li><strong>name</strong>：错误名称（非标准属性）</li>
+<li><strong>stack</strong>：错误的堆栈（非标准属性）</li>
+</ul>
+<p><strong>作为函数使用</strong></p>
+<p>当像函数一样使用 <code>Error</code> 时 – 如果没有 <code>new</code>，它也会返回一个 <code>Error</code> 对象。也就是说，仅仅调用 <code>Error</code> 将产生与通过 <code>new</code> 关键字构造 <code>Error</code> 输出相同的对象。</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">let</span> err1 = <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'1'</span>)</span><br><span class="line"><span class="built_in">console</span>.log(err1) <span class="comment">// Error: 1</span></span><br><span class="line"><span class="keyword">let</span> err2 = <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'1'</span>)</span><br><span class="line"><span class="built_in">console</span>.log(err2) <span class="comment">// Error: 1</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Error类的方法与属性"><a href="#Error类的方法与属性" class="headerlink" title="Error类的方法与属性"></a>Error类的方法与属性</h3><h4 id="方法"><a href="#方法" class="headerlink" title="方法"></a><strong>方法</strong></h4><p><code>Error</code> 类本身没有任何方法。但是，由于在 JavaScript 中所有类都是 Object 的子类，所以其会包含一些继承自 <code>Object</code> 类的方法。 </p>
+<h4 id="属性"><a href="#属性" class="headerlink" title="属性"></a>属性</h4><p> <code>Error</code> 类也没有自身定义的类属性，其所有属性据来自于其父类<code>Object</code>。 </p>
+<ul>
+<li><code>Error.prototype</code> － 添加到其实例中的属性</li>
+</ul>
+<h3 id="Error实例"><a href="#Error实例" class="headerlink" title="Error实例"></a>Error实例</h3><p>运行时错误实例会由执行引擎自动创建和抛出，我们也可以通过构造函数自定义 <code>Error</code> 实例，与其它类一样我们也可以通过 <code>Error.prototype</code> 向实例中添加属性和方法。</p>
+<p><code>Error</code> 实例包含以下属性或方法：</p>
+<ul>
+<li><code>Error.prototype.constructor</code> － 指定对象的构造函数</li>
+<li><code>Error.prototype.message</code> － 错误信息</li>
+<li><code>Error.prototype.name</code> － 错误名</li>
+<li><code>Error.prototype.stack</code> － 错误堆栈信息。该属性是一个非标准属性，但被大多数执行引擎所支持。</li>
+<li><code>Error.prototype.toString()</code> － 表示错误对象的描述信息。继承并重写<code>Object.prototype.toString()</code></li>
+</ul>
+<hr>
+<h2 id="Error类型"><a href="#Error类型" class="headerlink" title="Error类型"></a>Error类型</h2><p>除标准错误对象 <code>Error</code> 外，JavaScript 中还内置了一些类型错误对象。它们会在特殊时刻，或由特定的对象触发。 </p>
+<p>常用的有：</p>
+<h3 id="ReferenceError-引用错误"><a href="#ReferenceError-引用错误" class="headerlink" title="ReferenceError - 引用错误"></a>ReferenceError - 引用错误</h3><p> <code>ReferenceError</code> 错误对象会在<strong>无效引用</strong>时触发。也可以通过构造函数创建该对象的实例：</p>
+<blockquote>
+<p><strong>new ReferenceError([message])</strong></p>
+</blockquote>
+<p>引用未定义的变量时，会抛出该错误： </p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(a) <span class="comment">// Uncaught ReferenceError: a is not defined</span></span><br></pre></td></tr></table></figure>
+
+<p> 另一种触发场景是，将一个值分配给无法分配的对象，比如对函数的运行结果或者 <code>this</code> 赋值：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 等号左侧不是变量</span></span><br><span class="line"><span class="built_in">console</span>.log() = <span class="number">1</span></span><br><span class="line"><span class="comment">// Uncaught ReferenceError: Invalid left-hand side in assignment</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// this 对象不能手动赋值</span></span><br><span class="line"><span class="keyword">this</span> = <span class="number">1</span></span><br><span class="line"><span class="comment">// Uncaught SyntaxError: Invalid left-hand side in assignment</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="TypeError-类型错误"><a href="#TypeError-类型错误" class="headerlink" title="TypeError - 类型错误"></a>TypeError - 类型错误</h3><p> <code>TypeError</code> 错误会在<strong>变量或参数不属于有效类型</strong>时触发。也可以通过构造函数创建该对象的实例：</p>
+<blockquote>
+<p><strong>new TypeError([message])</strong></p>
+</blockquote>
+<p>比如，对字符串、布尔值、数值等原始类型的值使用 <code>new</code> 命令，就会抛出这种错误，因为 <code>new</code> 命令的参数应该是一个构造函数：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">new</span> <span class="number">123</span></span><br><span class="line"><span class="comment">// Uncaught TypeError: 123 is not a constructor</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">new</span> <span class="literal">true</span></span><br><span class="line"><span class="comment">// Uncaught TypeError: true is not a constructor</span></span><br><span class="line"></span><br><span class="line">···</span><br></pre></td></tr></table></figure>
+
+<p>或是当调用对象不存在的方法，也会抛出 <code>TypeError</code> 错误，因为<code>obj.unknownMethod</code>的值是<code>undefined</code>，而不是一个函数。 </p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">let</span> obj = &#123;&#125;</span><br><span class="line">obj.unknownMethod()</span><br><span class="line"><span class="comment">// Uncaught TypeError: obj.unknownMethod is not a function</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="SyntaxError-语法错误"><a href="#SyntaxError-语法错误" class="headerlink" title="SyntaxError - 语法错误"></a>SyntaxError - 语法错误</h3><p><code>SyntaxError</code> 错误对象会在解析代码的过程中发生的语法错误时触发。也可以通过构造函数创建该对象的实例：</p>
+<blockquote>
+<p><strong>new SyntaxError([message])</strong></p>
+</blockquote>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 变量名错误</span></span><br><span class="line"><span class="keyword">let</span> <span class="number">1</span>a</span><br><span class="line"><span class="comment">// Uncaught SyntaxError: Invalid or unexpected token</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 缺少括号</span></span><br><span class="line"><span class="built_in">console</span>.log <span class="string">'hello'</span>)</span><br><span class="line"><span class="comment">// Uncaught SyntaxError: Unexpected string</span></span><br></pre></td></tr></table></figure>
+
+<p>上面代码的错误，都是在语法解析阶段就可以发现，所以会抛出<code>SyntaxError</code>。第一个错误提示是“token 非法”，第二个错误提示是“字符串不符合要求”。 </p>
+<h3 id="RangeError-范围错误"><a href="#RangeError-范围错误" class="headerlink" title="RangeError - 范围错误"></a>RangeError - 范围错误</h3><p><code>RangeError</code>错误对象会在数值变量或参数超出其有效范围时触发。也可以通过构造函数创建该对象的实例：</p>
+<blockquote>
+<p><strong>new RangeError([message])</strong></p>
+</blockquote>
+<p> 触发<code>RangeError</code>错误的情况有：对 <code>Array</code> 构造函数使用错误的长度值； 对 <code>Number</code> 对象的方法参数超出范围； 以及函数堆栈超过最大值等。</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 对 Array 构造函数使用错误的长度值</span></span><br><span class="line"><span class="keyword">new</span> <span class="built_in">Array</span>(<span class="number">-1</span>)</span><br><span class="line"><span class="comment">// Uncaught RangeError: Invalid array length</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 对 Number 对象的方法参数超出范围</span></span><br><span class="line"><span class="keyword">let</span> numObj = <span class="number">77.1234</span></span><br><span class="line"><span class="built_in">console</span>.log(numObj.toExponential(<span class="number">101</span>))</span><br><span class="line"><span class="comment">// Uncaught RangeError: toExponential() argument must be between 0 and 100</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 函数堆栈超过最大值</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  fn()</span><br><span class="line">&#125;</span><br><span class="line">fn()</span><br><span class="line"><span class="comment">// RangeError: Maximum call stack size exceeded</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>除了这几种常见的的错误类型之外，还有：</p>
+<h3 id="URIError"><a href="#URIError" class="headerlink" title="URIError"></a>URIError</h3><p><code>URIError</code>错误会错误使用全局URI函数如 <code>encodeURI()</code>、<code>decodeURI()</code> 等时触发。也可以通过构造函数创建该对象的实例。</p>
+<p>该错误类型在目前的 ECMAScript 规范中仍处于草案（Draft）阶段，<a href="https://www.ecma-international.org/ecma-262/6.0/#sec-native-error-types-used-in-this-standard-evalerror" target="_blank" rel="noopener">详情点击</a>。</p>
+<h3 id="InternalError"><a href="#InternalError" class="headerlink" title="InternalError"></a>InternalError</h3><p> <code>InternalError</code> 对象表示出现在 JavaScript 引擎内部的错误。 例如： “InternalError: too much recursion”（内部错误：递归过深）。</p>
+<p>该错误类型目前尚未成为规范的一部分。</p>
+<h3 id="EvalError"><a href="#EvalError" class="headerlink" title="EvalError"></a>EvalError</h3><p><code>EvalError</code>对象表示全局函数<code>eval()</code>中发生的错误。</p>
+<p> 该错误类型已经不再使用了，只是为了保证与以前代码兼容，才继续保留，<a href="https://www.ecma-international.org/ecma-262/6.0/#sec-native-error-types-used-in-this-standard-evalerror" target="_blank" rel="noopener">详情点击</a>。</p>
+<hr>
+<h2 id="自定义错误"><a href="#自定义错误" class="headerlink" title="自定义错误"></a>自定义错误</h2><p>当 JavaScript 内置错误类型不能满足需要时，还可以自定义错误。自定义错误就是继承 <code>Error</code> 对象，并对其进行一定的扩展：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">MyError</span>(<span class="params">message</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>.message = message || <span class="string">'Default Message'</span></span><br><span class="line">  <span class="keyword">this</span>.name = <span class="string">'MyError'</span></span><br><span class="line">&#125;</span><br><span class="line">MyError.prototype = <span class="keyword">new</span> <span class="built_in">Error</span>()</span><br><span class="line">MyError.prototype.constructor = MyError</span><br></pre></td></tr></table></figure>
+
+<p>接着，我们就可以生成这种自定义类型的错误了：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">new</span> MyError(<span class="string">'this is my customizable error'</span>)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="错误的处理"><a href="#错误的处理" class="headerlink" title="错误的处理"></a>错误的处理</h2><h3 id="抛出错误-throw-语句"><a href="#抛出错误-throw-语句" class="headerlink" title="抛出错误 - throw 语句"></a>抛出错误 - throw 语句</h3><p> 通常，可以在创建 <code>Error</code> 实例后，通过 <code>throw</code> 关键字抛出：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'go wrong!'</span>)</span><br><span class="line"><span class="comment">// Error: go wrong!</span></span><br></pre></td></tr></table></figure>
+
+<p> 实际上，<strong><code>throw</code> 可以抛出任何类型的值</strong>：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 抛出一个字符串</span></span><br><span class="line"><span class="keyword">throw</span> <span class="string">'Error！'</span></span><br><span class="line"><span class="comment">// Uncaught Error！</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 抛出一个数值</span></span><br><span class="line"><span class="keyword">throw</span> <span class="number">42</span></span><br><span class="line"><span class="comment">// Uncaught 42</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 抛出一个布尔值</span></span><br><span class="line"><span class="keyword">throw</span> <span class="literal">true</span></span><br><span class="line"><span class="comment">// Uncaught true</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 抛出一个对象</span></span><br><span class="line"><span class="keyword">throw</span> &#123;</span><br><span class="line">  toString: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">'Error!'</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// Uncaught &#123;toString: ƒ&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>对于 JavaScript 引擎来说，遇到 <code>throw</code> 语句，程序就中止了。引擎会接收到 <code>throw</code> 抛出的信息，可能是一个错误实例，也可能是其他类型的值。 </p>
+<h3 id="捕获错误-try-…-catch结构"><a href="#捕获错误-try-…-catch结构" class="headerlink" title="捕获错误 - try … catch结构"></a>捕获错误 - try … catch结构</h3><p> 一旦发生错误，程序就中止执行了。 JavaScript提供了 <code>try...catch</code> 结构来捕获和处理错误， 选择是否往下执行。</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">  <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'go wrong!'</span>)</span><br><span class="line">&#125; <span class="keyword">catch</span> (error) &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'error.message = '</span> + error.message)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上方代码，try 代码块中抛出错误，该错误将立即被 catch 捕获，将该错误作为参数传递给 catch，并执行 catch 中的代码。</p>
+<p>也就是说，<strong>如果不确定某些代码是否会报错，就可以把它们放在 <code>try...catch</code> 代码块之中，便于进一步对错误进行处理</strong>。 <code>catch</code> 代码块捕获错误之后，程序不会中断，会按照正常流程继续执行下去。 </p>
+<p><code>try...catch</code> 可以嵌套使用。</p>
+<h3 id="finally代码块"><a href="#finally代码块" class="headerlink" title="finally代码块"></a>finally代码块</h3><p>可以在 <code>try...catch</code> 结构最后添加一个<code>finally</code>代码块，表示不管是否出现错误，都必需在最后运行的语句</p>
+<hr>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ol>
+<li><a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Error" target="_blank" rel="noopener">MDN —— Error</a></li>
+<li><a href="https://www.ecma-international.org/ecma-262/6.0/" target="_blank" rel="noopener">Standard ECMA-262 6th Edition / June 2015 ECMAScript® 2015 Language Specification</a></li>
+<li><a href="https://wangdoc.com/javascript/features/error.html" target="_blank" rel="noopener">阮一峰的网络日志 —— 错误处理机制</a></li>
+<li><a href="https://itbilu.com/javascript/js/V1oOv4Vv-.html" target="_blank" rel="noopener">IT笔录 —— JavaScript Error对象及错误类型</a></li>
+</ol>
+]]></content>
+      <categories>
+        <category>JavaScript</category>
+      </categories>
+  </entry>
+  <entry>
     <title>详解state与setState</title>
     <url>/2020/02/15/%E8%AF%A6%E8%A7%A3state%E4%B8%8EsetState/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><blockquote>
