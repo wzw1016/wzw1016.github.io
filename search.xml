@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>JS中的错误(Error)和错误处理</title>
-    <url>/2020/02/20/JS%E4%B8%AD%E7%9A%84%E9%94%99%E8%AF%AFError%E5%92%8C%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/</url>
+    <title>JS中的错误Error与错误处理</title>
+    <url>/2020/02/20/JS%E4%B8%AD%E7%9A%84%E9%94%99%E8%AF%AFError%E4%B8%8E%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/</url>
     <content><![CDATA[<h2 id="Error实例对象"><a href="#Error实例对象" class="headerlink" title="Error实例对象"></a>Error实例对象</h2><p><code>Error</code> 是 JavaScript 中的错误类，它同时也是一个构造函数，可以用来创建一个错误对象。<code>Error</code> 的实例会在运行发生错误时抛出，<code>Error</code> 对象像其它对象一样，也可以由用户自定义创建。 </p>
 <figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">let</span> err = <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'error message'</span>)</span><br><span class="line"><span class="built_in">console</span>.log(err) <span class="comment">// Error: error message</span></span><br></pre></td></tr></table></figure>
 
@@ -105,7 +105,24 @@
 <p>上方代码，try 代码块中抛出错误，该错误将立即被 catch 捕获，将该错误作为参数传递给 catch，并执行 catch 中的代码。</p>
 <p>也就是说，<strong>如果不确定某些代码是否会报错，就可以把它们放在 <code>try...catch</code> 代码块之中，便于进一步对错误进行处理</strong>。 <code>catch</code> 代码块捕获错误之后，程序不会中断，会按照正常流程继续执行下去。 </p>
 <p><code>try...catch</code> 可以嵌套使用。</p>
-<h3 id="finally代码块"><a href="#finally代码块" class="headerlink" title="finally代码块"></a>finally代码块</h3><p>可以在 <code>try...catch</code> 结构最后添加一个<code>finally</code>代码块，表示不管是否出现错误，都必需在最后运行的语句</p>
+<h3 id="finally代码块"><a href="#finally代码块" class="headerlink" title="finally代码块"></a>finally代码块</h3><p>可以在 <code>try...catch</code> 结构最后添加一个 <strong><code>finally</code> 代码块，表示不管是否出现错误，都必需在最后运行的语句</strong>。</p>
+<p>如下代码，就是一个使用 <code>try...catch...finally</code> 的经典场景。</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">openFile</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">		writeFile(data) <span class="comment">// 将可能出错的写入文件放入try代码块中</span></span><br><span class="line">	&#125;</span><br><span class="line">  <span class="keyword">catch</span> (err) &#123;</span><br><span class="line">		handleError(err) <span class="comment">// 如果在写入文件过程中出现错误，将在此处理</span></span><br><span class="line">	&#125;</span><br><span class="line">  <span class="keyword">finally</span> &#123;</span><br><span class="line">		closeFile() <span class="comment">// 总是会关闭文件</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>即使在 <code>try</code> 和 <code>catch</code> 的代码块中存在 <code>return</code> 语句，<code>finally</code> 中的代码依然会执行。</strong></p>
+<p>如下代码：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">still</span>(<span class="params">a</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(a)</span><br><span class="line">    <span class="keyword">return</span> <span class="string">'result'</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">finally</span> &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'FINALLY'</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(still(<span class="string">'test'</span>))</span><br><span class="line"><span class="comment">// test</span></span><br><span class="line"><span class="comment">// FINALLY</span></span><br><span class="line"><span class="comment">// result</span></span><br></pre></td></tr></table></figure>
+
+<p>从阮一峰老师的博客中可以看到： <strong>在 <code>try</code> 或 <code>catch</code> 中，<code>return</code> 语句的执行是排在 <code>finally</code> 代码之前的，只是等 <code>finally</code> 代码执行完毕后才返回</strong>。</p>
+<p>代码如下：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">let</span> count = <span class="number">0</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">countUp</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> count</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">finally</span> &#123;</span><br><span class="line">    count++</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(countUp())</span><br><span class="line"><span class="comment">// 0</span></span><br><span class="line"><span class="built_in">console</span>.log(count)</span><br><span class="line"><span class="comment">// 1</span></span><br></pre></td></tr></table></figure>
+
+<p>上面的代码中可以看到，<code>countUp()</code> 的返回值 <code>count</code> 先被确定为 0，但是此时并没有直接返回，而是先执行 <code>finally</code> 代码块中的内容。</p>
+<p><strong><code>finall</code> 代码块中的 <code>return</code> 语句会覆盖掉在 <code>try</code> 或 <code>catch</code> 中的 <code>return</code></strong>。也就是说， <strong>如果 <code>finall</code> 代码块中存在 <code>return</code>，那么该条 <code>return</code>语句中的值将作为 <code>try...catch...finally</code> 的返回值。</strong></p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">test</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="number">1</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="string">'from_try'</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">catch</span> (e) &#123;</span><br><span class="line">    <span class="comment">// TODO</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">finally</span> &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="number">2</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="string">'from_finally'</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
 <hr>
 <h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ol>
 <li><a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Error" target="_blank" rel="noopener">MDN —— Error</a></li>
