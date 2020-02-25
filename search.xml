@@ -1,6 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>promise.then()的返回值</title>
+    <url>/2020/02/23/promise.then()%E7%9A%84%E8%BF%94%E5%9B%9E%E5%80%BC/</url>
+    <content><![CDATA[<p>Promise 实例具有 <code>then</code> 方法，也就是说，<code>then</code> 方法是定义在原型对象 <code>Promise.prototype</code> 上的。它的作用是为 Promise 实例添加状态改变时的回调函数。</p>
+<p><code>Promise.prototype.then()</code> 方法返回的是一个<strong>新的 Promise 实例对象</strong>，因此可以采用<strong>链式写法</strong>。</p>
+<p>本文主要记录 <code>promise.then()</code> 返回值的不同情况。</p>
+<a id="more"></a>
+
+<hr>
+<h2 id="then-的基本用法"><a href="#then-的基本用法" class="headerlink" title="then() 的基本用法"></a>then() 的基本用法</h2><blockquote>
+<p><strong><code>new Promise(executor).then(onFulfilled[, onRejected])</code></strong> </p>
+</blockquote>
+<ul>
+<li><strong>onFulfilled</strong>： 当 Promise 变成 <strong><em>fulfilled</em></strong> 状态时调用的函数。</li>
+<li><strong>onRejected</strong>： 当 Promise 变成 <strong><em>rejected</em></strong> 状态时调用的函数。</li>
+</ul>
+<hr>
+<h2 id="then方法的返回值"><a href="#then方法的返回值" class="headerlink" title="then方法的返回值"></a>then方法的返回值</h2><h3 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h3><p><strong><code>then()</code> 返回的 promise 实例对象的结果由 <code>then()</code> 中指定的回调函数执行的结果决定</strong>。即由传入的 <strong>onFulfilled</strong> 或 <strong>onRejected</strong> 执行的结果决定。</p>
+<ul>
+<li>没有返回任何值（实际返回 undefined），那么 <code>then()</code> 返回的 promise 将会成为接受（resolved）状态。promise 携带的 value 为 undefined。</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Promise</span>.resolve()</span><br><span class="line">  .then(<span class="function"><span class="params">()</span> =&gt;</span> &#123;&#125;)</span><br><span class="line">  .then(<span class="function"><span class="params">value</span> =&gt;</span> <span class="built_in">console</span>.log(<span class="string">'onFulfilled'</span>, value)) <span class="comment">// onFulfilled undefined</span></span><br></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>返回了一个一般的值，那么 <code>then()</code> 返回的 promise 将会成为接受（resolved）状态。promise 携带的 value 为返回的值。 </li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Promise</span>.resolve()</span><br><span class="line">  .then(<span class="function"><span class="params">()</span> =&gt;</span> <span class="number">1</span>, () =&gt; <span class="number">2</span>)</span><br><span class="line">  .then(<span class="function"><span class="params">value</span> =&gt;</span> <span class="built_in">console</span>.log(<span class="string">'onFulfilled'</span>, value)) <span class="comment">// onFulfilled 1</span></span><br></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>抛出一个错误（throw xxx），那么 <code>then()</code> 返回的 promise 将会成为拒绝（rejected）状态。promise 携带的 reason 为抛出的错误。</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Promise</span>.resolve()</span><br><span class="line">  .then(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="comment">// 使 .then() 返回一个 rejected promise</span></span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'3'</span>)</span><br><span class="line">  &#125;)</span><br><span class="line">  .then(</span><br><span class="line">    () =&gt; <span class="built_in">console</span>.log(<span class="string">'不会调用'</span>),</span><br><span class="line">    (reason) =&gt; <span class="built_in">console</span>.log(<span class="string">'onRejected'</span>, reason) <span class="comment">// onRejected Error: 3</span></span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>返回一个接受（resolved）状态的 promise，那么 <code>then()</code> 返回的 promise 将会成为接受（resolved）状态。<code>then()</code> 返回的 promise 携带的 value 为回调函数返回的 promise 携带的 value。</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Promise</span>.resolve()</span><br><span class="line">  .then(<span class="function"><span class="params">()</span> =&gt;</span> <span class="built_in">Promise</span>.resolve(<span class="number">4</span>))</span><br><span class="line">  .then(<span class="function"><span class="params">value</span> =&gt;</span> <span class="built_in">console</span>.log(<span class="string">'onFulfilled'</span>, value)) <span class="comment">// onFulfilled 4</span></span><br></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>返回一个拒绝（rejected）状态的 promise，那么 <code>then()</code> 返回的 promise 将会成为拒绝（rejected）状态。<code>then()</code> 返回的 promise 携带的 reason 为回调函数返回的 promise 携带的 reason 。</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Promise</span>.resolve()</span><br><span class="line">  .then(<span class="function"><span class="params">()</span> =&gt;</span> <span class="built_in">Promise</span>.reject(<span class="number">5</span>))</span><br><span class="line">  .then(</span><br><span class="line">    () =&gt; <span class="built_in">console</span>.log(<span class="string">'不会调用'</span>),</span><br><span class="line">    (reason) =&gt; <span class="built_in">console</span>.log(<span class="string">'onRejected'</span>, reason) <span class="comment">// onRejected 5</span></span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>返回一个初始（pending）状态的 promise，那么 <code>then()</code> 返回的 promise 将会成为初始（pending）状态。</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">let</span> promise = <span class="built_in">Promise</span>.resolve().then(<span class="function"><span class="params">()</span> =&gt;</span> (</span><br><span class="line">  <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function"><span class="params">()</span> =&gt;</span> &#123;&#125;)</span><br><span class="line">))</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(promise) <span class="comment">// Promise &#123;&lt;pending&gt;&#125;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ul>
+<li><a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide/Using_promises" target="_blank" rel="noopener">使用 Promise</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>JavaScript</category>
+      </categories>
+      <tags>
+        <tag>Promise</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>JS中的错误Error与错误处理</title>
     <url>/2020/02/20/JS%E4%B8%AD%E7%9A%84%E9%94%99%E8%AF%AFError%E4%B8%8E%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/</url>
     <content><![CDATA[<h2 id="Error实例对象"><a href="#Error实例对象" class="headerlink" title="Error实例对象"></a>Error实例对象</h2><p><code>Error</code> 是 JavaScript 中的错误类，它同时也是一个构造函数，可以用来创建一个错误对象。<code>Error</code> 的实例会在运行发生错误时抛出，<code>Error</code> 对象像其它对象一样，也可以由用户自定义创建。 </p>
