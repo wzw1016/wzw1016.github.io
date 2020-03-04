@@ -49,21 +49,17 @@
 
 
 
-  <meta name="description" content="update：已加上QQ空间，人人网，豆瓣的支持。 起因本来 V2MM 一直使用 MoreBasicShare 相安无事的，在将 MoreBasicShare 移植到 V2MM 的博客评论系统的时候，发现 MoreBasicShare 有几点缺陷难以移植：  代码结构不好，不方便扩展新的分享方式，其中用了大量的字符串拼接； 依赖 jQuery, 而我们的博客评论系统是不依赖 jQuery 的；">
+  <meta name="description" content="逝者如斯夫 不舍昼夜">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Wang&#39;s Blog">
-<meta property="og:url" content="http://wzw1016.ml/lib/needsharebutton/README.html">
+<meta property="og:url" content="http://wzw1016.ml/tags/flatten/index.html">
 <meta property="og:site_name" content="Wang&#39;s Blog">
-<meta property="og:description" content="update：已加上QQ空间，人人网，豆瓣的支持。 起因本来 V2MM 一直使用 MoreBasicShare 相安无事的，在将 MoreBasicShare 移植到 V2MM 的博客评论系统的时候，发现 MoreBasicShare 有几点缺陷难以移植：  代码结构不好，不方便扩展新的分享方式，其中用了大量的字符串拼接； 依赖 jQuery, 而我们的博客评论系统是不依赖 jQuery 的；">
+<meta property="og:description" content="逝者如斯夫 不舍昼夜">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://github.com/revir/need-more-share2/raw/master/screenshot.png">
-<meta property="article:published_time" content="2020-02-03T07:24:56.630Z">
-<meta property="article:modified_time" content="2020-02-03T07:24:56.630Z">
 <meta property="article:author" content="Vincent">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://github.com/revir/need-more-share2/raw/master/screenshot.png">
 
-<link rel="canonical" href="http://wzw1016.ml/lib/needsharebutton/README">
+<link rel="canonical" href="http://wzw1016.ml/tags/flatten/">
 
 
 <script id="page-configurations">
@@ -75,8 +71,7 @@
   };
 </script>
 
-  <title> | Wang's Blog
-  </title>
+  <title>标签: flatten | Wang's Blog</title>
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-157496912-1"></script>
     <script>
@@ -224,100 +219,58 @@
       <div class="main-inner">
         <div class="content-wrap">
           
-  
-  
 
           <div class="content">
             
 
-  <div class="posts-expand">
-    
-    
-    
-    <div class="post-block" lang="zh-CN">
-      <header class="post-header">
-
-<h1 class="post-title" itemprop="name headline">
-</h1>
-
-<div class="post-meta">
   
-  <ul class="breadcrumb">
-          
-            <li><a href="/lib/">LIB</a></li>
-            <li><a href="/lib/needsharebutton/">NEEDSHAREBUTTON</a></li>
-            <li>README</li>
-          
-  </ul>
-
-</div>
-
-</header>
-
-      
-      
-      
-      <div class="post-body">
-          <p>update：已加上QQ空间，人人网，豆瓣的支持。</p>
-<h2 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h2><p>本来 V2MM 一直使用 <a href="https://github.com/revir/more-basic-share/" target="_blank" rel="noopener">MoreBasicShare</a> 相安无事的，在将 <a href="https://github.com/revir/more-basic-share/" target="_blank" rel="noopener">MoreBasicShare</a> 移植到 V2MM 的<a href="https://nodebb.tech/blog-comments2-bu-jin-jin-shi-yi-ge-bo-ke-ping-lun-xi-tong/" target="_blank" rel="noopener">博客评论系统</a>的时候，发现 <a href="https://github.com/revir/more-basic-share/" target="_blank" rel="noopener">MoreBasicShare</a> 有几点缺陷难以移植：</p>
-<ul>
-<li>代码结构不好，不方便扩展新的分享方式，其中用了大量的字符串拼接；</li>
-<li>依赖 jQuery, 而我们的博客评论系统是不依赖 jQuery 的；</li>
-</ul>
-<p>偶然发现一个老外写的纯 Javascript 的 <a href="https://github.com/DzmVasileusky/needShareButton" target="_blank" rel="noopener">Need Share Button</a>, 效果非常好，于是就 Clone 了过来，扩展了一下，增加了很多国内的分享网站，做得更傻瓜易用了一些。</p>
-<h2 id="Demo"><a href="#Demo" class="headerlink" title="Demo"></a>Demo</h2><p>可以见 V2MM 上的分享按钮，此插件还包含一个 <a href="https://github.com/revir/need-more-share2/blob/master/demo/index.html" target="_blank" rel="noopener">Demo</a> 页面，需把项目 clone 到本地展示。</p>
-<p><img src="https://github.com/revir/need-more-share2/raw/master/screenshot.png" alt="screenshot"></p>
-<h2 id="使用方式"><a href="#使用方式" class="headerlink" title="使用方式"></a>使用方式</h2><p>有多种方式使用，最简单的方法，加载 js 和 css 后，创建一个 class 名为 <code>need-share-button</code> 的分享按钮就好了，其他什么都不用做。</p>
-<p>第一步：在网页里加载 <strong>needsharebutton.min.js</strong> 和 <strong>needsharebutton.min.css</strong>。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- needsharebutton Javascript file --&gt;</span><br><span class="line">&lt;script src&#x3D;&quot;js&#x2F;needsharebutton.min.js&quot;&gt;&lt;&#x2F;script&gt;</span><br><span class="line">&lt;!-- needsharebutton CSS file --&gt;</span><br><span class="line">&lt;link href&#x3D;&quot;css&#x2F;needsharebutton.min.css&quot; rel&#x3D;&quot;stylesheet&quot; &#x2F;&gt;</span><br></pre></td></tr></table></figure>
-
-<p>第二步：创建一个<code>need-share-button</code>，插件会自动找到所有 <code>need-share-button</code>, 制作成分享按钮。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;button  class&#x3D;&quot;btn btn-default need-share-button&quot;&gt;Share&lt;&#x2F;button&gt;</span><br></pre></td></tr></table></figure>
-<p>这样你会看到网页上的 Share Button 已经可以使用了， 还可以通过 <code>data-share-</code> 传参。</p>
-<p>第三步：如果需要使用别的名字，可以手动调用 <code>needShareButton</code> 函数，比如：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> needShareButton(<span class="built_in">document</span>.getElementById(<span class="string">'my-share-button'</span>));</span><br><span class="line"># or</span><br><span class="line"><span class="keyword">new</span> needShareButton(<span class="string">'#my-share-button'</span>);</span><br></pre></td></tr></table></figure>
-
-<h2 id="needShareButton-函数"><a href="#needShareButton-函数" class="headerlink" title="needShareButton 函数"></a>needShareButton 函数</h2><p><code>needShareButton</code> 函数有两个参数：</p>
-<ol>
-<li>element, 可以是 Dom 节点，也可以是 CSS 选择器;</li>
-<li>options, 选项；</li>
-</ol>
-<h2 id="Options"><a href="#Options" class="headerlink" title="Options"></a>Options</h2><p>Options 可以通过参数传进去，也可以放在 DOM 节点里（加上 <code>data-share-</code> 前缀）。</p>
-<ol>
-<li>iconStyle： <code>default</code> or <code>box</code>；</li>
-<li>boxForm： <code>horizontal</code> or <code>vertical</code>;</li>
-<li>position: <code>bottomCenter</code>, <code>top / middle / bottom + Left / Center / Right</code>;</li>
-<li>networks: 默认： <code>&#39;Weibo,Wechat,Douban,QQZone,Twitter,Pinterest,Facebook,GooglePlus,Reddit,Linkedin,Tumblr,Evernote&#39;</code>; 注意，默认没有 <code>RenRen</code>，如果需要分享到人人网，在 networks 参数里加上 <code>RenRen</code>;</li>
-<li>url: 默认： <code>location.href</code>;</li>
-<li>title: 默认：<code>document.title</code>;</li>
-<li>image: 默认从 <code>meta[property=&quot;og:image&quot;]</code> 或 <code>meta[name=&quot;twitter:image&quot;]</code> 取值；</li>
-<li>description: 默认从 <code>meta[property=&quot;og:description&quot;]</code> 或 <code>meta[name=&quot;twitter:description&quot;]</code> 取值；</li>
-</ol>
-<h2 id="感谢"><a href="#感谢" class="headerlink" title="感谢"></a>感谢</h2><p>感谢<a href="https://github.com/DzmVasileusky/needShareButton" target="_blank" rel="noopener">DzmVasileusky</a>，此项目基于他的作品改编。</p>
-
+  
+  
+  <div class="post-block">
+    <div class="posts-collapse">
+      <div class="collection-title">
+        <h1 class="collection-header">flatten
+          <small>标签</small>
+        </h1>
       </div>
-      
-      
-      
-    </div>
-    
-  <ul class="breadcrumb">
-          
-            <li><a href="/lib/">LIB</a></li>
-            <li><a href="/lib/needsharebutton/">NEEDSHAREBUTTON</a></li>
-            <li>README</li>
-          
-  </ul>
 
-    
-    
-    
+      
+    <div class="collection-year">
+      <h1 class="collection-header">2020</h1>
+    </div>
+
+  <article itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      <div class="post-meta">
+        <time itemprop="dateCreated"
+              datetime="2020-03-04T17:09:41+08:00"
+              content="2020-03-04">
+          03-04
+        </time>
+      </div>
+
+      <h2 class="post-title">
+          <a class="post-title-link" href="/2020/03/04/%E6%95%B0%E7%BB%84%E6%89%81%E5%B9%B3%E5%8C%96/" itemprop="url">
+            <span itemprop="name">数组扁平化</span>
+          </a>
+      </h2>
+
+    </header>
+  </article>
+
+    </div>
   </div>
+  
+  
+  
+
+  
+
 
 
           </div>
           
-    <div class="comments" id="valine-comments"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -364,7 +317,6 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#起因"><span class="nav-number">1.</span> <span class="nav-text">起因</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Demo"><span class="nav-number">2.</span> <span class="nav-text">Demo</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用方式"><span class="nav-number">3.</span> <span class="nav-text">使用方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#needShareButton-函数"><span class="nav-number">4.</span> <span class="nav-text">needShareButton 函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Options"><span class="nav-number">5.</span> <span class="nav-text">Options</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#感谢"><span class="nav-number">6.</span> <span class="nav-text">感谢</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

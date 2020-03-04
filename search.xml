@@ -1,6 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>数组扁平化</title>
+    <url>/2020/03/04/%E6%95%B0%E7%BB%84%E6%89%81%E5%B9%B3%E5%8C%96/</url>
+    <content><![CDATA[<h2 id="何为数组扁平化？"><a href="#何为数组扁平化？" class="headerlink" title="何为数组扁平化？"></a>何为数组扁平化？</h2><p><strong>数组扁平化是指将一个多维数组转化为一维数组</strong>。</p>
+<p>举个例子，假设有个名为 <code>flatten</code> 的函数，接受一个数组作为参数，并将之扁平化：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> arr = [<span class="number">1</span>, <span class="number">2</span>, [<span class="number">3</span>, [<span class="number">4</span>, <span class="number">5</span>]]]</span><br><span class="line"><span class="built_in">console</span>.log(flatten(arr)) <span class="comment">// [1, 2, 3, 4, 5]</span></span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
+
+<hr>
+<h2 id="实现数组扁平化的方法"><a href="#实现数组扁平化的方法" class="headerlink" title="实现数组扁平化的方法"></a>实现数组扁平化的方法</h2><h3 id="flat"><a href="#flat" class="headerlink" title="flat()"></a>flat()</h3><p>ES2015（即ES6）中新增了数组的 <code>flat()</code> 方法，可以直接对<strong>多维数组</strong>进行“展平”，返回一个“展平”后的数组。</p>
+<p><code>flat()</code> 方法和数组的其他方法一样，定义在原型对象 <code>Array.prototype</code> 上。</p>
+<p><strong><code>flat()</code> 接收一个可选参数 <code>depth</code>， 用于指定要提取嵌套数组的结构深度，默认值为1。</strong></p>
+<p>使用如下：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> arr = [<span class="string">'a'</span>, [<span class="string">'b'</span>, [<span class="number">1</span>, [<span class="number">2</span>, <span class="number">3</span>]], <span class="string">'d'</span>]]</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(arr.flat()) <span class="comment">// ['a', 'b', [1, [2, 3]], 'd']</span></span><br><span class="line"><span class="built_in">console</span>.log(arr.flat(<span class="number">2</span>)) <span class="comment">// ['a', 'b', 1, [2, 3], 'd']</span></span><br><span class="line"><span class="built_in">console</span>.log(arr.flat(<span class="number">3</span>)) <span class="comment">// ['a', 'b', 1, 2, 3, 'd']</span></span><br></pre></td></tr></table></figure>
+
+<p>可以使用 <strong><code>Infinity</code></strong>，展开任意深度的嵌套数组。如下：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> arr = [<span class="number">1</span>, <span class="number">2</span>, [<span class="number">3</span>, [<span class="number">4</span>, [<span class="number">5</span>, [<span class="number">6</span>, [<span class="number">7</span>, <span class="number">8</span>]]]]]]</span><br><span class="line"><span class="built_in">console</span>.log(arr.flat(<span class="literal">Infinity</span>)) <span class="comment">// [1, 2, 3, 4, 5, 6, 7, 8]</span></span><br></pre></td></tr></table></figure>
+
+<p>当参数 <code>depth</code> 为负数时，会返回一个由原数组<strong>浅拷贝</strong>后的数组。如下：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> arr = [<span class="number">1</span>, <span class="number">2</span>, [<span class="number">3</span>, <span class="number">4</span>]]</span><br><span class="line"><span class="keyword">const</span> arr2 = arr.flat(<span class="number">-1</span>)</span><br><span class="line"><span class="built_in">console</span>.log(arr2) <span class="comment">// [1, 2, [3, 4]]</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 修改浅拷贝得到的数组，原数组也会发生改变</span></span><br><span class="line">arr2[<span class="number">2</span>][<span class="number">0</span>] = <span class="number">5</span></span><br><span class="line"><span class="built_in">console</span>.log(arr) <span class="comment">// [1, 2, [5, 4]]</span></span><br></pre></td></tr></table></figure>
+
+<p><code>flat()</code> 方法会将数组中的空项移除：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> arr = [<span class="number">1</span>, <span class="number">2</span>, , <span class="number">4</span>, <span class="number">5</span>]</span><br><span class="line">arr.flat() <span class="comment">// [1, 2, 4, 5]</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="函数递归-reduce-concat"><a href="#函数递归-reduce-concat" class="headerlink" title="函数递归 + reduce() + concat()"></a>函数递归 + reduce() + concat()</h3><p>自定义一个数组的方法 <code>flatten</code>，用于扁平化指定数组：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">flattenDepth</span>(<span class="params">array</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> array.reduce(<span class="function">(<span class="params">acc, item</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">if</span>(<span class="built_in">Array</span>.isArray(item)) &#123;</span><br><span class="line">      acc = acc.concat(flattenDepth(item))</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      acc = acc.concat(item)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> acc</span><br><span class="line">  &#125;, [])</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>简写后：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">flattenDepth</span>(<span class="params">arr</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> arr.reduce(<span class="function">(<span class="params">acc, item</span>) =&gt;</span> acc.concat(<span class="built_in">Array</span>.isArray(item) ? flattenDepth(item) : item), [])</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="扩展运算符-some-concat"><a href="#扩展运算符-some-concat" class="headerlink" title="扩展运算符 + some() + concat()"></a>扩展运算符 + some() + concat()</h3><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">flattenDepth</span>(<span class="params">array</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">while</span> (array.some(<span class="function"><span class="params">item</span> =&gt;</span> <span class="built_in">Array</span>.isArray(item))) &#123;</span><br><span class="line">    array = [].concat(...array)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> array</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>核心思想就是，遍历目标数组，若数组中的元素为非数组，则与返回的新数组进行 <code>concat()</code> 合并；若数组中的元素仍为数组，则进行递归遍历，并同时与返回的新数组进行 <code>concat()</code> 合并，直到目标数组中的所有元素都不是数组为止。</p>
+<hr>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ul>
+<li><a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/flat" target="_blank" rel="noopener">MDN - Array.prototype.flat()</a></li>
+</ul>
+]]></content>
+      <tags>
+        <tag>Array</tag>
+        <tag>flatten</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>promise.then()的返回值</title>
     <url>/2020/02/23/promise.then()%E7%9A%84%E8%BF%94%E5%9B%9E%E5%80%BC/</url>
     <content><![CDATA[<p>Promise 实例具有 <code>then</code> 方法，也就是说，<code>then</code> 方法是定义在原型对象 <code>Promise.prototype</code> 上的。它的作用是为 Promise 实例添加状态改变时的回调函数。</p>
