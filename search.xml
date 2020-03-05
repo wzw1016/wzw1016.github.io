@@ -33,6 +33,7 @@
 
 <h3 id="扩展运算符-some-concat"><a href="#扩展运算符-some-concat" class="headerlink" title="扩展运算符 + some() + concat()"></a>扩展运算符 + some() + concat()</h3><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">flattenDepth</span>(<span class="params">array</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">while</span> (array.some(<span class="function"><span class="params">item</span> =&gt;</span> <span class="built_in">Array</span>.isArray(item))) &#123;</span><br><span class="line">    array = [].concat(...array)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> array</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+<p>通过 ES6 的扩展运算符语法（…）将目标数组中的所有元素遍历取出，进行 <code>concat ()</code> 合并。</p>
 <hr>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>核心思想就是，遍历目标数组，若数组中的元素为非数组，则与返回的新数组进行 <code>concat()</code> 合并；若数组中的元素仍为数组，则进行递归遍历，并同时与返回的新数组进行 <code>concat()</code> 合并，直到目标数组中的所有元素都不是数组为止。</p>
 <hr>
