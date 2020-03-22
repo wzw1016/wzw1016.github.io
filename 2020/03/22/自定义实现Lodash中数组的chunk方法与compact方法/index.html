@@ -49,20 +49,21 @@
 
 
 
-  <meta name="description" content="前言 对js回调函数进行归纳总结   涉及的名词：单线程、回调函数">
+  <meta name="description" content="chunk(size)作用将数组（array）拆分成多个 size 长度的区块，并将这些区块组成一个新数组。 如果 array  无法被分割成全部等长的区块，那么最后剩余的元素将组成一个区块。   举个例子，假设数组有一个名为 chunk 的方法，可以实现上述功能，那么： 1234let arr &#x3D; [1, 2, 3, 4, 5, 6, 7]console.log(arr.chunk(2)) &#x2F;&#x2F;">
 <meta property="og:type" content="article">
-<meta property="og:title" content="同步回调与异步回调">
-<meta property="og:url" content="http://wzw1016.ml/2020/02/06/%E5%90%8C%E6%AD%A5%E5%9B%9E%E8%B0%83%E4%B8%8E%E5%BC%82%E6%AD%A5%E5%9B%9E%E8%B0%83/index.html">
+<meta property="og:title" content="自定义实现Lodash中数组的chunk方法与compact方法">
+<meta property="og:url" content="http://wzw1016.ml/2020/03/22/%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AE%9E%E7%8E%B0Lodash%E4%B8%AD%E6%95%B0%E7%BB%84%E7%9A%84chunk%E6%96%B9%E6%B3%95%E4%B8%8Ecompact%E6%96%B9%E6%B3%95/index.html">
 <meta property="og:site_name" content="Wang&#39;s Blog">
-<meta property="og:description" content="前言 对js回调函数进行归纳总结   涉及的名词：单线程、回调函数">
+<meta property="og:description" content="chunk(size)作用将数组（array）拆分成多个 size 长度的区块，并将这些区块组成一个新数组。 如果 array  无法被分割成全部等长的区块，那么最后剩余的元素将组成一个区块。   举个例子，假设数组有一个名为 chunk 的方法，可以实现上述功能，那么： 1234let arr &#x3D; [1, 2, 3, 4, 5, 6, 7]console.log(arr.chunk(2)) &#x2F;&#x2F;">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2020-02-06T07:11:09.000Z">
-<meta property="article:modified_time" content="2020-02-22T06:18:37.912Z">
+<meta property="article:published_time" content="2020-03-22T06:19:59.000Z">
+<meta property="article:modified_time" content="2020-03-22T07:08:07.235Z">
 <meta property="article:author" content="Vincent">
-<meta property="article:tag" content="回调函数">
+<meta property="article:tag" content="Array">
+<meta property="article:tag" content="Lodash">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://wzw1016.ml/2020/02/06/%E5%90%8C%E6%AD%A5%E5%9B%9E%E8%B0%83%E4%B8%8E%E5%BC%82%E6%AD%A5%E5%9B%9E%E8%B0%83/">
+<link rel="canonical" href="http://wzw1016.ml/2020/03/22/%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AE%9E%E7%8E%B0Lodash%E4%B8%AD%E6%95%B0%E7%BB%84%E7%9A%84chunk%E6%96%B9%E6%B3%95%E4%B8%8Ecompact%E6%96%B9%E6%B3%95/">
 
 
 <script id="page-configurations">
@@ -74,7 +75,7 @@
   };
 </script>
 
-  <title>同步回调与异步回调 | Wang's Blog</title>
+  <title>自定义实现Lodash中数组的chunk方法与compact方法 | Wang's Blog</title>
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-157496912-1"></script>
     <script>
@@ -231,7 +232,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://wzw1016.ml/2020/02/06/%E5%90%8C%E6%AD%A5%E5%9B%9E%E8%B0%83%E4%B8%8E%E5%BC%82%E6%AD%A5%E5%9B%9E%E8%B0%83/">
+    <link itemprop="mainEntityOfPage" href="http://wzw1016.ml/2020/03/22/%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AE%9E%E7%8E%B0Lodash%E4%B8%AD%E6%95%B0%E7%BB%84%E7%9A%84chunk%E6%96%B9%E6%B3%95%E4%B8%8Ecompact%E6%96%B9%E6%B3%95/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/avatar.png">
@@ -244,7 +245,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          同步回调与异步回调
+          自定义实现Lodash中数组的chunk方法与compact方法
         </h1>
 
         <div class="post-meta">
@@ -254,18 +255,7 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2020-02-06 15:11:09" itemprop="dateCreated datePublished" datetime="2020-02-06T15:11:09+08:00">2020-02-06</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JavaScript/" itemprop="url" rel="index">
-                    <span itemprop="name">JavaScript</span>
-                  </a>
-                </span>
+              <time title="创建时间：2020-03-22 14:19:59" itemprop="dateCreated datePublished" datetime="2020-03-22T14:19:59+08:00">2020-03-22</time>
             </span>
 
           
@@ -284,8 +274,8 @@
       </span>
       <span class="post-meta-item-text">评论：</span>
     
-    <a title="valine" href="/2020/02/06/%E5%90%8C%E6%AD%A5%E5%9B%9E%E8%B0%83%E4%B8%8E%E5%BC%82%E6%AD%A5%E5%9B%9E%E8%B0%83/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/02/06/%E5%90%8C%E6%AD%A5%E5%9B%9E%E8%B0%83%E4%B8%8E%E5%BC%82%E6%AD%A5%E5%9B%9E%E8%B0%83/" itemprop="commentCount"></span>
+    <a title="valine" href="/2020/03/22/%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AE%9E%E7%8E%B0Lodash%E4%B8%AD%E6%95%B0%E7%BB%84%E7%9A%84chunk%E6%96%B9%E6%B3%95%E4%B8%8Ecompact%E6%96%B9%E6%B3%95/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/03/22/%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AE%9E%E7%8E%B0Lodash%E4%B8%AD%E6%95%B0%E7%BB%84%E7%9A%84chunk%E6%96%B9%E6%B3%95%E4%B8%8Ecompact%E6%96%B9%E6%B3%95/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -295,7 +285,7 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>1.6k</span>
+              <span>1.1k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -314,62 +304,24 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><blockquote>
-<p>对js回调函数进行归纳总结</p>
-</blockquote>
-<blockquote>
-<p>涉及的名词：单线程、回调函数  </p>
-</blockquote>
-<a id="more"></a>
+        <h2 id="chunk-size"><a href="#chunk-size" class="headerlink" title="chunk(size)"></a>chunk(size)</h2><h3 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h3><p>将数组（array）拆分成多个 <code>size</code> 长度的区块，并将这些区块组成一个新数组。 如果 <code>array</code>  无法被分割成全部等长的区块，那么最后剩余的元素将组成一个区块。  </p>
+<p>举个例子，假设数组有一个名为 <code>chunk</code> 的方法，可以实现上述功能，那么：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> arr = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>]</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(arr.chunk(<span class="number">2</span>)) <span class="comment">// [[1, 2], [3, 4], [5, 6], [7]]</span></span><br><span class="line"><span class="built_in">console</span>.log(arr.chunk(<span class="number">3</span>)) <span class="comment">// [[1, 2, 3], [4, 5, 6], [7]]</span></span><br></pre></td></tr></table></figure>
 
-<hr>
-<h2 id="知识准备"><a href="#知识准备" class="headerlink" title="知识准备"></a>知识准备</h2><h3 id="js是单线程的"><a href="#js是单线程的" class="headerlink" title="js是单线程的"></a>js是单线程的</h3><h4 id="什么是单线程？"><a href="#什么是单线程？" class="headerlink" title="什么是单线程？"></a>什么是单线程？</h4><p>所谓“单线程”，就是同一时间只能处理一个任务，如果有多个任务，就必须依次执行。只有当前一个任务执行完了，后一个任务才会执行。  </p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    alert(<span class="string">'1'</span>)</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'2'</span>)</span><br><span class="line">&#125;)()</span><br></pre></td></tr></table></figure>
+<p>参数 <code>size</code> 的默认值为 1。</p>
+<h3 id="自定义实现"><a href="#自定义实现" class="headerlink" title="自定义实现"></a>自定义实现</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Array</span>.prototype.chunk = <span class="function"><span class="keyword">function</span> (<span class="params">size</span>) </span>&#123;</span><br><span class="line">  </span><br><span class="line">  <span class="comment">// size的默认值为1</span></span><br><span class="line">  size = size || <span class="number">1</span></span><br><span class="line">  <span class="keyword">const</span> length = <span class="keyword">this</span>.length</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">if</span> (length === <span class="number">0</span>) <span class="keyword">return</span> []</span><br><span class="line">  <span class="keyword">if</span> (size &gt; length) size = length</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">const</span> resultArrayLength = <span class="built_in">Math</span>.ceil(length / size)</span><br><span class="line">  <span class="comment">// 结果数组</span></span><br><span class="line">  <span class="keyword">const</span> resultArray = <span class="keyword">new</span> <span class="built_in">Array</span>(resultArrayLength)</span><br><span class="line">  <span class="keyword">let</span> index = <span class="number">0</span></span><br><span class="line">  <span class="keyword">let</span> start = <span class="number">0</span></span><br><span class="line">  </span><br><span class="line">  <span class="keyword">while</span> (index &lt; resultArrayLength) &#123;</span><br><span class="line">    resultArray[index++] = <span class="keyword">this</span>.slice(start, start += size)</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">return</span> resultArray</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>执行上面的代码，执行顺序：</p>
-<ol>
-<li>页面弹窗显示<strong>1</strong>，此时控制台没有内容。</li>
-<li>点击弹窗确定，控制台输出<strong>2。</strong>  </li>
-</ol>
-<p>即<code>console.log(&#39;2&#39;)</code>这条语句会在<code>alert(&#39;1&#39;)</code>执行结束后才开始执行</p>
-<h4 id="为什么JavaScript是单线程？"><a href="#为什么JavaScript是单线程？" class="headerlink" title="为什么JavaScript是单线程？"></a>为什么JavaScript是单线程？</h4><p>JavaScript的单线程，与它的用途有关。作为浏览器脚本语言，JavaScript的主要用途是与用户互动，以及操作DOM。这决定了它只能是单线程，否则会带来很复杂的同步问题。比如，假定JavaScript同时有两个线程，一个线程在某个DOM节点上添加内容，另一个线程删除了这个节点，这时浏览器应该以哪个线程为准？</p>
-<p>所以，为了避免复杂性，从一诞生，JavaScript就是单线程。  </p>
-<hr>
-<h3 id="回调函数"><a href="#回调函数" class="headerlink" title="回调函数"></a>回调函数</h3><h4 id="回调函数是什么？"><a href="#回调函数是什么？" class="headerlink" title="回调函数是什么？"></a>回调函数是什么？</h4><p>MDN对回调函数的定义： 被作为实参传入另一函数，并在该外部函数内被调用，用以来完成某些任务的函数，称为<strong>回调函数</strong> 。</p>
-<p>想要弄清楚回调函数，首先要清楚js中的函数，JavaScript中的函数本质是一个对象，准确来说是通过<code>new Function()</code>创建的Function的实例对象。因此我们可以将函数像对象一样存保存在变量中，当然也就可以将保存在变量中的函数通过参数传递给另一个函数，这个作为参数传递的函数，就是<strong>回调函数</strong>。  </p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> fn = <span class="function">(<span class="params">a</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(a)</span><br><span class="line">&#125;</span><br><span class="line">setTimeOut(fn(<span class="number">1</span>), <span class="number">1000</span>)</span><br></pre></td></tr></table></figure>
+<p>利用 <code>while</code> 循环与数组的 <code>slice</code> 方法对原数组进行反复的抽取，得到目标数组。</p>
+<h2 id="compact"><a href="#compact" class="headerlink" title="compact()"></a>compact()</h2><h3 id="作用-1"><a href="#作用-1" class="headerlink" title="作用"></a>作用</h3><p> 创建一个新数组，包含原数组中所有的非假值元素。例如 <code>false</code>, <code>null</code>, <code>0</code>, <code>&quot;&quot;</code>, <code>undefined</code>, 和 <code>NaN</code> 都是被认为是“假值”。 </p>
+<p>举个例子，假设数组有一个名为 <code>compact</code> 的方法，可以实现上述功能，那么：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> arr = [<span class="number">0</span>, <span class="number">1</span>, <span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">''</span>, <span class="literal">true</span>, <span class="literal">false</span>, <span class="literal">null</span>]</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(arr.compact()) <span class="comment">// [1, 'a', 'b', true]</span></span><br></pre></td></tr></table></figure>
 
+<h3 id="自定义实现-1"><a href="#自定义实现-1" class="headerlink" title="自定义实现"></a>自定义实现</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Array</span>.prototype.compact = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">this</span>.filter(<span class="function"><span class="params">value</span> =&gt;</span> value)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-
-<h4 id="为什么使用回调函数？"><a href="#为什么使用回调函数？" class="headerlink" title="为什么使用回调函数？"></a>为什么使用回调函数？</h4><p>js的单线程特性，使得所有任务需依次执行，如果前一个任务的执行需要很长时间，那么整个程序的执行时间就都会被拉长。</p>
-<p> 为了解决这个问题，Javascript语言将任务的执行模式分成两种：<u>同步（Synchronous）</u>和<u>异步（Asynchronous）</u> 。</p>
-<p><strong>同步任务</strong>指的是需要在主线程上排队依次执行的任务，前一个任务结束，才会执行后一个任务。 任务执行的顺序与代码排列的顺序是一致的、同步的，同步任务会导致阻塞；<strong>异步任务</strong>指的是不会阻塞主线程上的下一个同步任务，而是会进入的回调队列（callback queue）的任务。</p>
-<p>而回调函数，正是实现异步编程的方法之一。  </p>
-<hr>
-<h2 id="同步回调与异步回调"><a href="#同步回调与异步回调" class="headerlink" title="同步回调与异步回调"></a>同步回调与异步回调</h2><p>回调函数不等于异步， 同步(阻塞)的场景下也经常用到回调</p>
-<h3 id="同步回调"><a href="#同步回调" class="headerlink" title="同步回调"></a>同步回调</h3><p>立即执行，完全执行完了才会执行下一个任务，不会放入回调队列中</p>
-<p>如：数组遍历相关的回调函数 / Promise的excutor函数</p>
-<p><strong>例：</strong></p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> arr = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]</span><br><span class="line">arr.forEach(<span class="function">(<span class="params">item, index</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'遍历的回调'</span>, item, index)</span><br><span class="line">&#125;)</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">'forEach()之后'</span>)</span><br></pre></td></tr></table></figure>
-
-<p>数组的forEach()方法</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 遍历的回调, 1, 0</span></span><br><span class="line"><span class="comment">// 遍历的回调, 2, 1</span></span><br><span class="line"><span class="comment">// 遍历的回调, 3, 2</span></span><br><span class="line"><span class="comment">// forEach()之后</span></span><br></pre></td></tr></table></figure>
-
-<p>执行结果  </p>
-<h3 id="异步回调"><a href="#异步回调" class="headerlink" title="异步回调"></a>异步回调</h3><p>不会立即执行, 会放入回调队列中将来执行</p>
-<p>如：定时器回调 / ajax回调 / 事件监听回调/ Promise的成功和失败的回调</p>
-<p><strong>例：</strong></p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">'回调函数'</span>)</span><br><span class="line">&#125;, <span class="number">0</span>)</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">'setTimeout()之后'</span>)</span><br></pre></td></tr></table></figure>
-
-<p>定时器回调</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// setTimeout()之后</span></span><br><span class="line"><span class="comment">// 回调函数</span></span><br></pre></td></tr></table></figure>
-
-<p>执行结果</p>
-<hr>
-<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ol>
-<li><a href="http://www.ruanyifeng.com/blog/2014/10/event-loop.html" target="_blank" rel="noopener">JavaScript 运行机制详解：再谈Event Loop</a></li>
-<li><a href="[http://www.ruanyifeng.com/blog/2012/12/asynchronous%EF%BC%BFjavascript.html](http://www.ruanyifeng.com/blog/2012/12/asynchronous＿javascript.html)">Javascript异步编程的4种方法</a></li>
-</ol>
+<p>利用数组的 <code>filter</code> 方法对原数组进行过滤，得到目标数组。</p>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ul>
+<li><a href="https://www.lodashjs.com/docs/lodash.chunk" target="_blank" rel="noopener">Lodash - <code>“Array” 方法</code></a></li>
+</ul>
 
     </div>
 
@@ -385,7 +337,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://wzw1016.ml/2020/02/06/%E5%90%8C%E6%AD%A5%E5%9B%9E%E8%B0%83%E4%B8%8E%E5%BC%82%E6%AD%A5%E5%9B%9E%E8%B0%83/" title="同步回调与异步回调">http://wzw1016.ml/2020/02/06/同步回调与异步回调/</a>
+    <a href="http://wzw1016.ml/2020/03/22/%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AE%9E%E7%8E%B0Lodash%E4%B8%AD%E6%95%B0%E7%BB%84%E7%9A%84chunk%E6%96%B9%E6%B3%95%E4%B8%8Ecompact%E6%96%B9%E6%B3%95/" title="自定义实现Lodash中数组的chunk方法与compact方法">http://wzw1016.ml/2020/03/22/自定义实现Lodash中数组的chunk方法与compact方法/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -396,7 +348,8 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/%E5%9B%9E%E8%B0%83%E5%87%BD%E6%95%B0/" rel="tag"><i class="fa fa-tag"></i> 回调函数</a>
+              <a href="/tags/Array/" rel="tag"><i class="fa fa-tag"></i> Array</a>
+              <a href="/tags/Lodash/" rel="tag"><i class="fa fa-tag"></i> Lodash</a>
           </div>
 
         
@@ -404,11 +357,11 @@
 
         
     <div class="post-nav">
-      <div class="post-nav-item"></div>
       <div class="post-nav-item">
-    <a href="/2020/02/14/Component%E5%92%8CPureComponent/" rel="next" title="Component和PureComponent">
-      Component和PureComponent <i class="fa fa-chevron-right"></i>
+    <a href="/2020/03/04/%E6%95%B0%E7%BB%84%E6%89%81%E5%B9%B3%E5%8C%96/" rel="prev" title="数组扁平化">
+      <i class="fa fa-chevron-left"></i> 数组扁平化
     </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -469,7 +422,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#知识准备"><span class="nav-number">2.</span> <span class="nav-text">知识准备</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#js是单线程的"><span class="nav-number">2.1.</span> <span class="nav-text">js是单线程的</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#什么是单线程？"><span class="nav-number">2.1.1.</span> <span class="nav-text">什么是单线程？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#为什么JavaScript是单线程？"><span class="nav-number">2.1.2.</span> <span class="nav-text">为什么JavaScript是单线程？</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#回调函数"><span class="nav-number">2.2.</span> <span class="nav-text">回调函数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#回调函数是什么？"><span class="nav-number">2.2.1.</span> <span class="nav-text">回调函数是什么？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#为什么使用回调函数？"><span class="nav-number">2.2.2.</span> <span class="nav-text">为什么使用回调函数？</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#同步回调与异步回调"><span class="nav-number">3.</span> <span class="nav-text">同步回调与异步回调</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#同步回调"><span class="nav-number">3.1.</span> <span class="nav-text">同步回调</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#异步回调"><span class="nav-number">3.2.</span> <span class="nav-text">异步回调</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文章"><span class="nav-number">4.</span> <span class="nav-text">参考文章</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#chunk-size"><span class="nav-number">1.</span> <span class="nav-text">chunk(size)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#作用"><span class="nav-number">1.1.</span> <span class="nav-text">作用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#自定义实现"><span class="nav-number">1.2.</span> <span class="nav-text">自定义实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#compact"><span class="nav-number">2.</span> <span class="nav-text">compact()</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#作用-1"><span class="nav-number">2.1.</span> <span class="nav-text">作用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#自定义实现-1"><span class="nav-number">2.2.</span> <span class="nav-text">自定义实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文章"><span class="nav-number">3.</span> <span class="nav-text">参考文章</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

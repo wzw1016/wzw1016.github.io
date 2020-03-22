@@ -1,6 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>自定义实现Lodash中数组的chunk方法与compact方法</title>
+    <url>/2020/03/22/%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AE%9E%E7%8E%B0Lodash%E4%B8%AD%E6%95%B0%E7%BB%84%E7%9A%84chunk%E6%96%B9%E6%B3%95%E4%B8%8Ecompact%E6%96%B9%E6%B3%95/</url>
+    <content><![CDATA[<h2 id="chunk-size"><a href="#chunk-size" class="headerlink" title="chunk(size)"></a>chunk(size)</h2><h3 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h3><p>将数组（array）拆分成多个 <code>size</code> 长度的区块，并将这些区块组成一个新数组。 如果 <code>array</code>  无法被分割成全部等长的区块，那么最后剩余的元素将组成一个区块。  </p>
+<p>举个例子，假设数组有一个名为 <code>chunk</code> 的方法，可以实现上述功能，那么：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">let</span> arr = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>]</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(arr.chunk(<span class="number">2</span>)) <span class="comment">// [[1, 2], [3, 4], [5, 6], [7]]</span></span><br><span class="line"><span class="built_in">console</span>.log(arr.chunk(<span class="number">3</span>)) <span class="comment">// [[1, 2, 3], [4, 5, 6], [7]]</span></span><br></pre></td></tr></table></figure>
+
+<p>参数 <code>size</code> 的默认值为 1。</p>
+<h3 id="自定义实现"><a href="#自定义实现" class="headerlink" title="自定义实现"></a>自定义实现</h3><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Array</span>.prototype.chunk = <span class="function"><span class="keyword">function</span> (<span class="params">size</span>) </span>&#123;</span><br><span class="line">  </span><br><span class="line">  <span class="comment">// size的默认值为1</span></span><br><span class="line">  size = size || <span class="number">1</span></span><br><span class="line">  <span class="keyword">const</span> length = <span class="keyword">this</span>.length</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">if</span> (length === <span class="number">0</span>) <span class="keyword">return</span> []</span><br><span class="line">  <span class="keyword">if</span> (size &gt; length) size = length</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">const</span> resultArrayLength = <span class="built_in">Math</span>.ceil(length / size)</span><br><span class="line">  <span class="comment">// 结果数组</span></span><br><span class="line">  <span class="keyword">const</span> resultArray = <span class="keyword">new</span> <span class="built_in">Array</span>(resultArrayLength)</span><br><span class="line">  <span class="keyword">let</span> index = <span class="number">0</span></span><br><span class="line">  <span class="keyword">let</span> start = <span class="number">0</span></span><br><span class="line">  </span><br><span class="line">  <span class="keyword">while</span> (index &lt; resultArrayLength) &#123;</span><br><span class="line">    resultArray[index++] = <span class="keyword">this</span>.slice(start, start += size)</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">return</span> resultArray</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>利用 <code>while</code> 循环与数组的 <code>slice</code> 方法对原数组进行反复的抽取，得到目标数组。</p>
+<h2 id="compact"><a href="#compact" class="headerlink" title="compact()"></a>compact()</h2><h3 id="作用-1"><a href="#作用-1" class="headerlink" title="作用"></a>作用</h3><p> 创建一个新数组，包含原数组中所有的非假值元素。例如 <code>false</code>, <code>null</code>, <code>0</code>, <code>&quot;&quot;</code>, <code>undefined</code>, 和 <code>NaN</code> 都是被认为是“假值”。 </p>
+<p>举个例子，假设数组有一个名为 <code>compact</code> 的方法，可以实现上述功能，那么：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">let</span> arr = [<span class="number">0</span>, <span class="number">1</span>, <span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">''</span>, <span class="literal">true</span>, <span class="literal">false</span>, <span class="literal">null</span>]</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(arr.compact()) <span class="comment">// [1, 'a', 'b', true]</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="自定义实现-1"><a href="#自定义实现-1" class="headerlink" title="自定义实现"></a>自定义实现</h3><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Array</span>.prototype.compact = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">this</span>.filter(<span class="function"><span class="params">value</span> =&gt;</span> value)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>利用数组的 <code>filter</code> 方法对原数组进行过滤，得到目标数组。</p>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ul>
+<li><a href="https://www.lodashjs.com/docs/lodash.chunk" target="_blank" rel="noopener">Lodash - <code>“Array” 方法</code></a></li>
+</ul>
+]]></content>
+      <tags>
+        <tag>Array</tag>
+        <tag>Lodash</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>数组扁平化</title>
     <url>/2020/03/04/%E6%95%B0%E7%BB%84%E6%89%81%E5%B9%B3%E5%8C%96/</url>
     <content><![CDATA[<h2 id="何为数组扁平化？"><a href="#何为数组扁平化？" class="headerlink" title="何为数组扁平化？"></a>何为数组扁平化？</h2><p><strong>数组扁平化是指将一个多维数组转化为一维数组</strong>。</p>
@@ -44,6 +71,7 @@
       <tags>
         <tag>Array</tag>
         <tag>flatten</tag>
+        <tag>Lodash</tag>
       </tags>
   </entry>
   <entry>
