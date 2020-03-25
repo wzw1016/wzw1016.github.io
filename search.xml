@@ -1,6 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>自定义实现数组的difference方法与merge方法</title>
+    <url>/2020/03/25/%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AE%9E%E7%8E%B0%E6%95%B0%E7%BB%84%E7%9A%84difference%E6%96%B9%E6%B3%95%E4%B8%8Emerge%E6%96%B9%E6%B3%95/</url>
+    <content><![CDATA[<h2 id="difference-arr"><a href="#difference-arr" class="headerlink" title="difference(arr)"></a>difference(arr)</h2><h3 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h3><p>得到一个当前数组中所有不与指定数组 <code>arr</code> 中元素相同的数组（改方法不会改变原数组）。</p>
+<p>举个例子，假设数组有一个名为 <code>difference</code> 的方法，可以实现上述功能，那么：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> array = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">5</span>, <span class="number">8</span>]</span><br><span class="line"><span class="built_in">console</span>.log(array.difference([<span class="number">5</span>, <span class="number">7</span>])) <span class="comment">// (3) [1, 2, 5]</span></span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
+
+<h3 id="自定义实现"><a href="#自定义实现" class="headerlink" title="自定义实现"></a>自定义实现</h3><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Array</span>.prototype.difference = <span class="function"><span class="keyword">function</span> (<span class="params">arr</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (!arr || arr.length === <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> [...this]</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">this</span>.filter(<span class="function"><span class="params">item</span> =&gt;</span> arr.indexOf(item) === <span class="number">-1</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>利用 <code>filter()</code> 与 <code>indexOf()</code> 对当前数组进行过滤，得到结果数组。</p>
+<h2 id="merge-arr"><a href="#merge-arr" class="headerlink" title="merge(arr)"></a>merge(arr)</h2><h3 id="作用-1"><a href="#作用-1" class="headerlink" title="作用"></a>作用</h3><p>得到一个由当前数组与指定数组 <code>arr</code> 合并后组成的新的数组（改方法不会改变原数组）。</p>
+<p>举个例子，假设数组有一个名为 <code>merge</code> 的方法，可以实现上述功能，那么：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> array = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]</span><br><span class="line"><span class="built_in">console</span>.log(array.merge([<span class="number">2</span>, <span class="number">6</span>])) <span class="comment">// (5) [1, 2, 3, 6]</span></span><br></pre></td></tr></table></figure>
+
+<p>该方法与数组原生方法 <code>concat</code> 的不同之处在于，如果指定数组 <code>arr</code> 中的元素，在当前数组中已经存在，<code>merge</code> 方法则不会将该重复元素合并到当前数组中。而 <code>concat</code> 会进行合并。</p>
+<h2 id="自定义实现-1"><a href="#自定义实现-1" class="headerlink" title="自定义实现"></a>自定义实现</h2><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Array</span>.prototype.merge = <span class="function"><span class="keyword">function</span> (<span class="params">arr</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> resultArr = [...this]</span><br><span class="line">  <span class="keyword">if</span> (!arr || arr.length === <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> resultArr</span><br><span class="line">  &#125;</span><br><span class="line">  arr.forEach(<span class="function"><span class="params">item</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (resultArr.indexOf(item) === <span class="number">-1</span>) &#123;</span><br><span class="line">      resultArr.push(item)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line">  <span class="keyword">return</span> resultArr</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对指定的数组进行遍历，逐个判断是否需要塞入当前数组，从而得到结果数组。</p>
+]]></content>
+      <tags>
+        <tag>Array</tag>
+        <tag>Lodash</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>自定义实现Lodash中数组的chunk方法与compact方法</title>
     <url>/2020/03/22/%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AE%9E%E7%8E%B0Lodash%E4%B8%AD%E6%95%B0%E7%BB%84%E7%9A%84chunk%E6%96%B9%E6%B3%95%E4%B8%8Ecompact%E6%96%B9%E6%B3%95/</url>
     <content><![CDATA[<h2 id="chunk-size"><a href="#chunk-size" class="headerlink" title="chunk(size)"></a>chunk(size)</h2><h3 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h3><p>将数组（array）拆分成多个 <code>size</code> 长度的区块，并将这些区块组成一个新数组。 如果 <code>array</code>  无法被分割成全部等长的区块，那么最后剩余的元素将组成一个区块。  </p>
@@ -21,7 +47,7 @@
 
 <p>利用数组的 <code>filter</code> 方法对原数组进行过滤，得到目标数组。</p>
 <h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ul>
-<li><a href="https://www.lodashjs.com/docs/lodash.chunk" target="_blank" rel="noopener">Lodash - <code>“Array” 方法</code></a></li>
+<li><a href="https://www.lodashjs.com/docs/lodash.chunk" target="_blank" rel="noopener">Lodash - “Array” 方法</a></li>
 </ul>
 ]]></content>
       <tags>
@@ -72,8 +98,8 @@
 ]]></content>
       <tags>
         <tag>Array</tag>
-        <tag>flatten</tag>
         <tag>Lodash</tag>
+        <tag>flatten</tag>
       </tags>
   </entry>
   <entry>
