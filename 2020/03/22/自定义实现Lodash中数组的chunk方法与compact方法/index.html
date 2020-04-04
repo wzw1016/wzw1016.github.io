@@ -57,10 +57,10 @@
 <meta property="og:description" content="chunk(size)作用将数组（array）拆分成多个 size 长度的区块，并将这些区块组成一个新数组。 如果 array  无法被分割成全部等长的区块，那么最后剩余的元素将组成一个区块。   举个例子，假设数组有一个名为 chunk 的方法，可以实现上述功能，那么： 1234let arr &#x3D; [1, 2, 3, 4, 5, 6, 7]console.log(arr.chunk(2)) &#x2F;&#x2F;">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2020-03-22T06:19:59.000Z">
-<meta property="article:modified_time" content="2020-03-25T06:15:50.110Z">
+<meta property="article:modified_time" content="2020-04-04T14:26:06.796Z">
 <meta property="article:author" content="Vincent">
-<meta property="article:tag" content="Array">
 <meta property="article:tag" content="Lodash">
+<meta property="article:tag" content="Array">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="http://wzw1016.ml/2020/03/22/%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AE%9E%E7%8E%B0Lodash%E4%B8%AD%E6%95%B0%E7%BB%84%E7%9A%84chunk%E6%96%B9%E6%B3%95%E4%B8%8Ecompact%E6%96%B9%E6%B3%95/">
@@ -314,6 +314,7 @@
 <h3 id="自定义实现"><a href="#自定义实现" class="headerlink" title="自定义实现"></a>自定义实现</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Array</span>.prototype.chunk = <span class="function"><span class="keyword">function</span> (<span class="params">size</span>) </span>&#123;</span><br><span class="line">  </span><br><span class="line">  <span class="comment">// size的默认值为1</span></span><br><span class="line">  size = size || <span class="number">1</span></span><br><span class="line">  <span class="keyword">const</span> length = <span class="keyword">this</span>.length</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">if</span> (length === <span class="number">0</span>) <span class="keyword">return</span> []</span><br><span class="line">  <span class="keyword">if</span> (size &gt; length) size = length</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">const</span> resultArrayLength = <span class="built_in">Math</span>.ceil(length / size)</span><br><span class="line">  <span class="comment">// 结果数组</span></span><br><span class="line">  <span class="keyword">const</span> resultArray = <span class="keyword">new</span> <span class="built_in">Array</span>(resultArrayLength)</span><br><span class="line">  <span class="keyword">let</span> index = <span class="number">0</span></span><br><span class="line">  <span class="keyword">let</span> start = <span class="number">0</span></span><br><span class="line">  </span><br><span class="line">  <span class="keyword">while</span> (index &lt; resultArrayLength) &#123;</span><br><span class="line">    resultArray[index++] = <span class="keyword">this</span>.slice(start, start += size)</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">return</span> resultArray</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>利用 <code>while</code> 循环与数组的 <code>slice</code> 方法对原数组进行反复的抽取，得到目标数组。</p>
+<hr>
 <h2 id="compact"><a href="#compact" class="headerlink" title="compact()"></a>compact()</h2><h3 id="作用-1"><a href="#作用-1" class="headerlink" title="作用"></a>作用</h3><p> 创建一个新数组，包含原数组中所有的非假值元素。例如 <code>false</code>, <code>null</code>, <code>0</code>, <code>&quot;&quot;</code>, <code>undefined</code>, 和 <code>NaN</code> 都是被认为是“假值”。 </p>
 <p>举个例子，假设数组有一个名为 <code>compact</code> 的方法，可以实现上述功能，那么：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> arr = [<span class="number">0</span>, <span class="number">1</span>, <span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">''</span>, <span class="literal">true</span>, <span class="literal">false</span>, <span class="literal">null</span>]</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(arr.compact()) <span class="comment">// [1, 'a', 'b', true]</span></span><br></pre></td></tr></table></figure>
@@ -321,6 +322,7 @@
 <h3 id="自定义实现-1"><a href="#自定义实现-1" class="headerlink" title="自定义实现"></a>自定义实现</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Array</span>.prototype.compact = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">this</span>.filter(<span class="function"><span class="params">value</span> =&gt;</span> value)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>利用数组的 <code>filter</code> 方法对原数组进行过滤，得到目标数组。</p>
+<hr>
 <h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ul>
 <li><a href="https://www.lodashjs.com/docs/lodash.chunk" target="_blank" rel="noopener">Lodash - “Array” 方法</a></li>
 </ul>
@@ -350,8 +352,8 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/Array/" rel="tag"><i class="fa fa-tag"></i> Array</a>
               <a href="/tags/Lodash/" rel="tag"><i class="fa fa-tag"></i> Lodash</a>
+              <a href="/tags/Array/" rel="tag"><i class="fa fa-tag"></i> Array</a>
           </div>
 
         
@@ -443,7 +445,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-count">9</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -507,12 +509,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-area-chart"></i>
     </span>
-    <span title="站点总字数">26k</span>
+    <span title="站点总字数">27k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">24 分钟</span>
+    <span title="站点阅读时长">25 分钟</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
   </div>

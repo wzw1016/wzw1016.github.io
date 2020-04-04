@@ -1,6 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>函数节流与函数防抖</title>
+    <url>/2020/04/04/%E5%87%BD%E6%95%B0%E8%8A%82%E6%B5%81%E4%B8%8E%E5%87%BD%E6%95%B0%E9%98%B2%E6%8A%96/</url>
+    <content><![CDATA[<p>函数节流与函数防抖，实际上就是为了解决事件频繁被触发，而造成不必要的性能浪费的性能优化手段。例如，浏览器的 <code>onresize</code> 事件，鼠标的 <code>mousemove</code> 事件，如果其频繁触发，很可能会造成浏览器的卡顿；或者，如果向后台频繁发送请求，也会增大服务器的压力。这时，我们就可以使用函数节流或函数防抖进行优化。</p>
+<a id="more"></a>
+
+<h2 id="函数节流（throttle）"><a href="#函数节流（throttle）" class="headerlink" title="函数节流（throttle）"></a>函数节流（throttle）</h2><blockquote>
+<p><strong>概念：在设定的执行周期内，函数只会执行一次</strong></p>
+</blockquote>
+<h3 id="实现代码"><a href="#实现代码" class="headerlink" title="实现代码"></a>实现代码</h3><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">throttle</span>(<span class="params">callback, delay</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> start = <span class="number">0</span> <span class="comment">// start = 0 ，保证第一次current - start 一定大于间隔值 delay，从而保证第一次调用一定会执行</span></span><br><span class="line">  <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> current = <span class="built_in">Date</span>.now()</span><br><span class="line">    <span class="keyword">if</span> (current - start &gt; delay) &#123;</span><br><span class="line">      callback.apply(<span class="keyword">this</span>, <span class="built_in">arguments</span>) <span class="comment">// 1).使this与原事件处理函数中的this相同 2).传入原事件处理函数的参数</span></span><br><span class="line">      start = current</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h3><p>函数节流适合多次事件按时间做平均分配触发。</p>
+<p>例如：</p>
+<ul>
+<li>浏览器窗口调整（resize）</li>
+<li>页面滚动（scroll）</li>
+<li>DOM 元素的拖拽（mousemove）</li>
+<li>购物网站抢购（mousedown）</li>
+</ul>
+<hr>
+<h2 id="函数防抖（debounce）"><a href="#函数防抖（debounce）" class="headerlink" title="函数防抖（debounce）"></a>函数防抖（debounce）</h2><blockquote>
+<p><strong>概念： 在函数触发一段时间后再执行，如果在这段时间内再次触发，则重新计时。</strong></p>
+</blockquote>
+<h3 id="实现代码-1"><a href="#实现代码-1" class="headerlink" title="实现代码"></a>实现代码</h3><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">debounce</span>(<span class="params">callback, delay</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> timeId</span><br><span class="line">  <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 缓存arguments</span></span><br><span class="line">    <span class="keyword">const</span> args = <span class="built_in">arguments</span> </span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 清除待执行的定时器任务</span></span><br><span class="line">    clearTimeout(timeId)</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 每隔delay的时间，启动一个新的延时定时器，去准备调用callback</span></span><br><span class="line">    timeId = setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">      callback.apply(<span class="keyword">this</span>, args) <span class="comment">// 1).使this与原事件处理函数中的this相同 2).传入原事件处理函数的参数</span></span><br><span class="line">    &#125;, delay)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="使用场景-1"><a href="#使用场景-1" class="headerlink" title="使用场景"></a>使用场景</h3><p>适合多次事件一次响应的情况</p>
+<p>例如：</p>
+<ul>
+<li>实时搜索联想（keyup）</li>
+<li>文本输入的验证（连续输入文字后发送 ajax 请求进行验证，验证一次就好）</li>
+<li>判断scroll是否滑到底部（滚动事件+函数防抖）</li>
+</ul>
+<h2 id="函数节流与函数防抖的比较"><a href="#函数节流与函数防抖的比较" class="headerlink" title="函数节流与函数防抖的比较"></a>函数节流与函数防抖的比较</h2><h3 id="相同点"><a href="#相同点" class="headerlink" title="相同点"></a>相同点</h3><ul>
+<li>都是为了对函数的频繁触发进行优化</li>
+</ul>
+<h3 id="不同点"><a href="#不同点" class="headerlink" title="不同点"></a>不同点</h3><ul>
+<li>节流是让函数在每个时间段内只执行一次；而防抖是，规定时间段内的连续触发，只会执行最后一次。</li>
+</ul>
+]]></content>
+      <tags>
+        <tag>性能优化</tag>
+        <tag>Lodash</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>自定义实现数组的difference方法与merge方法</title>
     <url>/2020/03/25/%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AE%9E%E7%8E%B0%E6%95%B0%E7%BB%84%E7%9A%84difference%E6%96%B9%E6%B3%95%E4%B8%8Emerge%E6%96%B9%E6%B3%95/</url>
     <content><![CDATA[<h2 id="difference-arr"><a href="#difference-arr" class="headerlink" title="difference(arr)"></a>difference(arr)</h2><h3 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h3><p>得到一个当前数组中所有不与指定数组 <code>arr</code> 中元素相同的数组（改方法不会改变原数组）。</p>
@@ -12,6 +56,7 @@
 <h3 id="自定义实现"><a href="#自定义实现" class="headerlink" title="自定义实现"></a>自定义实现</h3><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Array</span>.prototype.difference = <span class="function"><span class="keyword">function</span> (<span class="params">arr</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (!arr || arr.length === <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> [...this]</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">this</span>.filter(<span class="function"><span class="params">item</span> =&gt;</span> arr.indexOf(item) === <span class="number">-1</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>利用 <code>filter()</code> 与 <code>indexOf()</code> 对当前数组进行过滤，得到结果数组。</p>
+<hr>
 <h2 id="merge-arr"><a href="#merge-arr" class="headerlink" title="merge(arr)"></a>merge(arr)</h2><h3 id="作用-1"><a href="#作用-1" class="headerlink" title="作用"></a>作用</h3><p>得到一个由当前数组与指定数组 <code>arr</code> 合并后组成的新的数组（改方法不会改变原数组）。</p>
 <p>举个例子，假设数组有一个名为 <code>merge</code> 的方法，可以实现上述功能，那么：</p>
 <figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> array = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]</span><br><span class="line"><span class="built_in">console</span>.log(array.merge([<span class="number">2</span>, <span class="number">6</span>])) <span class="comment">// (5) [1, 2, 3, 6]</span></span><br></pre></td></tr></table></figure>
@@ -22,8 +67,8 @@
 <p>对指定的数组进行遍历，逐个判断是否需要塞入当前数组，从而得到结果数组。</p>
 ]]></content>
       <tags>
-        <tag>Array</tag>
         <tag>Lodash</tag>
+        <tag>Array</tag>
       </tags>
   </entry>
   <entry>
@@ -39,6 +84,7 @@
 <h3 id="自定义实现"><a href="#自定义实现" class="headerlink" title="自定义实现"></a>自定义实现</h3><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Array</span>.prototype.chunk = <span class="function"><span class="keyword">function</span> (<span class="params">size</span>) </span>&#123;</span><br><span class="line">  </span><br><span class="line">  <span class="comment">// size的默认值为1</span></span><br><span class="line">  size = size || <span class="number">1</span></span><br><span class="line">  <span class="keyword">const</span> length = <span class="keyword">this</span>.length</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">if</span> (length === <span class="number">0</span>) <span class="keyword">return</span> []</span><br><span class="line">  <span class="keyword">if</span> (size &gt; length) size = length</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">const</span> resultArrayLength = <span class="built_in">Math</span>.ceil(length / size)</span><br><span class="line">  <span class="comment">// 结果数组</span></span><br><span class="line">  <span class="keyword">const</span> resultArray = <span class="keyword">new</span> <span class="built_in">Array</span>(resultArrayLength)</span><br><span class="line">  <span class="keyword">let</span> index = <span class="number">0</span></span><br><span class="line">  <span class="keyword">let</span> start = <span class="number">0</span></span><br><span class="line">  </span><br><span class="line">  <span class="keyword">while</span> (index &lt; resultArrayLength) &#123;</span><br><span class="line">    resultArray[index++] = <span class="keyword">this</span>.slice(start, start += size)</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">return</span> resultArray</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>利用 <code>while</code> 循环与数组的 <code>slice</code> 方法对原数组进行反复的抽取，得到目标数组。</p>
+<hr>
 <h2 id="compact"><a href="#compact" class="headerlink" title="compact()"></a>compact()</h2><h3 id="作用-1"><a href="#作用-1" class="headerlink" title="作用"></a>作用</h3><p> 创建一个新数组，包含原数组中所有的非假值元素。例如 <code>false</code>, <code>null</code>, <code>0</code>, <code>&quot;&quot;</code>, <code>undefined</code>, 和 <code>NaN</code> 都是被认为是“假值”。 </p>
 <p>举个例子，假设数组有一个名为 <code>compact</code> 的方法，可以实现上述功能，那么：</p>
 <figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">let</span> arr = [<span class="number">0</span>, <span class="number">1</span>, <span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">''</span>, <span class="literal">true</span>, <span class="literal">false</span>, <span class="literal">null</span>]</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(arr.compact()) <span class="comment">// [1, 'a', 'b', true]</span></span><br></pre></td></tr></table></figure>
@@ -46,13 +92,14 @@
 <h3 id="自定义实现-1"><a href="#自定义实现-1" class="headerlink" title="自定义实现"></a>自定义实现</h3><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Array</span>.prototype.compact = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">this</span>.filter(<span class="function"><span class="params">value</span> =&gt;</span> value)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>利用数组的 <code>filter</code> 方法对原数组进行过滤，得到目标数组。</p>
+<hr>
 <h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ul>
 <li><a href="https://www.lodashjs.com/docs/lodash.chunk" target="_blank" rel="noopener">Lodash - “Array” 方法</a></li>
 </ul>
 ]]></content>
       <tags>
-        <tag>Array</tag>
         <tag>Lodash</tag>
+        <tag>Array</tag>
       </tags>
   </entry>
   <entry>
@@ -97,8 +144,8 @@
 </ul>
 ]]></content>
       <tags>
-        <tag>Array</tag>
         <tag>Lodash</tag>
+        <tag>Array</tag>
         <tag>flatten</tag>
       </tags>
   </entry>
