@@ -22,8 +22,8 @@
       </tags>
   </entry>
   <entry>
-    <title>requestAnimationFrame()</title>
-    <url>/2020/04/05/requestAnimationFrame()/</url>
+    <title>你知道requestAnimationFrame()吗？</title>
+    <url>/2020/04/05/%E4%BD%A0%E7%9F%A5%E9%81%93requestAnimationFrame()%E5%90%97%EF%BC%9F/</url>
     <content><![CDATA[<p>Web 应用中，实现动画效果的手段有很多。可以使用 CSS3 的 <em>transition</em> 和 <em>animation</em> 实现；可以使用 HTML5 中的 canvas 实现；也可以可以使用 Javascript 中的定时器进行实现。</p>
 <p>除此之外，HTML5 为 Javascript 增加了一个新的 API，即 <code>Window.requestAnimationFrame()</code>，翻译成中文。这个方法会告诉浏览器：你希望执行一个动画，并且要求浏览器在下次重绘之前调用指定的回调函数更新动画。</p>
 <a id="more"></a>
