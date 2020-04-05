@@ -1,6 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>requestAnimationFrame()</title>
+    <url>/2020/04/05/requestAnimationFrame()/</url>
+    <content><![CDATA[<p>Web 应用中，实现动画效果的手段有很多。可以使用 CSS3 的 <em>transition</em> 和 <em>animation</em> 实现；可以使用 HTML5 中的 canvas 实现；也可以可以使用 Javascript 中的定时器进行实现。</p>
+<p>除此之外，HTML5 为 Javascript 增加了一个新的 API，即 <code>Window.requestAnimationFrame()</code>，翻译成中文。这个方法会告诉浏览器：你希望执行一个动画，并且要求浏览器在下次重绘之前调用指定的回调函数更新动画。</p>
+<a id="more"></a>
+
+<h2 id="为什么要使用-requestAnimationFrame"><a href="#为什么要使用-requestAnimationFrame" class="headerlink" title="为什么要使用 requestAnimationFrame()"></a>为什么要使用 requestAnimationFrame()</h2><h3 id="定时器实现动画的弊端"><a href="#定时器实现动画的弊端" class="headerlink" title="定时器实现动画的弊端"></a>定时器实现动画的弊端</h3><p>很长时间以来，<code>setTimeout()</code> 和 <code>setInterval()</code> 都是 JavaScript 实现动画的最核心技术。就像下面这样：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">updateAnimations</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    doAnimation1()</span><br><span class="line">    doAnimation2()</span><br><span class="line">    <span class="comment">// 其他动画...</span></span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  setInterval(updateAnimations, <span class="number">100</span>)</span><br><span class="line">&#125;)()</span><br></pre></td></tr></table></figure>
+
+<p>函数 <code>updateAnimations</code> 会每隔 100ms 调用一次，根据其内部代码对相应元素进行修改，进行页面的重绘（repaint）。</p>
+<h4 id="循环间隔的衡量"><a href="#循环间隔的衡量" class="headerlink" title="循环间隔的衡量"></a>循环间隔的衡量</h4><p>使用这种方式实现动画循环，需要对间隔时间需要从两个方面进行考虑。第一，循环的间隔不能太长，这样才能保证动画效果显得平滑流畅；第二，循环的时间也不能太短，以确保浏览器能够完整的渲染动画。</p>
+<p>现如今大多数电脑的刷新率都是 60HZ，也就是说，页面每秒最多只能进行60次重绘。大多数浏览器都会对重绘的操作进行限制，不超过显示器刷新的最大频率。因为即使超过，用户体验也不会有提升，反而可能会使动画抖动，也就是我们日常所说的“掉帧”。</p>
+<p>因此，动画的最佳循环间隔是 1000ms/60，约等于 17ms。以这个循环间隔绘制的动画是最平滑流畅的，因为它接近浏览器的极限绘制速度。</p>
+<p>在声明式编程时代，这样需要由开发者计算，而最佳方案却只有一个，无疑是不友好的。</p>
+<h4 id="定时器的精准问题"><a href="#定时器的精准问题" class="headerlink" title="定时器的精准问题"></a>定时器的精准问题</h4><p>由于 JavaScript 是单线程运行的，所以定时器的回调函数需要等待前面的任务全部执行完毕后，才能执行。因此，当前面任务的执行时间超过定时器所设置的时间间隔，就会导致定时器变得“并不准时”。如下代码所示：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">let</span> start = <span class="built_in">Date</span>.now()</span><br><span class="line">setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">let</span> end = <span class="built_in">Date</span>.now()</span><br><span class="line">  <span class="built_in">console</span>.log(end - start)</span><br><span class="line">&#125;, <span class="number">1000</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; <span class="number">30000</span>; i++) &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'主线程上的代码正在执行'</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在 chrome 中运行，如所示：</p>
+<p><a href="https://i.loli.net/2020/04/05/uoaQCtTG2jN65fp.png" target="_blank"><img src="https://i.loli.net/2020/04/05/uoaQCtTG2jN65fp.png" style="zoom:50%;" /></a></p>
+ <center>定时器“不准时”</center>
+可以看到，定时器执行所用的时间并不与所设定的间隔时间吻合。
+
+<p>CSS 动画的优势在于浏览器知道动画什么时候开始，因此其可以明确每次执行动画重绘页面的间隔时间，其动画会更显顺滑。而受限于 JavaScript 的单线程特性，定时器实现的动画，无法保证每次动画执行的间隔时间完全相同。因此定时器实现的动画，可能会出现抖动、卡顿的现象。</p>
+<h3 id="requestAnimationFrame"><a href="#requestAnimationFrame" class="headerlink" title="requestAnimationFrame()"></a>requestAnimationFrame()</h3><p>JavaScript 动画受限于定时器的弊端，因此，<code>requestAnimationFrame</code> 应运而生。与定时器相比，其最大的优势在于其顺应浏览器的最大重绘频率（也就是显示器的刷新率）。它保证屏幕的每一次刷新间隔中，操作动画的函数只会执行一次。因此不会出现“丢帧”的情况。</p>
+<p>此外，在大多数浏览器里，当 <code>requestAnimationFrame()</code> 运行在后台标签页或者隐藏的<em>&lt;iframe&gt;</em>里时，<code>requestAnimationFrame()</code> 会被暂停调用以提升性能和电池寿命。 </p>
+<hr>
+<h2 id="requestAnimationFrame-的使用"><a href="#requestAnimationFrame-的使用" class="headerlink" title="requestAnimationFrame()的使用"></a>requestAnimationFrame()的使用</h2><h3 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h3><p> 该方法需要传入一个回调函数作为参数，该回调函数会在浏览器的重绘之前执行。</p>
+<blockquote>
+<p><strong>window.requestAnimationFrame(callback)</strong></p>
+</blockquote>
+<p>被传入的回调函数会接收一个参数 DOMHighResTimeStamp， 该参数与 <a href="https://developer.mozilla.org/zh-CN/docs/Web/API/Performance/now" target="_blank" rel="noopener"><code>performance.now()</code></a> 的返回值相同，用于标识 <code>requestAnimationFrame()</code> 开始去执行回调函数的时刻。</p>
+<p><code>requestAnimationFrame()</code> 的返回值为一个长整型的数值。 是回调列表中唯一的<strong>标识</strong>，与定时器的返回值类似。是个非零值，没别的意义。可以将之传给 <code>window.cancelAnimationFrame()</code> 以取消回调函数。 </p>
+<h3 id="基本使用"><a href="#基本使用" class="headerlink" title="基本使用"></a>基本使用</h3><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">let</span> element = <span class="built_in">document</span>.getElementById(<span class="string">'SomeElementYouWantToAnimate'</span>)</span><br><span class="line"><span class="keyword">let</span> moveLength = <span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">repeatMove</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  moveLength++</span><br><span class="line">  element.style.transform = <span class="string">`translateX(<span class="subst">$&#123;moveLength&#125;</span>px)`</span></span><br><span class="line">  requestAnimationFrame(repeatMove)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">repeatMove()</span><br></pre></td></tr></table></figure>
+
+<p>在动画函数内部调用 <code>requestAnimationFrame</code>，同时传入该动画函数。在执行动画函数时，页面重新绘制，此时 <code>requestAnimationFrame</code> 会调用传入的函数。有点像递归的感觉。</p>
+<h2 id="优雅降级"><a href="#优雅降级" class="headerlink" title="优雅降级"></a>优雅降级</h2><p><code>requestAnimationFrame</code> 的兼容性，可以参考 <a href="https://caniuse.com/#search=requestAnimationFrame" target="_blank" rel="noopener">CanIUse</a>。</p>
+<p><code>requestAnimationFrame</code> 在大多数主流浏览器中都可以使用，但少数低版本浏览器无法使用，因此需要向下兼容，在不兼容的浏览器中使用定时器模拟 <code>requestAnimationFrame</code> 。</p>
+<p>以下代码摘自<a href="https://www.zhangxinxu.com/" target="_blank" rel="noopener">张鑫旭的个人博客</a><sup>参考</sup></p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> lastTime = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">var</span> vendors = [<span class="string">'webkit'</span>, <span class="string">'moz'</span>];</span><br><span class="line">  <span class="keyword">for</span>(<span class="keyword">var</span> x = <span class="number">0</span>; x &lt; vendors.length &amp;&amp; !<span class="built_in">window</span>.requestAnimationFrame; ++x) &#123;</span><br><span class="line">      <span class="built_in">window</span>.requestAnimationFrame = <span class="built_in">window</span>[vendors[x] + <span class="string">'RequestAnimationFrame'</span>];</span><br><span class="line">      <span class="built_in">window</span>.cancelAnimationFrame = <span class="built_in">window</span>[vendors[x] + <span class="string">'CancelAnimationFrame'</span>] ||    <span class="comment">// Webkit中此取消方法的名字变了</span></span><br><span class="line">                                    <span class="built_in">window</span>[vendors[x] + <span class="string">'CancelRequestAnimationFrame'</span>];</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (!<span class="built_in">window</span>.requestAnimationFrame) &#123;</span><br><span class="line">      <span class="built_in">window</span>.requestAnimationFrame = <span class="function"><span class="keyword">function</span>(<span class="params">callback, element</span>) </span>&#123;</span><br><span class="line">          <span class="keyword">var</span> currTime = <span class="keyword">new</span> <span class="built_in">Date</span>().getTime();</span><br><span class="line">          <span class="keyword">var</span> timeToCall = <span class="built_in">Math</span>.max(<span class="number">0</span>, <span class="number">16.7</span> - (currTime - lastTime));</span><br><span class="line">          <span class="keyword">var</span> id = <span class="built_in">window</span>.setTimeout(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">              callback(currTime + timeToCall);</span><br><span class="line">          &#125;, timeToCall);</span><br><span class="line">          lastTime = currTime + timeToCall;</span><br><span class="line">          <span class="keyword">return</span> id;</span><br><span class="line">      &#125;;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (!<span class="built_in">window</span>.cancelAnimationFrame) &#123;</span><br><span class="line">      <span class="built_in">window</span>.cancelAnimationFrame = <span class="function"><span class="keyword">function</span>(<span class="params">id</span>) </span>&#123;</span><br><span class="line">          clearTimeout(id);</span><br><span class="line">      &#125;;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;());</span><br></pre></td></tr></table></figure>
+
+<p>使用之后，就可以向下兼容到 IE6。</p>
+<hr>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li>JavaScript 高级程序设计（第3版）</li>
+<li><a href="https://developer.mozilla.org/zh-CN/docs/Web/API/Window/requestAnimationFrame" target="_blank" rel="noopener">MDN - window.requestAnimationFrame</a></li>
+<li><a href="https://javascript.ruanyifeng.com/" target="_blank" rel="noopener">JavaScrip标准参考教程（alpha），by 阮一峰</a></li>
+<li><a href="[https://www.zhangxinxu.com/wordpress/2013/09/css3-animation-requestanimationframe-tween-%E5%8A%A8%E7%94%BB%E7%AE%97%E6%B3%95/?_t_t_t=0.3547051663712042](https://www.zhangxinxu.com/wordpress/2013/09/css3-animation-requestanimationframe-tween-动画算法/?_t_t_t=0.3547051663712042)">张鑫旭的个人博客 - CSS3动画那么强，requestAnimationFrame还有毛线用？</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>JavaScript</category>
+      </categories>
+      <tags>
+        <tag>性能优化</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>函数节流与函数防抖</title>
     <url>/2020/04/04/%E5%87%BD%E6%95%B0%E8%8A%82%E6%B5%81%E4%B8%8E%E5%87%BD%E6%95%B0%E9%98%B2%E6%8A%96/</url>
     <content><![CDATA[<p>函数节流与函数防抖，实际上就是为了解决事件频繁被触发，而造成不必要的性能浪费的性能优化手段。例如，浏览器的 <code>onresize</code> 事件，鼠标的 <code>mousemove</code> 事件，如果其频繁触发，很可能会造成浏览器的卡顿；或者，如果向后台频繁发送请求，也会增大服务器的压力。这时，我们就可以使用函数节流或函数防抖进行优化。</p>
@@ -527,13 +584,8 @@
 </ul>
 <p>这样，就导致了本不必要的性能浪费。  </p>
 <h3 id="为什么会存在这些问题？"><a href="#为什么会存在这些问题？" class="headerlink" title="为什么会存在这些问题？"></a>为什么会存在这些问题？</h3><p>首先我们来看一下 React 的生命周期：</p>
-<img src="https://i.loli.net/2020/02/19/gW8yp3ltDoIaznA.jpg" alt="React的生命周期" style="zoom:60%;" />
-
-
-
+<p><a href="https://i.loli.net/2020/04/05/9KNUBvCmtXxwQA4.jpg" target="_blank"><img src="https://i.loli.net/2020/04/05/9KNUBvCmtXxwQA4.jpg" style="zoom:60%;"  ></a></p>
 <center>图源来自网络</center>
-
-
 
 <p>从这张图中可以很轻松的看到，组件运行时，无论是父组件重新 <code>render()</code>，还是子组件的 state 发生改变，都会调用 <strong><code>shouldComponentUpdate()</code></strong> 这个方法。 它<strong>接收两个参数：nextProps和nextState</strong>，分别表示新的 props 和新的 state 的值。并且，当函数返回 ture 时，组件会重新调用 <code>render()</code> 进行 update ；当函数返回 false 时，组件不会重新渲染。</p>
 <p>然而，<strong>Component 类的 <code>shouldComponentUpdate()</code> 默认返回 true, 即使数据没有变化 <code>render()</code> 也会重新执行</strong>，这就导致了我们上方的问题。</p>
