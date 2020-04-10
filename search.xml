@@ -1,6 +1,116 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>vue.esm.js与vue.runtime.esm.js的差异</title>
+    <url>/2020/04/09/vue.esm.js%E4%B8%8Evue.runtime.esm.js%E7%9A%84%E5%B7%AE%E5%BC%82/</url>
+    <content><![CDATA[<p>在使用@vue/cli编译项目时，控制台报出如下错误：</p>
+<p>[Vue warn]: You are using the runtime-only build of Vue where the template compiler is not available. Either pre-compile the templates into render functions, or use the compiler-included build.</p>
+<a id="more"></a>
+
+<p>翻译过来就是说：你正在使用的vue，是<strong>只包含运行时</strong>（<em>runtime-only</em>） 的构建版本，而不包含<strong>编译器</strong>（<em>compiler</em>）。要么将模板预编译进渲染（render）函数，要么使用包含编译器的构建版本。</p>
+<p>此时入口文件 main.js 的代码如下：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> Vue <span class="keyword">from</span> <span class="string">'vue'</span></span><br><span class="line"><span class="keyword">import</span> App <span class="keyword">from</span> <span class="string">'./App'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">new</span> Vue(&#123;</span><br><span class="line">  components: &#123; App &#125;,</span><br><span class="line">  template: <span class="string">'&lt;App /&gt;'</span></span><br><span class="line">&#125;).$mount(<span class="string">'#app'</span>)</span><br></pre></td></tr></table></figure>
+
+
+
+<hr>
+<h2 id="vue的版本"><a href="#vue的版本" class="headerlink" title="vue的版本"></a>vue的版本</h2><p>要想知道问题出现的原因，得先了解 vue 的各个版本：</p>
+<table>
+<thead>
+<tr>
+<th align="left"></th>
+<th align="left"><strong>UMD</strong></th>
+<th><strong>CommonJS</strong></th>
+<th align="left"><strong>ES Module (基于构建工具使用)</strong></th>
+<th><strong>ES Module (直接用于浏览器)</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><strong>完整版（Full）</strong></td>
+<td align="left">vue.js</td>
+<td>vue.common.js</td>
+<td align="left">vue.esm.js</td>
+<td>vue.esm.browser.js</td>
+</tr>
+<tr>
+<td align="left"><strong>只包含运行时版（Runtime-only）</strong></td>
+<td align="left">vue.runtime.js</td>
+<td>vue.runtime.common.js</td>
+<td align="left">vue.runtime.esm.js</td>
+<td>-</td>
+</tr>
+<tr>
+<td align="left"><strong>完整版 (生产环境)</strong></td>
+<td align="left">vue.min.js</td>
+<td>-</td>
+<td align="left">-</td>
+<td>vue.esm.browser.min.js</td>
+</tr>
+<tr>
+<td align="left"><strong>只包含运行时版 (生产环境)</strong></td>
+<td align="left">vue.runtime.min.js</td>
+<td>-</td>
+<td align="left">-</td>
+<td>-</td>
+</tr>
+</tbody></table>
+<center>表：vue各版本</center>  
+### 各版本解释
+
+<ul>
+<li><p><strong>完整版</strong>：同时包含编译器和运行时的版本。</p>
+</li>
+<li><p><strong>编译器</strong>：用来将模板字符串编译成为 JavaScript 渲染函数的代码。</p>
+</li>
+<li><p><strong>运行时</strong>：用来创建 Vue 实例、渲染并处理虚拟 DOM 等的代码。基本上就是除去编译器的其它一切。  </p>
+</li>
+</ul>
+<h3 id="对比"><a href="#对比" class="headerlink" title="对比"></a>对比</h3><p>当需要在客户端进行编译模板 (比如传入一个字符串给 <code>template</code> 选项，或挂载到一个元素上并以其 DOM 内部的 HTML 作为模板)时，就像这样：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> App <span class="keyword">from</span> <span class="string">'./App'</span></span><br><span class="line"><span class="keyword">new</span> Vue(&#123;</span><br><span class="line">  component: &#123; App &#125;,</span><br><span class="line">  template: <span class="string">'&lt;App /&gt;'</span></span><br><span class="line">&#125;).$mount(<span class="string">'#app'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>此时就需要使用完整版的 vue。</p>
+<p>当使用 <code>vue-loader</code> 或 <code>vueify</code> 的时候，<code>*.vue</code> 文件内部的模板会在构建时预编译成 JavaScript。你在最终打好的包里实际上是不需要编译器的，所以只用运行时版本即可。就像这样： </p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> App <span class="keyword">from</span> <span class="string">'./App'</span></span><br><span class="line"><span class="keyword">new</span> Vue(&#123;</span><br><span class="line">  render: <span class="function"><span class="params">h</span> =&gt;</span> h(App)</span><br><span class="line">&#125;).$mount(<span class="string">'#app'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>render 函数接收一个函数作为参数，用来创建<strong>虚拟DOM</strong>（VNode）。</p>
+<p>因为运行时版本相比完整版体积要小大约 30%，所以应该尽可能使用运行时版本。 </p>
+<h2 id="问题原因"><a href="#问题原因" class="headerlink" title="问题原因"></a>问题原因</h2><p>@vue/cli 默认使用的是不带编译器的 runtime-only 版（即 vue.runtime.esm.js），无法对模板进行预编译。</p>
+<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><h3 id="方案一：使用带编译器的-vue"><a href="#方案一：使用带编译器的-vue" class="headerlink" title="方案一：使用带编译器的 vue"></a>方案一：使用带编译器的 vue</h3><p>三版本的脚手架 <strong>@vue/cli</strong> 相较于二版本的脚手架 <strong>vue-cli</strong> ，最大的变化就是将配置文件隐藏，我们无法直接修改配置。</p>
+<p>当需要修改配置时，可以在 @vue/cli 创建的项目根目录下，新建一个名为 <code>vue.config.js</code> 的配置文件。</p>
+<p>1）、我们的目的是修改 webpack 的配置，将引入的 vue 变更为 <strong>vue.esm.js</strong>。参照 @vue/cli 的<a href="https://cli.vuejs.org/zh/config/#configurewebpack" target="_blank" rel="noopener">配置参考</a>和 webpack的<a href="https://webpack.docschina.org/configuration/resolve/#resolve-alias" target="_blank" rel="noopener">配置</a>，在 <code>vue.config.js</code> 中新增一个名为 <code>configureWebpack</code> 的配置选项，具体如下：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// vue.config.js</span></span><br><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">  <span class="comment">// 选项...</span></span><br><span class="line">  configureWebpack: &#123; <span class="comment">// webpack的配置</span></span><br><span class="line">    resolve: &#123;</span><br><span class="line">      alias: &#123; <span class="comment">// 模块路径别名</span></span><br><span class="line">        <span class="string">'vue$'</span>: <span class="string">'vue/dist/vue.esm.js'</span>  <span class="comment">// $代表精确匹配</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>或者：</strong></p>
+<p>在 <code>vue.config.js</code> 中新增一个名为 <code>runtimeCompiler</code> 的配置选项，具体如下：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// vue.config.js</span></span><br><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">  <span class="comment">// 选项...</span></span><br><span class="line">  runtimeCompiler: <span class="literal">true</span>,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>runtimeCompiler 的值决定是否使用包含运行时编译器的 vue 构建版本。</p>
+<p>其默认值为 <code>false</code>，也就是 @vue/cli 默认使用的是不带编译器的 vue；</p>
+<p> 设置为 <code>true</code> 后，则使用带编译器的完整版 vue，就可以在 vue 组件中使用 <code>template</code> 选项了。</p>
+<p><strong>再者：</strong></p>
+<p>直接引入带编译器的完整版 vue：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> Vue <span class="keyword">from</span> <span class="string">'vue/dist/vue.esm.js'</span></span><br><span class="line"><span class="keyword">import</span> App <span class="keyword">from</span> <span class="string">'./App'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">new</span> Vue(&#123;</span><br><span class="line">  components: &#123; App &#125;,</span><br><span class="line">  template: <span class="string">'&lt;App /&gt;'</span></span><br><span class="line">&#125;).$mount(<span class="string">'#app'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>不推荐使用这种方式。</p>
+<p><strong>三种方式本质一样，都是将 vue 的构架版本修改为带编译器的完整版（vue.esm.js）</strong></p>
+<p><strong>前两种方式修改配置后，需重新运行项目。</strong></p>
+<h3 id="方案二：使用渲染函数"><a href="#方案二：使用渲染函数" class="headerlink" title="方案二：使用渲染函数"></a>方案二：使用渲染函数</h3><p>直接上代码，将 main.js 的代码修改如下：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> Vue <span class="keyword">from</span> <span class="string">'vue'</span></span><br><span class="line"><span class="keyword">import</span> App <span class="keyword">from</span> <span class="string">'./App'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">new</span> Vue(&#123;</span><br><span class="line">  render: <span class="function"><span class="params">h</span> =&gt;</span> h(App)</span><br><span class="line">&#125;).$mount(<span class="string">'#app'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>使用渲染函数，会在项目构建时进行预编译。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="[https://cn.vuejs.org/v2/guide/installation.html#%E5%AF%B9%E4%B8%8D%E5%90%8C%E6%9E%84%E5%BB%BA%E7%89%88%E6%9C%AC%E7%9A%84%E8%A7%A3%E9%87%8A](https://cn.vuejs.org/v2/guide/installation.html#对不同构建版本的解释)">vue官方文档 - 对不同构建版本的解释</a></li>
+<li><a href="[https://cli.vuejs.org/zh/config/#%E9%85%8D%E7%BD%AE%E5%8F%82%E8%80%83](https://cli.vuejs.org/zh/config/#配置参考)">@vue/cli - 配置参考</a></li>
+<li><a href="https://webpack.docschina.org/configuration/resolve/#resolve-alias" target="_blank" rel="noopener">webpack - 配置</a></li>
+</ul>
+]]></content>
+      <tags>
+        <tag>vue</tag>
+        <tag>webpack</tag>
+        <tag>bug</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>new Date().getTime()与Date.now()效率对比</title>
     <url>/2020/04/05/new%20Date.getTime()%E4%B8%8EDate.now()%E6%95%88%E7%8E%87%E5%B0%8F%E5%AF%B9%E6%AF%94/</url>
     <content><![CDATA[<p>看到好多人的文章里获取时间戳时，会用 <code>new Date().getTime()</code> 获取，而不是使用 <code>Date.now()</code>，难道是前者性能更好？于是做了一个简单的小测试对比一下。</p>
