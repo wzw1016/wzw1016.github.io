@@ -1,6 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>hexo报错TypeError [ERR_INVALID_URL]&quot;:&quot; Invalid URL&quot;:&quot;</title>
+    <url>/2020/04/25/hexo%E6%8A%A5%E9%94%99TypeError%20%5BERR_INVALID_URL%5D%20Invalid%20URL/</url>
+    <content><![CDATA[<p>在写完上一篇，进行 <code>hexo g</code> 时报错：</p>
+<p><code>TypeError [ERR_INVALID_URL]: Invalid URL: http://localhost:8080&amp;#39;</code></p>
+<p>具体如下图：</p>
+<a id="more"></a>
+
+<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p><a href="https://i.loli.net/2020/04/25/DEaKcokQ5wJAHs1.png" target="_blank"><img src="https://i.loli.net/2020/04/25/DEaKcokQ5wJAHs1.png" style="zoom: 80%;"></a></p>
+<center>图：hexo报错TypeError [ERR_INVALID_URL]: Invalid URL:</center>  
+
+
+
+<h2 id="解决办法"><a href="#解决办法" class="headerlink" title="解决办法"></a>解决办法</h2><p>更改文章中此格式的链接：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#39;http:&#x2F;&#x2F;localhost:8080&#39;</span><br></pre></td></tr></table></figure>
+
+<p>更改为：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">\&#39;&lt;http:&#x2F;&#x2F;localhost:8080&gt;\&#39;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>使用反斜杠对单引号进行转义。</li>
+<li>使用尖括号包裹链接（markdown 语法）。  </li>
+</ol>
+<p>个人猜测应该是 hexo 某插件对文章内链接的解析存在问题，这里就不深究！</p>
+<p><strong>完！</strong></p>
+]]></content>
+      <categories>
+        <category>blog</category>
+      </categories>
+      <tags>
+        <tag>bug</tag>
+        <tag>hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>vue脚手架中使用开发环境代理</title>
+    <url>/2020/04/25/vue%E8%84%9A%E6%89%8B%E6%9E%B6%E4%B8%AD%E4%BD%BF%E7%94%A8%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E4%BB%A3%E7%90%86/</url>
+    <content><![CDATA[<p>在 <code>vue-cli</code> 和 <code>@vue/cli</code> 中使用开发环境代理解决跨域（ cross-origin ）问题。</p>
+<p>Access to XMLHttpRequest at &#39;<a href="http://localhost:2000/index_category" target="_blank" rel="noopener">http://localhost:2000/index_category</a>&#39; from origin &#39;<a href="http://localhost:8080" target="_blank" rel="noopener">http://localhost:8080</a>&#39; has been blocked by CORS policy: No ‘Access-Control-Allow-Origin’ header is present on the requested resource.</p>
+<a id="more"></a>
+
+<h2 id="vue-cli-中（二版本脚手架）"><a href="#vue-cli-中（二版本脚手架）" class="headerlink" title="vue-cli 中（二版本脚手架）"></a>vue-cli 中（二版本脚手架）</h2><p>配置项目根目录下 <code>config</code> 文件夹中文件 <code>index.js</code> 的 <code>dev.proxyTable</code> 选项：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">  dev: &#123;</span><br><span class="line">    ...</span><br><span class="line">    proxyTable: &#123;</span><br><span class="line">      <span class="string">'/api'</span>: &#123;</span><br><span class="line">        target: <span class="string">'http://www.example.org'</span>, <span class="comment">// target host</span></span><br><span class="line">        changeOrigin: <span class="literal">true</span>, <span class="comment">// needed for virtual hosted sites</span></span><br><span class="line">        pathRewrite: &#123;</span><br><span class="line">          <span class="string">'^/api/old-path'</span>: <span class="string">'/api/new-path'</span>, <span class="comment">// rewrite path</span></span><br><span class="line">          <span class="string">'^/api/remove/path'</span>: <span class="string">'/path'</span>, <span class="comment">// remove base path</span></span><br><span class="line">        &#125;</span><br><span class="line">      &#125;,</span><br><span class="line">      ...</span><br><span class="line">      <span class="comment">// 其他代理路径</span></span><br><span class="line">    &#125;,</span><br><span class="line">    ...</span><br><span class="line">  &#125;,</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>接着在需要使用代理转发的接口请求函数中将指定的名称（上方示例中是 <code>&#39;/api&#39;</code>）拼串到对应的 URL 前，重启项目即可。</p>
+<h2 id="vue-cli-中（三版本脚手架）"><a href="#vue-cli-中（三版本脚手架）" class="headerlink" title="@vue-cli 中（三版本脚手架）"></a>@vue-cli 中（三版本脚手架）</h2><p>配置项目根目录下  <code>vue.config.js</code> 中的 <code>devServer.proxy</code> 选项：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">  ...</span><br><span class="line">  <span class="comment">// 配置开发代理服务器</span></span><br><span class="line">  devServer: &#123;</span><br><span class="line">    proxy: <span class="string">'http://www.example.org'</span>, <span class="comment">// target host</span></span><br><span class="line">  &#125;,</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这种对策适用于只有一个后台时，当不同请求需要通过代理转发到不同的服务器时，可以采用下方的配置：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">  ...</span><br><span class="line">  <span class="comment">// 配置开发代理服务器</span></span><br><span class="line">  devServer: &#123;</span><br><span class="line">    proxy: &#123;</span><br><span class="line">      <span class="string">'/api'</span>: &#123;</span><br><span class="line">        target: <span class="string">'http://www.example.org'</span>, <span class="comment">// target host</span></span><br><span class="line">        changeOrigin: <span class="literal">true</span>, <span class="comment">// needed for virtual hosted sites</span></span><br><span class="line">        pathRewrite: &#123;</span><br><span class="line">          <span class="string">'^/api/old-path'</span>: <span class="string">'/api/new-path'</span>, <span class="comment">// rewrite path</span></span><br><span class="line">          <span class="string">'^/api/remove/path'</span>: <span class="string">'/path'</span>, <span class="comment">// remove base path</span></span><br><span class="line">        &#125;</span><br><span class="line">      &#125;,</span><br><span class="line">      <span class="string">'/foo'</span>: &#123;</span><br><span class="line">        target: <span class="string">'&lt;other_url&gt;'</span>,</span><br><span class="line">        pathRewrite: &#123;</span><br><span class="line">          <span class="string">'^/api/old-path'</span>: <span class="string">'/api/new-path'</span>, <span class="comment">// rewrite path</span></span><br><span class="line">          <span class="string">'^/api/remove/path'</span>: <span class="string">'/path'</span>, <span class="comment">// remove base path</span></span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">      ...</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>与 <code>vue-cli</code> 中的用法大同小异。</p>
+<hr>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="https://cli.vuejs.org/zh/config/#devserver-proxy" target="_blank" rel="noopener">devServer.proxy</a></li>
+<li><a href="https://github.com/chimurai/http-proxy-middleware#proxycontext-config" target="_blank" rel="noopener">http-proxy-middleware</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>Vue</category>
+      </categories>
+      <tags>
+        <tag>vue</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>模拟JS中的new运算符</title>
     <url>/2020/04/11/%E6%A8%A1%E6%8B%9FJS%E4%B8%AD%E7%9A%84new%E8%BF%90%E7%AE%97%E7%AC%A6/</url>
     <content><![CDATA[<p>模拟 JavaScript 中使用 new 关键字配合构造函数创建实例对象。其基本思想如下：</p>
@@ -140,9 +205,9 @@
         <category>Vue</category>
       </categories>
       <tags>
+        <tag>bug</tag>
         <tag>vue</tag>
         <tag>webpack</tag>
-        <tag>bug</tag>
       </tags>
   </entry>
   <entry>
@@ -290,8 +355,8 @@
 <p>对指定的数组进行遍历，逐个判断是否需要塞入当前数组，从而得到结果数组。</p>
 ]]></content>
       <tags>
-        <tag>Lodash</tag>
         <tag>Array</tag>
+        <tag>Lodash</tag>
       </tags>
   </entry>
   <entry>
@@ -321,8 +386,8 @@
 </ul>
 ]]></content>
       <tags>
-        <tag>Lodash</tag>
         <tag>Array</tag>
+        <tag>Lodash</tag>
       </tags>
   </entry>
   <entry>
@@ -367,9 +432,9 @@
 </ul>
 ]]></content>
       <tags>
-        <tag>Lodash</tag>
         <tag>Array</tag>
         <tag>flatten</tag>
+        <tag>Lodash</tag>
       </tags>
   </entry>
   <entry>
