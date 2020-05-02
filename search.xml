@@ -1,6 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>函数声明与函数表达式</title>
+    <url>/2020/05/02/%E5%87%BD%E6%95%B0%E5%A3%B0%E6%98%8E%E4%B8%8E%E5%87%BD%E6%95%B0%E8%A1%A8%E8%BE%BE%E5%BC%8F/</url>
+    <content><![CDATA[<p>`JavaScript</p>
+<p>函数声明与函数表达式是 <code>JavaScript</code> 中创建函数最常见的两种方式。此文记录本人对其二者的理解。</p>
+<hr>
+<p>记录本人对 <code>JavaScript</code> 中两种最常见创建函数方式的理解。</p>
+<hr>
+<p><code>JavaScript</code></p>
+<hr>
+<hr>
+<p><code>JavaScript</code></p>
+<a id="more"></a>
+
+<h2 id="函数声明（Function-Declaration）"><a href="#函数声明（Function-Declaration）" class="headerlink" title="函数声明（Function Declaration）"></a>函数声明（Function Declaration）</h2><h3 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h3><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">name</span>(<span class="params">[param,[, param,[..., param]]]</span>) </span>&#123;</span><br><span class="line">   [statements]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用函数声明的函数定义为一条完整的语句。</p>
+<h3 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h3><ul>
+<li>有提升，可以在函数声明之前被调用（原因：<code>js</code> 引擎会在代码执行之前创建执行上下文环境，将函数声明保存到执行上下文对象中）。</li>
+</ul>
+<p>就像这样：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">fn1(<span class="number">1</span>, <span class="number">2</span>) <span class="comment">// 3</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn1</span>(<span class="params">a, b</span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(a + b)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>开发中应尽量避免使用函数提升。</strong></p>
+<hr>
+<h2 id="函数表达式（Function-Expression）"><a href="#函数表达式（Function-Expression）" class="headerlink" title="函数表达式（Function Expression）"></a>函数表达式（Function Expression）</h2><h3 id="语法-1"><a href="#语法-1" class="headerlink" title="语法"></a>语法</h3><figure class="highlight js"><table><tr><td class="code"><pre><span class="line">let function_expression = function [name]([param1[, param2[, ..., paramN]]]) &#123;</span><br><span class="line">   [statements]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>函数表达式其与函数声明十分相似，二者最主要区别是函数名称。函数表达式中的函数名称可以省略，从而创建匿名函数。</p>
+<p>使用没有函数名函数表达式的函数定义，本身不是一个完整的语句，不能单独存在，只能与其他语句配合成为一条完整的语句。</p>
+<h3 id="匿名函数表达式使用的多种方式"><a href="#匿名函数表达式使用的多种方式" class="headerlink" title="匿名函数表达式使用的多种方式"></a>匿名函数表达式使用的多种方式</h3><h4 id="赋值-保存给一个变量"><a href="#赋值-保存给一个变量" class="headerlink" title="赋值/保存给一个变量"></a>赋值/保存给一个变量</h4><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">let</span> fn2 = <span class="function"><span class="keyword">function</span> (<span class="params">a, b</span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(a * b)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">fn2(<span class="number">1</span>, <span class="number">2</span>) <span class="comment">// 2</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="作为另一个函数的实参（配合高阶函数）"><a href="#作为另一个函数的实参（配合高阶函数）" class="headerlink" title="作为另一个函数的实参（配合高阶函数）"></a>作为另一个函数的实参（配合高阶函数）</h4><figure class="highlight js"><table><tr><td class="code"><pre><span class="line">setTimeout(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">'延迟执行的函数表达式'</span>)</span><br><span class="line">&#125;, <span class="number">1000</span>)</span><br></pre></td></tr></table></figure>
+
+<p>该方式本质上也是将函数表达式保存为一个变量，内部会将定义的匿名函数赋值给内部定义的实参。</p>
+<h4 id="作为另一个函数的返回值（配合高阶函数）"><a href="#作为另一个函数的返回值（配合高阶函数）" class="headerlink" title="作为另一个函数的返回值（配合高阶函数）"></a>作为另一个函数的返回值（配合高阶函数）</h4><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn3</span>(<span class="params">a</span>) </span>&#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="function"><span class="keyword">function</span> (<span class="params">b</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(a + b)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">fn3(<span class="number">1</span>)(<span class="number">2</span>) <span class="comment">// 3</span></span><br></pre></td></tr></table></figure>
+
+<p>同样，该方式本质上也是将函数表达式保存为一个变量。</p>
+<h4 id="立即执行（IIFE实现模块化）"><a href="#立即执行（IIFE实现模块化）" class="headerlink" title="立即执行（IIFE实现模块化）"></a>立即执行（IIFE实现模块化）</h4><figure class="highlight js"><table><tr><td class="code"><pre><span class="line">(<span class="function"><span class="keyword">function</span> (<span class="params">a, b</span>) </span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(a + b)</span><br><span class="line">&#125;)(<span class="number">1</span>, <span class="number">2</span>) <span class="comment">// 3</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="命名函数表达式"><a href="#命名函数表达式" class="headerlink" title="命名函数表达式"></a>命名函数表达式</h3><p><strong><p style="color: #f00;">当函数表达式不省略函数名时，可以在该函数内部（并且只能在该函数内部）使用该函数名访问该函数，该函数名作为的变量保存的值只读不可修改。</p></strong></p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">let</span> fn4 = <span class="function"><span class="keyword">function</span> <span class="title">fn5</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(fn5)</span><br><span class="line">  <span class="built_in">console</span>.log(fn5 === fn4)</span><br><span class="line">	fn5 = <span class="number">1</span></span><br><span class="line">	<span class="built_in">console</span>.log(fn5)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">fn4()</span><br></pre></td></tr></table></figure>
+
+<p>执行输出如下：</p>
+<p><a href="https://i.loli.net/2020/05/02/ToVPEl1ZYM5xgdF.png" target="_blank"><img src="https://i.loli.net/2020/05/02/ToVPEl1ZYM5xgdF.png"  style="zoom: 60%;" /></a></p>
+<center>图：命名函数表达式执行</center>  
+
+<h3 id="命名函数表达式的应用"><a href="#命名函数表达式的应用" class="headerlink" title="命名函数表达式的应用"></a>命名函数表达式的应用</h3><h4 id="例"><a href="#例" class="headerlink" title="例"></a>例</h4><p>需求：<strong>使用演示定时器模拟实现循环定时器</strong>。</p>
+<p>实现：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">setTimeout(<span class="function"><span class="keyword">function</span> <span class="title">callback</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'action'</span>)</span><br><span class="line">  setTimeout(callback, <span class="number">1000</span>)</span><br><span class="line">&#125;, <span class="number">1000</span>)</span><br></pre></td></tr></table></figure>
+
+<p>此时，可以实现控制台中每隔一秒输出一次 <code>action</code>。</p>
+<p>这里只是举个例子，不推荐实际开发中这样使用，毕竟浏览器栈空间有限，这样很可能会造成栈溢出报错。</p>
+<h3 id="函数表达式的提升"><a href="#函数表达式的提升" class="headerlink" title="函数表达式的提升"></a>函数表达式的提升</h3><p>不同于函数声明语句，函数表达式没有提升，无法在使用函数表达式的函数定义之前调用，如果调用会报错。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">fn6(<span class="number">1</span>, <span class="number">2</span>) <span class="comment">// Uncaught ReferenceError: fn6 is not defined</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> fn6 = <span class="function"><span class="keyword">function</span> (<span class="params">a, b</span>) </span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(a - b)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>函数声明与函数表达式其实都没什么难点，只是要注意匿名函数表达式的延申。</p>
+<hr>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ul>
+<li><a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Statements/function" target="_blank" rel="noopener">MDN - 函数声明</a></li>
+<li><a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/function" target="_blank" rel="noopener">MDN - 函数表达式</a></li>
+</ul>
+<p><code>JavaScript</code> 中两种最常见创建函数的方式</p>
+<p><code>JavaScript</code> 中两种最常见</p>
+<p><code>JavaScript</code> 中两种最常见</p>
+]]></content>
+      <categories>
+        <category>JavaScript</category>
+      </categories>
+      <tags>
+        <tag>Function</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>hexo报错TypeError [ERR_INVALID_URL]&quot;:&quot; Invalid URL&quot;:&quot;</title>
     <url>/2020/04/25/hexo%E6%8A%A5%E9%94%99TypeError%20%5BERR_INVALID_URL%5D%20Invalid%20URL/</url>
     <content><![CDATA[<p>在写完上一篇，进行 <code>hexo g</code> 时报错：</p>
@@ -355,8 +428,8 @@
 <p>对指定的数组进行遍历，逐个判断是否需要塞入当前数组，从而得到结果数组。</p>
 ]]></content>
       <tags>
-        <tag>Array</tag>
         <tag>Lodash</tag>
+        <tag>Array</tag>
       </tags>
   </entry>
   <entry>
@@ -386,8 +459,8 @@
 </ul>
 ]]></content>
       <tags>
-        <tag>Array</tag>
         <tag>Lodash</tag>
+        <tag>Array</tag>
       </tags>
   </entry>
   <entry>
@@ -432,9 +505,9 @@
 </ul>
 ]]></content>
       <tags>
+        <tag>Lodash</tag>
         <tag>Array</tag>
         <tag>flatten</tag>
-        <tag>Lodash</tag>
       </tags>
   </entry>
   <entry>
