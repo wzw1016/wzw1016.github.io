@@ -3,17 +3,10 @@
   <entry>
     <title>函数声明与函数表达式</title>
     <url>/2020/05/02/%E5%87%BD%E6%95%B0%E5%A3%B0%E6%98%8E%E4%B8%8E%E5%87%BD%E6%95%B0%E8%A1%A8%E8%BE%BE%E5%BC%8F/</url>
-    <content><![CDATA[<p>`JavaScript</p>
-<p>函数声明与函数表达式是 <code>JavaScript</code> 中创建函数最常见的两种方式。此文记录本人对其二者的理解。</p>
-<hr>
-<p>记录本人对 <code>JavaScript</code> 中两种最常见创建函数方式的理解。</p>
-<hr>
-<p><code>JavaScript</code></p>
-<hr>
-<hr>
-<p><code>JavaScript</code></p>
+    <content><![CDATA[<p>函数声明与函数表达式是 <code>JavaScript</code> 中创建函数最常见的两种方式。此文记录本人对其二者的理解。</p>
 <a id="more"></a>
 
+<hr>
 <h2 id="函数声明（Function-Declaration）"><a href="#函数声明（Function-Declaration）" class="headerlink" title="函数声明（Function Declaration）"></a>函数声明（Function Declaration）</h2><h3 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h3><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">name</span>(<span class="params">[param,[, param,[..., param]]]</span>) </span>&#123;</span><br><span class="line">   [statements]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>使用函数声明的函数定义为一条完整的语句。</p>
@@ -39,14 +32,16 @@
 <p>同样，该方式本质上也是将函数表达式保存为一个变量。</p>
 <h4 id="立即执行（IIFE实现模块化）"><a href="#立即执行（IIFE实现模块化）" class="headerlink" title="立即执行（IIFE实现模块化）"></a>立即执行（IIFE实现模块化）</h4><figure class="highlight js"><table><tr><td class="code"><pre><span class="line">(<span class="function"><span class="keyword">function</span> (<span class="params">a, b</span>) </span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(a + b)</span><br><span class="line">&#125;)(<span class="number">1</span>, <span class="number">2</span>) <span class="comment">// 3</span></span><br></pre></td></tr></table></figure>
 
-<h3 id="命名函数表达式"><a href="#命名函数表达式" class="headerlink" title="命名函数表达式"></a>命名函数表达式</h3><p><strong><p style="color: #f00;">当函数表达式不省略函数名时，可以在该函数内部（并且只能在该函数内部）使用该函数名访问该函数，该函数名作为的变量保存的值只读不可修改。</p></strong></p>
+<h3 id="命名函数表达式"><a href="#命名函数表达式" class="headerlink" title="命名函数表达式"></a>命名函数表达式</h3><p><strong>当函数表达式不省略函数名时，可以在该函数内部（并且只能在该函数内部）使用该函数名访问该函数，该函数名作为的变量保存的值只读不可修改。</strong></p>
+<p>可以借助命名函数表达式代替 <code>ECMAScript</code> 不推荐使用的</p>
 <figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">let</span> fn4 = <span class="function"><span class="keyword">function</span> <span class="title">fn5</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(fn5)</span><br><span class="line">  <span class="built_in">console</span>.log(fn5 === fn4)</span><br><span class="line">	fn5 = <span class="number">1</span></span><br><span class="line">	<span class="built_in">console</span>.log(fn5)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">fn4()</span><br></pre></td></tr></table></figure>
 
 <p>执行输出如下：</p>
 <p><a href="https://i.loli.net/2020/05/02/ToVPEl1ZYM5xgdF.png" target="_blank"><img src="https://i.loli.net/2020/05/02/ToVPEl1ZYM5xgdF.png"  style="zoom: 60%;" /></a></p>
 <center>图：命名函数表达式执行</center>  
+### 命名函数表达式的应用
 
-<h3 id="命名函数表达式的应用"><a href="#命名函数表达式的应用" class="headerlink" title="命名函数表达式的应用"></a>命名函数表达式的应用</h3><h4 id="例"><a href="#例" class="headerlink" title="例"></a>例</h4><p>需求：<strong>使用演示定时器模拟实现循环定时器</strong>。</p>
+<h4 id="例"><a href="#例" class="headerlink" title="例"></a>例</h4><p>需求：<strong>使用演示定时器模拟实现循环定时器</strong>。</p>
 <p>实现：</p>
 <figure class="highlight js"><table><tr><td class="code"><pre><span class="line">setTimeout(<span class="function"><span class="keyword">function</span> <span class="title">callback</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'action'</span>)</span><br><span class="line">  setTimeout(callback, <span class="number">1000</span>)</span><br><span class="line">&#125;, <span class="number">1000</span>)</span><br></pre></td></tr></table></figure>
 
@@ -62,9 +57,6 @@
 <li><a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Statements/function" target="_blank" rel="noopener">MDN - 函数声明</a></li>
 <li><a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/function" target="_blank" rel="noopener">MDN - 函数表达式</a></li>
 </ul>
-<p><code>JavaScript</code> 中两种最常见创建函数的方式</p>
-<p><code>JavaScript</code> 中两种最常见</p>
-<p><code>JavaScript</code> 中两种最常见</p>
 ]]></content>
       <categories>
         <category>JavaScript</category>
