@@ -420,8 +420,8 @@
 <p>对指定的数组进行遍历，逐个判断是否需要塞入当前数组，从而得到结果数组。</p>
 ]]></content>
       <tags>
-        <tag>Array</tag>
         <tag>Lodash</tag>
+        <tag>Array</tag>
       </tags>
   </entry>
   <entry>
@@ -451,8 +451,8 @@
 </ul>
 ]]></content>
       <tags>
-        <tag>Array</tag>
         <tag>Lodash</tag>
+        <tag>Array</tag>
       </tags>
   </entry>
   <entry>
@@ -497,9 +497,9 @@
 </ul>
 ]]></content>
       <tags>
+        <tag>Lodash</tag>
         <tag>Array</tag>
         <tag>flatten</tag>
-        <tag>Lodash</tag>
       </tags>
   </entry>
   <entry>
