@@ -1,6 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>mint-ui按需引入的问题</title>
+    <url>/2020/05/07/mint-ui%E6%8C%89%E9%9C%80%E5%BC%95%E5%85%A5%E7%9A%84%E9%97%AE%E9%A2%98/</url>
+    <content><![CDATA[<p>按 <strong>Mint UI</strong> 官网中描述，实现<strong>按需打包</strong>的步骤如下：</p>
+<ol>
+<li>安装开发依赖 <code>babel-plugin-component</code></li>
+<li>配置：</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="string">"presets"</span>: [</span><br><span class="line">    [<span class="string">"es2015"</span>, &#123; <span class="string">"modules"</span>: <span class="literal">false</span> &#125;]</span><br><span class="line">  ],</span><br><span class="line">  <span class="string">"plugins"</span>: [[<span class="string">"component"</span>, [</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="string">"libraryName"</span>: <span class="string">"mint-ui"</span>,</span><br><span class="line">      <span class="string">"style"</span>: <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">  ]]]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
+
+<p>在项目中配置后，<code>npm run serve</code> 重新运行报错如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ERROR  Error: .plugins[0][1] must be an object, false, or undefined</span><br></pre></td></tr></table></figure>
+
+<p>就是说 <strong><code>plugins</code> 索引为0的第一个元素 的 索引为1的第二个元素必须是个 <code>object</code> 或 <code>false</code> 或 <code>undefined</code>。</strong></p>
+<p>又回去官网瞅了瞅，发现官网说的是在 <code>.babelrc</code> 中配置。</p>
+<p>所以官网应该是没有更新，说的还是二版本脚手架 <code>vue-cli2</code> 中的按需引入配置。</p>
+<p><strong>按照错误提示</strong>，将项目根路径下 <code>babel.config.js</code> （三版本脚手架 <code>@vue/cli</code> 的 <code>babel</code> 配置文件）中内容修改如下：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">  presets: [</span><br><span class="line">    <span class="string">'@vue/cli-plugin-babel/preset'</span></span><br><span class="line">  ],</span><br><span class="line">  <span class="string">"plugins"</span>: [</span><br><span class="line">    [</span><br><span class="line">      <span class="string">'component'</span>,</span><br><span class="line">      &#123;</span><br><span class="line">        <span class="string">"libraryName"</span>: <span class="string">"mint-ui"</span>,</span><br><span class="line">        <span class="string">"style"</span>: <span class="literal">true</span></span><br><span class="line">      &#125;</span><br><span class="line">    ]</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>配置后重新运行即可。  </p>
+<p>完！</p>
+]]></content>
+      <categories>
+        <category>Vue</category>
+      </categories>
+      <tags>
+        <tag>bug</tag>
+        <tag>vue</tag>
+        <tag>babel</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>git clone后本地只有master分支的问题</title>
     <url>/2020/05/07/gitclone%E5%90%8E%E6%9C%AC%E5%9C%B0%E5%8F%AA%E6%9C%89master%E5%88%86%E6%94%AF/</url>
     <content><![CDATA[<p><strong>举个例子：</strong></p>
