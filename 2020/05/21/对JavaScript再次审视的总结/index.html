@@ -49,22 +49,19 @@
 
 
 
-  <meta name="description" content="举个例子： 在公司上班时是在 dev 分支进行开发并提交到 dev 分支，回家后想要接着进行开发。  git clone 后进行 git branch 查看本地分支，只有 master 分支；而 git branch -a 查看远程分支，所有分支都在。如下：">
+  <meta name="description" content="此文没有什么长篇大论，仅仅是个人再次深入学习 JavaScript 的记录，以及遗忘知识点的回顾。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="git clone后本地只有master分支的问题">
-<meta property="og:url" content="http://wzw1016.ml/2020/05/07/gitclone%E5%90%8E%E6%9C%AC%E5%9C%B0%E5%8F%AA%E6%9C%89master%E5%88%86%E6%94%AF/index.html">
+<meta property="og:title" content="对JavaScript再次审视的总结">
+<meta property="og:url" content="http://wzw1016.ml/2020/05/21/%E5%AF%B9JavaScript%E5%86%8D%E6%AC%A1%E5%AE%A1%E8%A7%86%E7%9A%84%E6%80%BB%E7%BB%93/index.html">
 <meta property="og:site_name" content="Wang&#39;s Blog">
-<meta property="og:description" content="举个例子： 在公司上班时是在 dev 分支进行开发并提交到 dev 分支，回家后想要接着进行开发。  git clone 后进行 git branch 查看本地分支，只有 master 分支；而 git branch -a 查看远程分支，所有分支都在。如下：">
+<meta property="og:description" content="此文没有什么长篇大论，仅仅是个人再次深入学习 JavaScript 的记录，以及遗忘知识点的回顾。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://i.loli.net/2020/05/07/JQb4LKsCPVUkIHx.png">
-<meta property="article:published_time" content="2020-05-07T05:30:22.000Z">
-<meta property="article:modified_time" content="2020-05-07T06:20:39.453Z">
+<meta property="article:published_time" content="2020-05-21T04:45:21.000Z">
+<meta property="article:modified_time" content="2020-05-23T10:03:14.263Z">
 <meta property="article:author" content="Vincent">
-<meta property="article:tag" content="git">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://i.loli.net/2020/05/07/JQb4LKsCPVUkIHx.png">
 
-<link rel="canonical" href="http://wzw1016.ml/2020/05/07/gitclone%E5%90%8E%E6%9C%AC%E5%9C%B0%E5%8F%AA%E6%9C%89master%E5%88%86%E6%94%AF/">
+<link rel="canonical" href="http://wzw1016.ml/2020/05/21/%E5%AF%B9JavaScript%E5%86%8D%E6%AC%A1%E5%AE%A1%E8%A7%86%E7%9A%84%E6%80%BB%E7%BB%93/">
 
 
 <script id="page-configurations">
@@ -76,7 +73,7 @@
   };
 </script>
 
-  <title>git clone后本地只有master分支的问题 | Wang's Blog</title>
+  <title>对JavaScript再次审视的总结 | Wang's Blog</title>
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-157496912-1"></script>
     <script>
@@ -233,7 +230,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://wzw1016.ml/2020/05/07/gitclone%E5%90%8E%E6%9C%AC%E5%9C%B0%E5%8F%AA%E6%9C%89master%E5%88%86%E6%94%AF/">
+    <link itemprop="mainEntityOfPage" href="http://wzw1016.ml/2020/05/21/%E5%AF%B9JavaScript%E5%86%8D%E6%AC%A1%E5%AE%A1%E8%A7%86%E7%9A%84%E6%80%BB%E7%BB%93/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/avatar.png">
@@ -246,7 +243,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          git clone后本地只有master分支的问题
+          对JavaScript再次审视的总结
         </h1>
 
         <div class="post-meta">
@@ -256,7 +253,18 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2020-05-07 13:30:22" itemprop="dateCreated datePublished" datetime="2020-05-07T13:30:22+08:00">2020-05-07</time>
+              <time title="创建时间：2020-05-21 12:45:21" itemprop="dateCreated datePublished" datetime="2020-05-21T12:45:21+08:00">2020-05-21</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaScript/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaScript</span>
+                  </a>
+                </span>
             </span>
 
           
@@ -268,8 +276,8 @@
       </span>
       <span class="post-meta-item-text">评论：</span>
     
-    <a title="valine" href="/2020/05/07/gitclone%E5%90%8E%E6%9C%AC%E5%9C%B0%E5%8F%AA%E6%9C%89master%E5%88%86%E6%94%AF/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/05/07/gitclone%E5%90%8E%E6%9C%AC%E5%9C%B0%E5%8F%AA%E6%9C%89master%E5%88%86%E6%94%AF/" itemprop="commentCount"></span>
+    <a title="valine" href="/2020/05/21/%E5%AF%B9JavaScript%E5%86%8D%E6%AC%A1%E5%AE%A1%E8%A7%86%E7%9A%84%E6%80%BB%E7%BB%93/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/05/21/%E5%AF%B9JavaScript%E5%86%8D%E6%AC%A1%E5%AE%A1%E8%A7%86%E7%9A%84%E6%80%BB%E7%BB%93/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -279,14 +287,14 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>248</span>
+              <span>2.1k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="fa fa-clock-o"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>2 分钟</span>
             </span>
 
         </div>
@@ -298,27 +306,90 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p><strong>举个例子：</strong></p>
-<p>在公司上班时是在 <em>dev</em> 分支进行开发并提交到 <em>dev</em> 分支，回家后想要接着进行开发。</p>
-<p> <code>git clone</code> 后进行 <code>git branch</code> 查看本地分支，只有 <em>master</em> 分支；而 <code>git branch -a</code> 查看远程分支，所有分支都在。如下：</p>
+        <p>此文没有什么长篇大论，仅仅是个人再次深入学习 <code>JavaScript</code> 的记录，以及遗忘知识点的回顾。</p>
 <a id="more"></a>
 
-<p><a href="https://i.loli.net/2020/05/07/JQb4LKsCPVUkIHx.png" target="_blank"><img src="https://i.loli.net/2020/05/07/JQb4LKsCPVUkIHx.png" ></a></p>
-<p><strong>两个命令，都可以追溯远程分支：</strong></p>
+
+
+<hr>
 <ul>
-<li>命令一：</li>
+<li><p>翻阅 <code>ECMAScript Specification</code>，解决了我很长时间的一个疑惑。<strong><code>Object.prototype</code> 是浏览器基于 spec 而创建的一个 <code>built-in</code> 的对象</strong>。</p>
+<p>对此，很多人说的 “<code>JavaScript</code> 中所有函数的 <code>prototype</code> 属性值都是 <code>Object</code> 构造函数的实例对象” 这句话，是不完全正确的。</p>
+</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git checkout -b mybranch origin&#x2F;abranch</span><br></pre></td></tr></table></figure>
-
-<p>此命令可以追溯远程分支的同时自定义本地分支名称，其余与下方命令无区别</p>
+<hr>
 <ul>
-<li>命令二：</li>
+<li><p><strong><code>instanceof</code></strong> <strong>运算符</strong>仅仅用于检测构造函数的 <code>prototype</code> 属性是否出现在某个实例对象的原型链上。</p>
+<p><code>Object instanceof Function</code> 为 <code>true</code> 是由于 <code>Object.__proto__ === Function.prototype</code>。而 <code>Function instanceof Object</code> 、<code>Function instanceof Function</code>、<code>Object instanceof Object</code> 也都可以用原型链证实。</p>
+</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git checkout --track origin&#x2F;branch</span><br></pre></td></tr></table></figure>
+<p>因此 <code>instanceof</code> 无法判断 <code>Function</code> 和 <code>Object</code> 哪个是鸡哪个是蛋。</p>
+<hr>
+<ul>
+<li><code>JavaScript</code> 的作用域为<strong>词法作用域</strong>（即静态作用域）。<strong>函数的作用域在函数定义的时候就决定了</strong>。</li>
+</ul>
+<hr>
+<ul>
+<li><p><code>JS</code> 引擎在<strong>代码执行之前</strong>，会创建执行上下文环境，做出以下操作：</p>
+<ul>
+<li>收集变量、函数以及函数的参数 <code>arguments</code> （如果是函数执行上下文的话）作为<strong>变量对象</strong>（Variable Object，VO）（在进入执行上下文阶段为 VO，在执行代码阶段变为AO。AO即 Activation Object）。</li>
+<li>确认 <code>this</code> 的指向</li>
+<li>创建作用域链</li>
+</ul>
+<p>“收集变量、函数” 就是 <strong>“使用 <code>var</code> 声明的变量存在提升，即函数声明提升”</strong>的原因（切记是声明提升，就是只声明，并不赋值）。</p>
+<p><strong>函数声明提升的优先级高于变量声明提升的优先级</strong>，就像下方代码这样：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(foo)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">'foo'</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> foo = <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<p>最后会输出<code>foo</code> 函数体。是因为<strong>在进入执行上下文时，首先会处理函数声明，其次会处理变量声明。如果如果变量名称跟已经声明的形式参数或函数相同，则变量声明不会干扰已经存在的这类属性</strong>。（这句话，如果用下方模拟的这个例子来解释的话，就是：在进入全局执行上下文阶段，由于函数声明提升的优先级比变量声明提升的优先级高，所以 <code>foo</code> 函数先声明，再 <code>var foo</code> 声明，没有任何卵用！） </p>
+<p>如果模拟一下 <code>JS</code> 引擎实际的执行流程，那就是这样的：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> foo</span><br><span class="line"><span class="built_in">console</span>.log(foo)</span><br><span class="line">foo = <span class="number">1</span></span><br></pre></td></tr></table></figure>
 
 
 
-<p>完！</p>
+</li>
+</ul>
+<hr>
+<ul>
+<li><p>关于闭包</p>
+<ul>
+<li>从理论角度来说，<code>JavaScript</code> 中所有的函数都会产生闭包，这是因为：函数在创建的时候，就会将外层执行上下文中的作用域链保存当前执行上下文的作用域 <code>[[Scopes]]</code> 中。</li>
+<li>从实践角度来说，<strong>闭包</strong>的产生实际就是：<strong>即使执行上下文中的变量对象已经销毁了，而变量仍可以使用</strong>。实际开发时有两种情况：①函数中引用了外部的变量；②外层函数将内层函数 <code>return</code> （实际开发意义很大）</li>
+</ul>
+<p>理论角度的闭包就是理论而已，确实时这个理，实际开发中没啥卵用。</p>
+<p>闭包就是为了延长变量对象的生命周期而已，并无其他深奥之处。</p>
+</li>
+</ul>
+<hr>
+<ul>
+<li><code>let</code> 与 <code>const</code> 没有提升的原因是：使用 <code>let</code> 和 <code>const</code> 声明的变量， <code>JavaScript</code> 引擎在扫描代码发现变量声明时（也就是进入执行上下文时），将二者声明的变量放入临时性死区（ Temporal Dead Zone，TDZ ）。访问 <code>TDZ</code> 内的变量会报错。在执行代码时，将变量从 <code>TDZ</code> 内取出，这事方可访问。</li>
+</ul>
+<hr>
+<ul>
+<li><p><code>Symbol</code> 作为属性名时，该属性不会出现在  <code>for...in</code>、<code>for...of</code> 循环中，也不会被 <code>Object.keys()</code>、<code>Object.getOwnPropertyNames()</code>、<code>JSON.stringify()</code> 返回。<strong>可以使用<code>Object.getOwnPropertySymbols</code> 方法，获取指定对象的所有 <code>Symbol</code> 属性名。</strong></p>
+<p>如果希望使用同一个 <code>Symbol</code> 值，可以使用 <code>Symbol.for</code>。它接受一个字符串作为参数，然后搜索有没有以该参数作为名称的 <code>Symbol</code> 值。如果有，就返回这个 <code>Symbol</code> 值，否则就新建并返回一个以该字符串为名称的 <code>Symbol</code> 值。就像下方这样：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> s1 = <span class="built_in">Symbol</span>.for(<span class="string">'foo'</span>);</span><br><span class="line"><span class="keyword">var</span> s2 = <span class="built_in">Symbol</span>.for(<span class="string">'foo'</span>);</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(s1 === s2); <span class="comment">// true</span></span><br></pre></td></tr></table></figure>
+
+<p>以前一直搞不懂 <code>Symbol</code> 在实际开发中的用途，在 issue 中发现了解答，用途如下：</p>
+<ul>
+<li>定义类的私有变量/方法</li>
+<li>运用在单例模式中   </li>
+</ul>
+</li>
+</ul>
+<p>以上，大部分取经自 <a href="[https://github.com/mqyqingfeng/Blog#%E5%86%B4%E7%BE%BD%E7%9A%84%E5%8D%9A%E5%AE%A2](https://github.com/mqyqingfeng/Blog#冴羽的博客)">冴羽的博客</a>。</p>
+<hr>
+<ul>
+<li><strong>继承</strong><ul>
+<li><strong>原型链继承</strong>。即将子类的原型指向父类的实例，并校正子类原型的 <code>constructor</code> 属性。</li>
+<li>借用构造函数继承（伪继承）。使用 <code>call</code> 或 <code>apply</code> 在子类中调用父类，将父类的 <code>this</code> 指向子类的 <code>this</code>。</li>
+<li>组合继承。实际上就是 原型链继承 + 借用构造函数继承。<ul>
+<li>原型链继承的作用：实现真正的继承</li>
+<li>借用构造函数继承的作用：当子类中有与父类相同的属性时，节省代码量</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
 
     </div>
 
@@ -334,7 +405,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://wzw1016.ml/2020/05/07/gitclone%E5%90%8E%E6%9C%AC%E5%9C%B0%E5%8F%AA%E6%9C%89master%E5%88%86%E6%94%AF/" title="git clone后本地只有master分支的问题">http://wzw1016.ml/2020/05/07/gitclone后本地只有master分支/</a>
+    <a href="http://wzw1016.ml/2020/05/21/%E5%AF%B9JavaScript%E5%86%8D%E6%AC%A1%E5%AE%A1%E8%A7%86%E7%9A%84%E6%80%BB%E7%BB%93/" title="对JavaScript再次审视的总结">http://wzw1016.ml/2020/05/21/对JavaScript再次审视的总结/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -344,9 +415,6 @@
 
 
       <footer class="post-footer">
-          <div class="post-tags">
-              <a href="/tags/git/" rel="tag"><i class="fa fa-tag"></i> git</a>
-          </div>
 
         
 
@@ -354,13 +422,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/05/06/vee-validate%203.3.0%E7%9A%84%E4%BD%BF%E7%94%A8/" rel="prev" title="vee-validate3.3.0的使用">
-      <i class="fa fa-chevron-left"></i> vee-validate3.3.0的使用
+    <a href="/2020/05/07/mint-ui%E6%8C%89%E9%9C%80%E5%BC%95%E5%85%A5%E7%9A%84%E9%97%AE%E9%A2%98/" rel="prev" title="mint-ui按需引入的问题">
+      <i class="fa fa-chevron-left"></i> mint-ui按需引入的问题
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2020/05/07/mint-ui%E6%8C%89%E9%9C%80%E5%BC%95%E5%85%A5%E7%9A%84%E9%97%AE%E9%A2%98/" rel="next" title="mint-ui按需引入的问题">
-      mint-ui按需引入的问题 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
