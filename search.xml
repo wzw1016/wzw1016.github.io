@@ -4,8 +4,8 @@
     <title>hexo deploy后Github Pages自定义域名失效</title>
     <url>/2020/07/06/hexo%20deploy%E5%90%8EGithub%20Pages%E8%87%AA%E5%AE%9A%E4%B9%89%E5%9F%9F%E5%90%8D%E5%A4%B1%E6%95%88/</url>
     <content><![CDATA[<p>有一个小问题，每次写完博客 <code>hexo d</code> 部署到 <code>Github Pages</code> 后，进到自己的网站一看 404。</p>
-<p>解决很简单：</p>
-<p>​    在 <code>hexo</code> 博客根目录的 <code>source</code> 文件夹下新建一个<strong>文件名为 <code>CNAME</code> 的无格式后缀文件，内容为你的 <code>Github Pages</code> 自定义域名。</strong></p>
+<p>解决方法很简单：</p>
+<p>在 <code>hexo</code> 博客根目录的 <code>source</code> 文件夹下新建一个<strong>文件名为 <code>CNAME</code> 的无格式后缀文件，内容为你的 <code>Github Pages</code> 自定义域名。</strong></p>
 ]]></content>
       <categories>
         <category>blog</category>
