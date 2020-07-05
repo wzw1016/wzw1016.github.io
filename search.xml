@@ -1,6 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>webpack HMR（热模块替换）</title>
+    <url>/2020/07/05/webpack%20HMR%EF%BC%88%E7%83%AD%E6%A8%A1%E5%9D%97%E6%9B%BF%E6%8D%A2%EF%BC%89/</url>
+    <content><![CDATA[<p>之前入门时，也是学习过 <code>glup</code>、<code>grunt</code> 和 <code>webpack</code>，但由于平时一般都是在脚手架环境下进行开发，记的越来越模糊了。打算再次系统的学习一次 <code>webpack</code>。至于另外二者，那就需要时再说。</p>
+<p><strong><code>HMR</code></strong> 是 <code>hot module replacement</code> 的缩写，也就是<strong>热模块替换</strong>，或者叫模块热替换。</p>
+<a id="more"></a>
+
+<p>它的作用就是：<strong>当项目中的一个模块发生改变时，只会重新打包这一个模块</strong>。</p>
+<p>这样，当项目中拥有很多模块时，如果修改了一个模块，<code>webpack</code> 只会重新打包这一个模块，而不是将全部模块重新打包。这样可以很大提升项目开发时的构建速度。</p>
+<p>开启方式很简单，由于<code>devServer</code> 内部支持 <code>HMR</code> 功能，所以只需要在 <code>webpack</code> 的 <code>devServer</code> 配置中新增 <code>hot: true</code> 选项即可，如下：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">	...</span><br><span class="line">	devServer: &#123;</span><br><span class="line">		contentBase: <span class="string">'build'</span>,</span><br><span class="line">    compress: <span class="literal">true</span>,</span><br><span class="line">    port: <span class="number">3000</span>,</span><br><span class="line">    open: <span class="literal">true</span>,</span><br><span class="line">    <span class="comment">// 开启HMR</span></span><br><span class="line">    hot: <span class="literal">true</span></span><br><span class="line">	&#125;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这一步完成，就可以实现样式文件的热模块替换了（因为 <code>style-loader</code> 已经内部实现了 <code>HMR</code>）</p>
+<p>那 <code>html</code> 文件和 <code>js</code> 文件该如何实现呢？</p>
+<p>答案是：</p>
+<p><code>html</code> 文件不需要实现热模块替换，因为 <code>html</code> 文件只有一个，当发生改变时一定会重新打包，因此无需处理，也没有办法处理；</p>
+<p>而且，当开启了 <code>HMR</code> 时，还会有一个问题：修改了 <code>html</code>，<code>webpack</code> 不会重新打包。只需要将 <code>entry</code> 入口改为一个数组，同时将 <code>html</code> 的相对路径添加到数组中。如下：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">  ...</span><br><span class="line">  entry: [<span class="string">'./src/js/index.js'</span>, <span class="string">'./src/index.html'</span>]</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>还有 <code>js</code> 文件，假设有一个 <code>print.js</code> 模块，向外暴露函数对象 <code>print</code>。</p>
+<p>若需要为其实现热模块替换，则需在入口文件中新增如下代码：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line"><span class="comment">// 判断HMR是否开启</span></span><br><span class="line"><span class="keyword">if</span> (<span class="built_in">module</span>.hot) &#123;</span><br><span class="line">  <span class="comment">// 监听print.js文件的变化，一旦其发生变化，不会重新打包，而是执行后续的回调函数</span></span><br><span class="line">  <span class="built_in">module</span>.hot.accept(<span class="string">'./print.js'</span>, () =&gt; &#123;</span><br><span class="line">    print()</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p><code>HMR</code> 对 <code>js</code> 文件的处理，只能处理非入口文件的 <code>js</code> 文件，因为一旦入口文件发生变化，各模块就会重新引入处理打包，这也是合情合理的。</p>
+<hr>
+<p>一些原因，很久没有写博客了，以后一定抽时间多进行输出！</p>
+]]></content>
+      <categories>
+        <category>构建工具</category>
+      </categories>
+      <tags>
+        <tag>性能优化</tag>
+        <tag>webpack</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>对JavaScript再次审视的总结</title>
     <url>/2020/05/21/%E5%AF%B9JavaScript%E5%86%8D%E6%AC%A1%E5%AE%A1%E8%A7%86%E7%9A%84%E6%80%BB%E7%BB%93/</url>
     <content><![CDATA[<p>此文没有什么长篇大论，仅仅是个人再次深入学习 <code>JavaScript</code> 的记录，以及遗忘知识点的回顾。</p>
@@ -462,7 +497,7 @@
 <ul>
 <li><p><strong>完整版</strong>：同时包含编译器和运行时的版本。</p>
 </li>
-<li><p><strong>编译器</strong>：用来将模板字符串编译成为 JavaScript 渲染函数的代码。</p>
+<li><p><strong>编译器</strong>：用来将模板编译成为 JavaScript 渲染函数的代码。</p>
 </li>
 <li><p><strong>运行时</strong>：用来创建 Vue 实例、渲染并处理虚拟 DOM 等的代码。基本上就是除去编译器的其它一切。  </p>
 </li>
