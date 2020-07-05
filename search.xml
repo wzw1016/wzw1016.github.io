@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>hexo deploy后Github Pages自定义域名失效</title>
+    <url>/2020/07/06/hexo%20deploy%E5%90%8EGithub%20Pages%E8%87%AA%E5%AE%9A%E4%B9%89%E5%9F%9F%E5%90%8D%E5%A4%B1%E6%95%88/</url>
+    <content><![CDATA[<p>有一个小问题，每次写完博客 <code>hexo d</code> 部署到 <code>Github Pages</code> 后，进到自己的网站一看 404。</p>
+<p>解决很简单：</p>
+<p>​    在 <code>hexo</code> 博客根目录的 <code>source</code> 文件夹下新建一个<strong>文件名为 <code>CNAME</code> 的无格式后缀文件，内容为你的 <code>Github Pages</code> 自定义域名。</strong></p>
+]]></content>
+      <categories>
+        <category>blog</category>
+      </categories>
+      <tags>
+        <tag>git</tag>
+        <tag>hexo</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>webpack HMR（热模块替换）</title>
     <url>/2020/07/05/webpack%20HMR%EF%BC%88%E7%83%AD%E6%A8%A1%E5%9D%97%E6%9B%BF%E6%8D%A2%EF%BC%89/</url>
     <content><![CDATA[<p>之前入门时，也是学习过 <code>glup</code>、<code>grunt</code> 和 <code>webpack</code>，但由于平时一般都是在脚手架环境下进行开发，记的越来越模糊了。打算再次系统的学习一次 <code>webpack</code>。至于另外二者，那就需要时再说。</p>
@@ -155,8 +170,8 @@
         <category>Vue</category>
       </categories>
       <tags>
-        <tag>vue</tag>
         <tag>bug</tag>
+        <tag>vue</tag>
         <tag>babel</tag>
       </tags>
   </entry>
@@ -370,8 +385,8 @@
         <category>blog</category>
       </categories>
       <tags>
-        <tag>bug</tag>
         <tag>hexo</tag>
+        <tag>bug</tag>
       </tags>
   </entry>
   <entry>
@@ -545,8 +560,8 @@
         <category>Vue</category>
       </categories>
       <tags>
-        <tag>vue</tag>
         <tag>bug</tag>
+        <tag>vue</tag>
         <tag>webpack</tag>
       </tags>
   </entry>
