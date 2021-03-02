@@ -2,7 +2,7 @@
 <search>
   <entry>
     <title>前端工程化之四：模块化打包工具</title>
-    <url>/2021/11/20/%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%8C%96%E4%B9%8B%E5%9B%9B%EF%BC%9A%E6%A8%A1%E5%9D%97%E5%8C%96%E6%89%93%E5%8C%85%E5%B7%A5%E5%85%B7/</url>
+    <url>/2020/11/20/%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%8C%96%E4%B9%8B%E5%9B%9B%EF%BC%9A%E6%A8%A1%E5%9D%97%E5%8C%96%E6%89%93%E5%8C%85%E5%B7%A5%E5%85%B7/</url>
     <content><![CDATA[<h2 id="1-使用模块打包工具的原因"><a href="#1-使用模块打包工具的原因" class="headerlink" title="1. 使用模块打包工具的原因"></a>1. 使用模块打包工具的原因</h2><h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><ol>
 <li>ES Modules 存在环境兼容性问题</li>
 <li>模块文件过多，网络请求频繁</li>
@@ -443,7 +443,7 @@
   </entry>
   <entry>
     <title>前端工程化之三：模块化开发</title>
-    <url>/2021/10/12/%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%8C%96%E4%B9%8B%E4%B8%89%EF%BC%9A%E6%A8%A1%E5%9D%97%E5%8C%96%E5%BC%80%E5%8F%91/</url>
+    <url>/2020/10/12/%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%8C%96%E4%B9%8B%E4%B8%89%EF%BC%9A%E6%A8%A1%E5%9D%97%E5%8C%96%E5%BC%80%E5%8F%91/</url>
     <content><![CDATA[<p>模块化一直是前端工程化中的重大问题，在标准化的 ES Module 推出之前，前端开发人员为了进行模块化开发，创造多样的模块化规范，如 CommonJS、AMD 等社区模块化规范。本文从记录模块化演变过程为开始，以加深本人在对模块化的理解，并着重记录现代的模块化规范（ ES Module、CommonJS ）。</p>
 <a id="more"></a>
 
@@ -729,7 +729,7 @@
   </entry>
   <entry>
     <title>前端工程化之二：自动化构建工具</title>
-    <url>/2021/10/03/%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%8C%96%E4%B9%8B%E4%BA%8C%EF%BC%9A%E8%87%AA%E5%8A%A8%E5%8C%96%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7/</url>
+    <url>/2020/10/03/%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%8C%96%E4%B9%8B%E4%BA%8C%EF%BC%9A%E8%87%AA%E5%8A%A8%E5%8C%96%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7/</url>
     <content><![CDATA[<p>本文记录在前端的自动化构建中常用的方法和工具，如使用 npm scripts，或使用 grunt、gulp、fis 这类工具来简化开发流程，将项目开发中机械式的任务进行自动化。</p>
 <a id="more"></a>
 
@@ -864,7 +864,7 @@
   </entry>
   <entry>
     <title>前端工程化之一：脚手架工具</title>
-    <url>/2021/09/16/%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%8C%96%E4%B9%8B%E4%B8%80%EF%BC%9A%E8%84%9A%E6%89%8B%E6%9E%B6%E5%B7%A5%E5%85%B7/</url>
+    <url>/2020/09/16/%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%8C%96%E4%B9%8B%E4%B8%80%EF%BC%9A%E8%84%9A%E6%89%8B%E6%9E%B6%E5%B7%A5%E5%85%B7/</url>
     <content><![CDATA[<p>本文从脚手架的作用、常用的脚手架工具、通用脚手架工具剖析、开发一款脚手架几方面内容着手。记录本人在前端工程化中脚手架工具的学习</p>
 <a id="more"></a>
 
@@ -1457,8 +1457,8 @@
         <category>blog</category>
       </categories>
       <tags>
-        <tag>hexo</tag>
         <tag>bug</tag>
+        <tag>hexo</tag>
       </tags>
   </entry>
   <entry>
