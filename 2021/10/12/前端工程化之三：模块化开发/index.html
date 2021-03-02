@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('http://wzw1016.ml').hostname,
+    root: '/',
+    scheme: 'Muse',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":true,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":true},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+
+
+
+  <meta name="description" content="模块化一直是前端工程化中的重大问题，在标准化的 ES Module 推出之前，前端开发人员为了进行模块化开发，创造多样的模块化规范，如 CommonJS、AMD 等社区模块化规范。本文从记录模块化演变过程为开始，以加深本人在对模块化的理解，并着重记录现代的模块化规范（ ES Module、CommonJS ）。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="前端工程化之三：模块化开发">
+<meta property="og:url" content="http://wzw1016.ml/2021/10/12/%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%8C%96%E4%B9%8B%E4%B8%89%EF%BC%9A%E6%A8%A1%E5%9D%97%E5%8C%96%E5%BC%80%E5%8F%91/index.html">
+<meta property="og:site_name" content="Wang&#39;s Blog">
+<meta property="og:description" content="模块化一直是前端工程化中的重大问题，在标准化的 ES Module 推出之前，前端开发人员为了进行模块化开发，创造多样的模块化规范，如 CommonJS、AMD 等社区模块化规范。本文从记录模块化演变过程为开始，以加深本人在对模块化的理解，并着重记录现代的模块化规范（ ES Module、CommonJS ）。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-10-12T04:40:02.000Z">
+<meta property="article:modified_time" content="2021-03-02T15:13:30.803Z">
+<meta property="article:author" content="Vincent">
+<meta property="article:tag" content="模块化">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://wzw1016.ml/2021/10/12/%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%8C%96%E4%B9%8B%E4%B8%89%EF%BC%9A%E6%A8%A1%E5%9D%97%E5%8C%96%E5%BC%80%E5%8F%91/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>前端工程化之三：模块化开发 | Wang's Blog</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-157496912-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-157496912-1');
+      }
+    </script>
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?5d0d45b3388d4cf3f6bb81c35cdd31ef";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Wang's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://wzw1016.ml/2021/10/12/%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%8C%96%E4%B9%8B%E4%B8%89%EF%BC%9A%E6%A8%A1%E5%9D%97%E5%8C%96%E5%BC%80%E5%8F%91/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/avatar.png">
+      <meta itemprop="name" content="Vincent">
+      <meta itemprop="description" content="逝者如斯夫 不舍昼夜">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Wang's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          前端工程化之三：模块化开发
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-10-12 12:40:02" itemprop="dateCreated datePublished" datetime="2021-10-12T12:40:02+08:00">2021-10-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%8C%96/" itemprop="url" rel="index">
+                    <span itemprop="name">前端工程化</span>
+                  </a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">评论：</span>
+    
+    <a title="valine" href="/2021/10/12/%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%8C%96%E4%B9%8B%E4%B8%89%EF%BC%9A%E6%A8%A1%E5%9D%97%E5%8C%96%E5%BC%80%E5%8F%91/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/10/12/%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%8C%96%E4%B9%8B%E4%B8%89%EF%BC%9A%E6%A8%A1%E5%9D%97%E5%8C%96%E5%BC%80%E5%8F%91/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5.5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>模块化一直是前端工程化中的重大问题，在标准化的 ES Module 推出之前，前端开发人员为了进行模块化开发，创造多样的模块化规范，如 CommonJS、AMD 等社区模块化规范。本文从记录模块化演变过程为开始，以加深本人在对模块化的理解，并着重记录现代的模块化规范（ ES Module、CommonJS ）。</p>
+<a id="more"></a>
+
+<h2 id="内容概要"><a href="#内容概要" class="headerlink" title="内容概要"></a>内容概要</h2><ul>
+<li>模块化演变过程</li>
+<li>模块化规范</li>
+<li>常用的模块化打包工具</li>
+<li>基于模块化工具构建现代 Web 工具</li>
+<li>打包工具的优化技巧</li>
+</ul>
+<h2 id="1-模块化概述"><a href="#1-模块化概述" class="headerlink" title="1. 模块化概述"></a>1. 模块化概述</h2><p><strong>模块化</strong>就是，通过将复杂代码按照功能的不同划分成不同的模块来单独维护的一种方式。以此提高开发效率，降低维护成本。</p>
+<p>模块化仅仅是思想。</p>
+<h2 id="3-模块化演变过程"><a href="#3-模块化演变过程" class="headerlink" title="3. 模块化演变过程"></a>3. 模块化演变过程</h2><p>stage1 - 3：早期在没有工具和规范的情况下，以原始的模块系统未基础，通过约定，对模块化的落地方式。</p>
+<p>stage4：模块化规范</p>
+<h3 id="stage-1：文件划分方式"><a href="#stage-1：文件划分方式" class="headerlink" title="stage-1：文件划分方式"></a>stage-1：文件划分方式</h3><p>划分 js 文件，通过 script 分别引入</p>
+<ul>
+<li>弊端<ul>
+<li>污染全局作用域</li>
+<li>命名冲突问题</li>
+<li>无法管理模块依赖关系</li>
+</ul>
+</li>
+</ul>
+<h3 id="stage-2：命名空间方式"><a href="#stage-2：命名空间方式" class="headerlink" title="stage-2：命名空间方式"></a>stage-2：命名空间方式</h3><p>每个模块值暴露一个对象，所有模块成员都挂载到这个对象上</p>
+<ul>
+<li>弊端<ul>
+<li>仍然没有私有空间，模块内部仍可能被修改</li>
+<li>仍然无法管理模块依赖关系</li>
+</ul>
+</li>
+</ul>
+<h3 id="stage-3：IIFE"><a href="#stage-3：IIFE" class="headerlink" title="stage-3：IIFE"></a>stage-3：IIFE</h3><p>将模块成员在 IIFE 中挂在到 全局对象 window 上</p>
+<ul>
+<li><p>优点</p>
+<ul>
+<li><p>每个模块有了自己的私有空间，模块内部不被外部修改了</p>
+</li>
+<li><p>可以将 IIFE 的参数作为依赖声明来使用。相对于文件划分和命名空间方式，模块间的依赖方式便更加明显，如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// module a</span></span><br><span class="line">;(<span class="function"><span class="keyword">function</span>(<span class="params">$</span>) </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">method1</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    $(<span class="string">'body'</span>).animate(&#123; <span class="attr">margin</span>: <span class="string">'200px'</span> &#125;)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="built_in">window</span>.moduleA = &#123; method1 &#125;</span><br><span class="line">&#125;)(jQuery)</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="stage-4：模块化规范的出现"><a href="#stage-4：模块化规范的出现" class="headerlink" title="stage-4：模块化规范的出现"></a>stage-4：模块化规范的出现</h3><p>模块化规范 + 模块加载器</p>
+<h4 id="CommonJS-规范（NodeJs标准）"><a href="#CommonJS-规范（NodeJs标准）" class="headerlink" title="CommonJS 规范（NodeJs标准）"></a>CommonJS 规范（NodeJs标准）</h4><ul>
+<li>一个文件就是一个模块</li>
+<li>每个模块都有单独的作用域</li>
+<li>通过 module.exports 导出成员</li>
+<li>通过 require 函数载入模块</li>
+</ul>
+<p><strong>以同步方式加载模块</strong>，启动时加载模块，在浏览器中效率较低（每一次页面加载，都会进行大量的同步请求）</p>
+<h4 id="AMD（Asynchronous-Module-Definition）"><a href="#AMD（Asynchronous-Module-Definition）" class="headerlink" title="AMD（Asynchronous Module Definition）"></a>AMD（Asynchronous Module Definition）</h4><p><strong>Require.js</strong> 实现了 AMD 规范</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">define() <span class="comment">// 定义</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">require</span>() <span class="comment">// 载入</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>当加载一个模块时，会自动创建 script 标签请求对应的 js 文件，并且去执行对应的模块代码</strong></p>
+<p>目前绝大多数的额第三方库都支持 AMD 规范。</p>
+<p>但 AMD 使用起来相对复杂；</p>
+<p>而且，当项目中模块划分过于细致，会导致模块 JS 文件请求频繁。</p>
+<h4 id="CMD（Common-Module-Definition）"><a href="#CMD（Common-Module-Definition）" class="headerlink" title="CMD（Common Module Definition）"></a>CMD（Common Module Definition）</h4><p>Sea.js</p>
+<p>类似 CommonJS 规范</p>
+<h4 id="ES-Module"><a href="#ES-Module" class="headerlink" title="ES Module"></a>ES Module</h4><h2 id="4-模块化标准规范"><a href="#4-模块化标准规范" class="headerlink" title="4. 模块化标准规范"></a>4. 模块化标准规范</h2><p><strong>CommonJS</strong> in Node.js（为内置模块系统，无兼容性问题）</p>
+<p><strong>ES Modules</strong> in Browsers</p>
+<p>ES Modules（ES2015中语言层面的模块化规范）</p>
+<h2 id="5-ES-Modules"><a href="#5-ES-Modules" class="headerlink" title="5. ES Modules"></a>5. ES Modules</h2><p>两方面，一：特性、二：语法，三：兼容性</p>
+<h3 id="特性"><a href="#特性" class="headerlink" title="特性"></a>特性</h3><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"module"</span>&gt;</span></span><br><span class="line">  	</span><br><span class="line">  <span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>自动采用严格模式，忽略 ‘use strict’</li>
+<li>每个 ES Module 都是独立运行在私有的作用域中</li>
+<li>ES Module 中，通过 CORS 的方式请求外部 JS 模块<ul>
+<li>因此若不在同一源下，请求的服务端地址的响应头中必须提供有效的 CORS 标头。</li>
+</ul>
+</li>
+<li>ES Module 中的 script 标签会自动延迟执行脚本（等同于 script 标签的 derfer 属性）<ul>
+<li>网页的加载过程中，采取 script 立即执行的机制。页面的渲染会等待脚本执行完成，再继续完成渲染。使用 ES Module 后，脚本延迟执行，不会阻塞页面渲染</li>
+</ul>
+</li>
+</ol>
+<p>ES Module 不支持文件形式访问，因此需使用 http server 的方式访问页面</p>
+<h3 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h3><p><strong>注意：</strong></p>
+<ul>
+<li><p><code>export {...}</code>、<code>import {...}</code> 为固定语法，并非对象字面量和解构语法</p>
+</li>
+<li><p><code>export {...}</code> 导出的为内部成员的引用。如下例：</p>
+<p>module1.js</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> foo = <span class="string">'foo'</span></span><br><span class="line"></span><br><span class="line">setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">  foo = <span class="string">'bar'</span></span><br><span class="line">&#125;, <span class="number">1000</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> &#123; foo &#125;</span><br></pre></td></tr></table></figure>
+
+<p>main.js</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; foo &#125; <span class="keyword">from</span> <span class="string">'./module1.js'</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(foo) <span class="comment">// 'foo'</span></span><br><span class="line"></span><br><span class="line">setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(foo) <span class="comment">// 'bar'</span></span><br><span class="line">&#125;, <span class="number">1000</span>)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>import {...}</code> 导入的成员为只读的常量</p>
+</li>
+</ul>
+<h4 id="export-导出"><a href="#export-导出" class="headerlink" title="export 导出"></a>export 导出</h4><p>module1.js</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> foo = <span class="string">'foo'</span></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">hello</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'Hello !'</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>main.js</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; foo, hello &#125; <span class="keyword">from</span> <span class="string">'./module1.js'</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(foo)</span><br><span class="line">hello()</span><br></pre></td></tr></table></figure>
+
+<p>如果在 html 中使用：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"module"</span>&gt;</span></span><br><span class="line"><span class="javascript">  <span class="keyword">import</span> &#123; foo, hello &#125; <span class="keyword">from</span> <span class="string">'./module1.js'</span></span></span><br><span class="line"></span><br><span class="line"><span class="javascript">  <span class="built_in">console</span>.log(foo)</span></span><br><span class="line">  hello()</span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+
+
+<p>或者统一导出</p>
+<p>module1.js</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> foo = <span class="string">'foo'</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">hello</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'Hello !'</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> &#123; foo, hello &#125; <span class="comment">// 为固定语法，并非导出一个对象。应按下方形式引入</span></span><br></pre></td></tr></table></figure>
+
+<p>main.js</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; foo, hello &#125; <span class="keyword">from</span> <span class="string">'./module1.js'</span></span><br></pre></td></tr></table></figure>
+
+<p><code>export { foo, hello }</code>  并非对象字面量</p>
+<p>导出时重命名</p>
+<p>module1.js</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> &#123; </span><br><span class="line">	foo <span class="keyword">as</span> bar,</span><br><span class="line">	hello <span class="keyword">as</span> h</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>main.js</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; bar, h &#125; <span class="keyword">from</span> <span class="string">'./module1.js'</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p> 重命名的特殊情况</p>
+<p>module1.js</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> &#123; </span><br><span class="line">	foo <span class="keyword">as</span> <span class="keyword">default</span>, <span class="comment">// default</span></span><br><span class="line">	hello</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>main.js</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; <span class="keyword">default</span> <span class="keyword">as</span> foo, hello &#125; <span class="keyword">from</span> <span class="string">'./module1.js'</span></span><br></pre></td></tr></table></figure>
+
+<p>default 为 JS 关键字，不可作为变量直接使用，引入时需重命名</p>
+<p>默认导出</p>
+<p>module1.js</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123; foo, hello &#125; <span class="comment">// 此时导出为一个对象，即 &#123; foo: foo, hello: hello &#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>main.js</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 不可以直接解构，因为 import &#123; ... &#125; = '...' 为对单独导出所设定的特殊语法</span></span><br><span class="line"><span class="keyword">import</span> module1 <span class="keyword">from</span> <span class="string">'./module1.js'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> &#123; foo, hello &#125; = module1</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="import-导入"><a href="#import-导入" class="headerlink" title="import 导入"></a>import 导入</h4><p><strong>注意：</strong></p>
+<ul>
+<li>原生 ES Module 引入时，需完整填写文件路径。不可省略 .js 扩展名，不可省略目录下的 index.js</li>
+<li>文件相对路径开头不可省略 <code>./</code>，省略 <code>./</code> 会被误判为加载第三方模块（绝对路径写法：<code>&#39;/src/components/commont/index.js&#39;</code>，从项目根目录开始）（或可以使用完整的 URL ，引用 CDN 资源）</li>
+</ul>
+<p>若只需要执行某个模块，而不需要引用该模块的成员，可以如下写法</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123;&#125; <span class="keyword">from</span> <span class="string">'./module1.js'</span></span><br></pre></td></tr></table></figure>
+
+<p>或：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="string">'./module1.js'</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>将模块导出的成员全部提取：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> * <span class="keyword">as</span> allMumber <span class="keyword">from</span> <span class="string">'./module1.js'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> &#123; foo, hello &#125; = allMumber</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>使用 import() 函数动态加载模块（该函数返回一个 promise）</strong></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span>(<span class="string">'./module1.js'</span>).then(<span class="function"><span class="params">module1</span> =&gt;</span> &#123;</span><br><span class="line">  </span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+
+
+<p>同时存在 <code>export {...}</code> 和 <code>export ...</code> 时</p>
+<p>module1.js</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> foo = <span class="string">'foo'</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">hello</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'Hello !'</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> &#123; foo, hello &#125; </span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="string">'default export'</span></span><br></pre></td></tr></table></figure>
+
+<p>main.js</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; foo, hello, <span class="keyword">default</span> <span class="keyword">as</span> title &#125; <span class="keyword">from</span> <span class="string">'./module1.js'</span></span><br></pre></td></tr></table></figure>
+
+<p>或者：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> title, &#123; foo, hello &#125; <span class="keyword">from</span> <span class="string">'./module1.js'</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="导出导入成员"><a href="#导出导入成员" class="headerlink" title="导出导入成员"></a>导出导入成员</h4><p>index.js</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> &#123; Button &#125; <span class="keyword">from</span> <span class="string">'./component/button/index.js'</span></span><br><span class="line"><span class="keyword">export</span> &#123; Avatar &#125; <span class="keyword">from</span> <span class="string">'./component/avatar/index.js'</span></span><br></pre></td></tr></table></figure>
+
+<p>若导入的模块中采取 <code>export default</code>, 则需：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> &#123; <span class="keyword">default</span> <span class="keyword">as</span> Button &#125; <span class="keyword">from</span> <span class="string">'./component/button/index.js'</span></span><br></pre></td></tr></table></figure>
+
+<p>直接导出导入成员时，导入的成员在当前模块中不可访问</p>
+<h3 id="ES-Module-in-Node-js"><a href="#ES-Module-in-Node-js" class="headerlink" title="ES Module in Node.js"></a>ES Module in Node.js</h3><h4 id="支持情况"><a href="#支持情况" class="headerlink" title="支持情况"></a>支持情况</h4><p>node 8.5 之后，开始实验性的支持 ES Module</p>
+<p>使用准备：</p>
+<ol>
+<li><p>需将文件扩展名由 .js 文件改为 .mjs</p>
+</li>
+<li><p>执行时，需如下命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">node --experimental-modules index.mjs</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+<p>使用</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> fs <span class="keyword">from</span> <span class="string">'fs'</span></span><br><span class="line"><span class="keyword">import</span> _ <span class="keyword">from</span> <span class="string">'lodash'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> &#123; writeFileSync &#125; <span class="keyword">from</span> <span class="string">'fs'</span> <span class="comment">// 内置模块兼容了 ESM 提取成员的方式</span></span><br><span class="line"><span class="keyword">import</span> &#123; cameCase &#125; <span class="keyword">from</span> <span class="string">'lodash'</span> <span class="comment">// 报错</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="与-CommonJS-交互"><a href="#与-CommonJS-交互" class="headerlink" title="与 CommonJS 交互"></a>与 CommonJS 交互</h4><ul>
+<li>ESM 中可以导入 CommonJS 模块，且 CommonJS 模块始终只会导出一个默认成员，ESM 中只会导入默认成员，不能直接提取成员（即 import { … }）</li>
+<li>不能在原生 CommonJS 模块中使用 require() 函数载入 ESM</li>
+</ul>
+<h4 id="与-CommonJS-的差异"><a href="#与-CommonJS-的差异" class="headerlink" title="与 CommonJS 的差异"></a>与 CommonJS 的差异</h4><p>ESM 中没有 CommonJS 中的一些模块全局成员，如下：</p>
+<table>
+<thead>
+<tr>
+<th align="center">ES Modules</th>
+<th align="center">CommonJS</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">import</td>
+<td align="center">require</td>
+</tr>
+<tr>
+<td align="center">export</td>
+<td align="center">module</td>
+</tr>
+<tr>
+<td align="center">如下</td>
+<td align="center">__filename</td>
+</tr>
+<tr>
+<td align="center">如下</td>
+<td align="center">__dirname</td>
+</tr>
+</tbody></table>
+<p>ES Modules 中 得到 __filename 的方法：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; fileURLToPath &#125; <span class="keyword">from</span> <span class="string">'url'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> url = <span class="keyword">import</span>.meta.url</span><br><span class="line"><span class="keyword">const</span> __filename = fileURLToPath(url)</span><br></pre></td></tr></table></figure>
+
+<p>得到 <em>\</em>filename后，获取 __dirname：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; dirname &#125; <span class="keyword">from</span> <span class="string">'path'</span> </span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> __dirname = dirname(__filename)</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="Node-新版本对-ESM-的进一步支持"><a href="#Node-新版本对-ESM-的进一步支持" class="headerlink" title="Node 新版本对 ESM 的进一步支持"></a>Node 新版本对 ESM 的进一步支持</h4><p>只需在项目下新建 package.json 中新增 type 字段，</p>
+<p>package.json</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	...</span><br><span class="line">	"type": "module",</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>就不需要再修改 js 文件的后缀名。</p>
+<p>此时，若某个文件需要使用 CommonJS 语法，需将文件扩展名改为 <code>.cjs</code></p>
+<h4 id="Babel-兼容方案"><a href="#Babel-兼容方案" class="headerlink" title="Babel 兼容方案"></a>Babel 兼容方案</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yarn add @babel&#x2F;node @babel&#x2F;core @babel&#x2F;preset-env --dev</span><br></pre></td></tr></table></figure>
+
+<p>@babel/core：babel 核心模块</p>
+<p>@babel/preset-env：babel 预设集合（包含了最新的 JS 规范中的所有新特性）</p>
+<p>module1.js</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> foo = <span class="string">'hello'</span></span><br><span class="line"><span class="keyword">const</span> bar = <span class="string">'world'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> &#123; foo, bar &#125;</span><br></pre></td></tr></table></figure>
+
+<p>index.js</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; foo, bar &#125; <span class="keyword">from</span> <span class="string">'module.js'</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(foo, bar)</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yarn babel-node index.js --presets&#x3D;@babel&#x2F;preset-env</span><br></pre></td></tr></table></figure>
+
+<p>启用 node 执行 index.js </p>
+<p>或项目根目录下新建 babel 配置文件  <code>.babelrc</code> ，简化命令，如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	<span class="attr">"presets"</span>: [<span class="string">"@babel/preset-env"</span>]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>执行只需：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yarn babel-node index.js</span><br></pre></td></tr></table></figure>
+
+
+
+<p>或使用单独的插件（transforms ES2015 modules to CommonJS）进行转换：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yarn add @babel&#x2F;plugin-transform-modules-commonjs --dev</span><br></pre></td></tr></table></figure>
+
+<p>使用该插件处理 ESM 的兼容问题</p>
+<p>.babelrc</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"plugins"</span>: [</span><br><span class="line">    <span class="string">"@babel/plugin-transform-modules-commonjs"</span></span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yarn babel-node index.js</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>Vincent
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://wzw1016.ml/2021/10/12/%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%8C%96%E4%B9%8B%E4%B8%89%EF%BC%9A%E6%A8%A1%E5%9D%97%E5%8C%96%E5%BC%80%E5%8F%91/" title="前端工程化之三：模块化开发">http://wzw1016.ml/2021/10/12/前端工程化之三：模块化开发/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%A8%A1%E5%9D%97%E5%8C%96/" rel="tag"><i class="fa fa-tag"></i> 模块化</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/10/03/%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%8C%96%E4%B9%8B%E4%BA%8C%EF%BC%9A%E8%87%AA%E5%8A%A8%E5%8C%96%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7/" rel="prev" title="前端工程化之二：自动化构建工具">
+      <i class="fa fa-chevron-left"></i> 前端工程化之二：自动化构建工具
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/11/20/%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%8C%96%E4%B9%8B%E5%9B%9B%EF%BC%9A%E6%A8%A1%E5%9D%97%E5%8C%96%E6%89%93%E5%8C%85%E5%B7%A5%E5%85%B7/" rel="next" title="前端工程化之四：模块化打包工具">
+      前端工程化之四：模块化打包工具 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#内容概要"><span class="nav-number">1.</span> <span class="nav-text">内容概要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-模块化概述"><span class="nav-number">2.</span> <span class="nav-text">1. 模块化概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-模块化演变过程"><span class="nav-number">3.</span> <span class="nav-text">3. 模块化演变过程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#stage-1：文件划分方式"><span class="nav-number">3.1.</span> <span class="nav-text">stage-1：文件划分方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#stage-2：命名空间方式"><span class="nav-number">3.2.</span> <span class="nav-text">stage-2：命名空间方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#stage-3：IIFE"><span class="nav-number">3.3.</span> <span class="nav-text">stage-3：IIFE</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#stage-4：模块化规范的出现"><span class="nav-number">3.4.</span> <span class="nav-text">stage-4：模块化规范的出现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#CommonJS-规范（NodeJs标准）"><span class="nav-number">3.4.1.</span> <span class="nav-text">CommonJS 规范（NodeJs标准）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#AMD（Asynchronous-Module-Definition）"><span class="nav-number">3.4.2.</span> <span class="nav-text">AMD（Asynchronous Module Definition）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#CMD（Common-Module-Definition）"><span class="nav-number">3.4.3.</span> <span class="nav-text">CMD（Common Module Definition）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ES-Module"><span class="nav-number">3.4.4.</span> <span class="nav-text">ES Module</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-模块化标准规范"><span class="nav-number">4.</span> <span class="nav-text">4. 模块化标准规范</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-ES-Modules"><span class="nav-number">5.</span> <span class="nav-text">5. ES Modules</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#特性"><span class="nav-number">5.1.</span> <span class="nav-text">特性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#语法"><span class="nav-number">5.2.</span> <span class="nav-text">语法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#export-导出"><span class="nav-number">5.2.1.</span> <span class="nav-text">export 导出</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#import-导入"><span class="nav-number">5.2.2.</span> <span class="nav-text">import 导入</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#导出导入成员"><span class="nav-number">5.2.3.</span> <span class="nav-text">导出导入成员</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ES-Module-in-Node-js"><span class="nav-number">5.3.</span> <span class="nav-text">ES Module in Node.js</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#支持情况"><span class="nav-number">5.3.1.</span> <span class="nav-text">支持情况</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#与-CommonJS-交互"><span class="nav-number">5.3.2.</span> <span class="nav-text">与 CommonJS 交互</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#与-CommonJS-的差异"><span class="nav-number">5.3.3.</span> <span class="nav-text">与 CommonJS 的差异</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Node-新版本对-ESM-的进一步支持"><span class="nav-number">5.3.4.</span> <span class="nav-text">Node 新版本对 ESM 的进一步支持</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Babel-兼容方案"><span class="nav-number">5.3.5.</span> <span class="nav-text">Babel 兼容方案</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Vincent"
+      src="/uploads/avatar.png">
+  <p class="site-author-name" itemprop="name">Vincent</p>
+  <div class="site-description" itemprop="description">逝者如斯夫 不舍昼夜</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">28</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/wzw1016" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;wzw1016" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:wzw487923438@gmail.com" title="E-Mail → mailto:wzw487923438@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/Vincent__1016" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;Vincent__1016" rel="noopener" target="_blank"><i class="fa fa-fw fa-twitter"></i>Twitter</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/u/5598935126" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;u&#x2F;5598935126" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Vincent</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="站点总字数">79k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">1:12</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.7.0
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/velocity-animate@1/velocity.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/velocity-animate@1/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el: '#valine-comments',
+      verify: false,
+      notify: false,
+      appId: 'FPfwWzvC6DoA6NUDXKg40nvO-gzGzoHsz',
+      appKey: 'th1fjs8n4fIsjn7UKzST5HHd',
+      placeholder: "ヾﾉ≧∀≦)o 来呀！吐槽一番吧！",
+      avatar: 'mm',
+      meta: guest,
+      pageSize: '10' || 10,
+      visitor: false,
+      lang: '' || 'zh-cn',
+      path: location.pathname,
+      recordIP: false,
+      serverURLs: ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

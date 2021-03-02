@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('http://wzw1016.ml').hostname,
+    root: '/',
+    scheme: 'Muse',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":true,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":true},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+
+
+
+  <meta name="description" content="本文记录在前端的自动化构建中常用的方法和工具，如使用 npm scripts，或使用 grunt、gulp、fis 这类工具来简化开发流程，将项目开发中机械式的任务进行自动化。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="前端工程化之二：自动化构建工具">
+<meta property="og:url" content="http://wzw1016.ml/2021/10/03/%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%8C%96%E4%B9%8B%E4%BA%8C%EF%BC%9A%E8%87%AA%E5%8A%A8%E5%8C%96%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7/index.html">
+<meta property="og:site_name" content="Wang&#39;s Blog">
+<meta property="og:description" content="本文记录在前端的自动化构建中常用的方法和工具，如使用 npm scripts，或使用 grunt、gulp、fis 这类工具来简化开发流程，将项目开发中机械式的任务进行自动化。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-10-03T14:40:02.000Z">
+<meta property="article:modified_time" content="2021-03-02T15:13:11.190Z">
+<meta property="article:author" content="Vincent">
+<meta property="article:tag" content="自动化构建">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://wzw1016.ml/2021/10/03/%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%8C%96%E4%B9%8B%E4%BA%8C%EF%BC%9A%E8%87%AA%E5%8A%A8%E5%8C%96%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>前端工程化之二：自动化构建工具 | Wang's Blog</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-157496912-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-157496912-1');
+      }
+    </script>
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?5d0d45b3388d4cf3f6bb81c35cdd31ef";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Wang's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://wzw1016.ml/2021/10/03/%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%8C%96%E4%B9%8B%E4%BA%8C%EF%BC%9A%E8%87%AA%E5%8A%A8%E5%8C%96%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/avatar.png">
+      <meta itemprop="name" content="Vincent">
+      <meta itemprop="description" content="逝者如斯夫 不舍昼夜">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Wang's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          前端工程化之二：自动化构建工具
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-10-03 22:40:02" itemprop="dateCreated datePublished" datetime="2021-10-03T22:40:02+08:00">2021-10-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%8C%96/" itemprop="url" rel="index">
+                    <span itemprop="name">前端工程化</span>
+                  </a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">评论：</span>
+    
+    <a title="valine" href="/2021/10/03/%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%8C%96%E4%B9%8B%E4%BA%8C%EF%BC%9A%E8%87%AA%E5%8A%A8%E5%8C%96%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/10/03/%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%8C%96%E4%B9%8B%E4%BA%8C%EF%BC%9A%E8%87%AA%E5%8A%A8%E5%8C%96%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本文记录在前端的自动化构建中常用的方法和工具，如使用 npm scripts，或使用 grunt、gulp、fis 这类工具来简化开发流程，将项目开发中机械式的任务进行自动化。</p>
+<a id="more"></a>
+
+<h2 id="1-使用npm-scripts"><a href="#1-使用npm-scripts" class="headerlink" title="1. 使用npm scripts"></a>1. 使用npm scripts</h2><p>package.json</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">"scripts": &#123;</span><br><span class="line">	"serve": "...",</span><br><span class="line">  "build": "...",</span><br><span class="line">  "start": "..."</span><br><span class="line">&#125;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>可以解决一部分简单的构建任务</p>
+<h2 id="2-常用的构建工具"><a href="#2-常用的构建工具" class="headerlink" title="2. 常用的构建工具"></a>2. 常用的构建工具</h2><ul>
+<li>Grunt</li>
+<li>Gulp</li>
+<li>FIS</li>
+</ul>
+<h3 id="1-Grunt"><a href="#1-Grunt" class="headerlink" title="1. Grunt"></a>1. Grunt</h3><p>安装依赖：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yarn add grunt --dev</span><br></pre></td></tr></table></figure>
+
+
+
+<p>项目根目录下创建 gruntfile.js 文件：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = <span class="function"><span class="params">grunt</span> =&gt;</span> &#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>该文件向外暴露一个函数，接收一个参数，该参数上定义了一些关于 grunt 任务的方法。</p>
+<p>基本使用，创建任务：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = <span class="function"><span class="params">grunt</span> =&gt;</span> &#123;</span><br><span class="line">  grunt.registerTask(<span class="string">'foo'</span>, () =&gt; &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'foo task run'</span>)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以在终端中运行 yarn grunt foo，执行定义的任务。</p>
+<p>定义异步任务：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = <span class="function"><span class="params">grunt</span> =&gt;</span> &#123;</span><br><span class="line">  grunt.registerTask(<span class="string">'async-task'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> done = <span class="keyword">this</span>.async()</span><br><span class="line">    setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="built_in">console</span>.log(<span class="string">'async-task run()'</span>)</span><br><span class="line">      done()</span><br><span class="line">    &#125;, <span class="number">2000</span>)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>对失败任务进行标记：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = <span class="function"><span class="params">grunt</span> =&gt;</span> &#123;</span><br><span class="line">  grunt.registerTask(<span class="string">'bad'</span>, () =&gt; &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'bad task run'</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对异步失败任务进行标记：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = <span class="function"><span class="params">grunt</span> =&gt;</span> &#123;</span><br><span class="line">  grunt.registerTask(<span class="string">'bad-async-task'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> done = <span class="keyword">this</span>.async()</span><br><span class="line">    setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="built_in">console</span>.log(<span class="string">'bad-async-task run()'</span>)</span><br><span class="line">      done(<span class="literal">false</span>)</span><br><span class="line">    &#125;, <span class="number">2000</span>)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>定义组合任务列表：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = <span class="function"><span class="params">grunt</span> =&gt;</span> &#123;</span><br><span class="line">  grunt.registerTask(<span class="string">'compose'</span>, [<span class="string">'foo'</span>, <span class="string">'bad'</span>, <span class="string">'bar'</span>])</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>组合任务列表中失败任务的后续任务不会执行</p>
+<p>如需要让失败任务的后续任务执行，运行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yarn grunt bad-tasks --force</span><br></pre></td></tr></table></figure>
+
+
+
+<p>定义多目标任务：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = <span class="function"><span class="params">grunt</span> =&gt;</span> &#123;</span><br><span class="line">  grunt.initConfig(&#123;</span><br><span class="line">    build: &#123;</span><br><span class="line">      css: <span class="string">'test1'</span>,</span><br><span class="line">      js: <span class="string">'test2'</span>,</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line">  </span><br><span class="line">  grunt.registerMultiTask(<span class="string">'build'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="keyword">this</span>.options())</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">`target: <span class="subst">$&#123;<span class="keyword">this</span>.target&#125;</span>, data: <span class="subst">$&#123;<span class="keyword">this</span>.data&#125;</span>`</span>)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>使用 grunt <strong>插件</strong></p>
+<p>安装对应插件依赖，如 grunt-sass：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yarn add grunt-sass sass --dev</span><br></pre></td></tr></table></figure>
+
+
+
+<p>在 gruntfile.js 中使用 grunt.loadNpmTasks() 方法加载插件：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = <span class="function"><span class="params">grunt</span> =&gt;</span> &#123;</span><br><span class="line">	...</span><br><span class="line">	grunt.loadNpmTasks(<span class="string">'grunt-sass'</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>或使用社区中提供的 ‘load-grunt-tasks’ 包自动加载NPM插件：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> loadGruntTasks = <span class="built_in">require</span>(<span class="string">'load-grunt-tasks'</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = <span class="function"><span class="params">grunt</span> =&gt;</span> &#123;</span><br><span class="line">	...</span><br><span class="line">	loadGruntTasks(grunt)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>为任务配置目标：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> sass = <span class="built_in">require</span>(<span class="string">'sass'</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = <span class="function"><span class="params">grunt</span> =&gt;</span> &#123;</span><br><span class="line">	grunt.initConfig(&#123;</span><br><span class="line">    sass: &#123;</span><br><span class="line">      options: &#123;</span><br><span class="line">        sourceMap: <span class="literal">true</span>,</span><br><span class="line">        implementation: sass,</span><br><span class="line">      &#125;,</span><br><span class="line">      main: &#123;</span><br><span class="line">        files: &#123;</span><br><span class="line">          <span class="string">'dist/css/main.css'</span>: <span class="string">'src/scss/main.scss'</span>,</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)  </span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>运行任务 yarn grunt sass</p>
+<p>…</p>
+<h3 id="2-Gulp"><a href="#2-Gulp" class="headerlink" title="2. Gulp"></a>2. Gulp</h3><h4 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h4><p><strong>输入（读取流） ==&gt; 加工（转换流） ==&gt; 输出（写入流）</strong></p>
+<h4 id="基本使用"><a href="#基本使用" class="headerlink" title="基本使用"></a>基本使用</h4><p>注册任务</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">exports.task1 = <span class="function"><span class="params">done</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'task1 run'</span>)</span><br><span class="line">  done()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行：yarn gulp task1</p>
+<p>default 未默认任务，yarn gulp 即可</p>
+<h4 id="任务组合使用"><a href="#任务组合使用" class="headerlink" title="任务组合使用"></a>任务组合使用</h4><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> &#123; series, parallel &#125; = <span class="built_in">require</span>(<span class="string">'gulp'</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> task1 = ...</span><br><span class="line"><span class="keyword">const</span> task2 = ...</span><br><span class="line"><span class="keyword">const</span> task3 = ...</span><br><span class="line"></span><br><span class="line">exports.foo = series(task1, task2, task3) <span class="comment">// 串行任务</span></span><br><span class="line"></span><br><span class="line">exports.bar = parallel(task1, task2, task3) <span class="comment">// 并行任务</span></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h4 id="异步任务方式（gulp-中的任务都是异步任务）"><a href="#异步任务方式（gulp-中的任务都是异步任务）" class="headerlink" title="异步任务方式（gulp 中的任务都是异步任务）"></a>异步任务方式（gulp 中的任务都是异步任务）</h4><p>1.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">exports.task1 = <span class="function"><span class="params">done</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'task1 run'</span>)</span><br><span class="line">  done()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>失败：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">exports.error_task1 = <span class="function"><span class="params">done</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'error_task1 run'</span>)</span><br><span class="line">  done(<span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'task1 failed!'</span>))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>同样遵循错误优先原则</p>
+<p>失败失败时会中断任务队列</p>
+<ol start="2">
+<li>Promise</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">exports.task2 = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'task2 run'</span>)</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">Promise</span>.resolve() <span class="comment">// resolve的值会被忽略</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>失败：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">exports.task2 = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'task2 run'</span>)</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">Promise</span>.resolve() <span class="comment">// resolve的值会被忽略</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>使用 async…await…</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> time = <span class="function"><span class="params">time</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function"><span class="params">resolvee</span> =&gt;</span> &#123;</span><br><span class="line">    setTimeout(resolve, time)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">exports.task3 = <span class="keyword">async</span> () =&gt; &#123;</span><br><span class="line">  <span class="keyword">await</span> timeout(<span class="number">1000</span>)</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'task3 run'</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>Stream</li>
+</ol>
+<p>返回 stream 对象</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>)</span><br><span class="line"></span><br><span class="line">exports.task4 = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> readStream = fs.createReadStream(<span class="string">'package.json'</span>)</span><br><span class="line">  <span class="keyword">const</span> writeStream = fs.createWriteStream(<span class="string">'temp.txt'</span>)</span><br><span class="line">  readStream.pipe(writeStream)</span><br><span class="line">  <span class="keyword">return</span> readStream</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>等同于：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">exports.task4 = <span class="function"><span class="params">done</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> readStream = fs.createReadStream(<span class="string">'package.json'</span>)</span><br><span class="line">  <span class="keyword">const</span> writeStream = fs.createWriteStream(<span class="string">'temp.txt'</span>)</span><br><span class="line">  readStream.pipe(writeStream)</span><br><span class="line">  readStream.on(<span class="string">'end'</span>, () =&gt; &#123;</span><br><span class="line">    done()</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>实际上 gulp 中注册了 end 事件，监听流的结束</p>
+<h4 id="文件操作-API-插件使用"><a href="#文件操作-API-插件使用" class="headerlink" title="文件操作 API + 插件使用"></a>文件操作 API + 插件使用</h4><p><strong>使用 gulp 实现构建任务的常用流程</strong>：</p>
+<p>①. 使用 gulp 提供的 src 方法创建读取流 </p>
+<p>②. 借助插件实现文件加工（或自己转换） </p>
+<p>③. 使用 gulp 提供的 dest方法创建写入流，写入目标文件</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> &#123; src, dest &#125; = <span class="built_in">require</span>(<span class="string">'gulp'</span>)</span><br><span class="line"><span class="keyword">const</span> cleanCss = <span class="built_in">require</span>(<span class="string">'gulp-clean-css'</span>)</span><br><span class="line"><span class="keyword">const</span> rename = <span class="built_in">require</span>(<span class="string">'gulp-rename'</span>)</span><br><span class="line"></span><br><span class="line">exports.default = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> src(<span class="string">'src/normalize.css'</span>)</span><br><span class="line">  	.pipe(cleanCss()) <span class="comment">// 使用插件压缩css</span></span><br><span class="line">  	.pipe(rename(&#123; <span class="attr">extends</span>: <span class="string">'min.css'</span> &#125;)) <span class="comment">// 使用插件重命名扩展名</span></span><br><span class="line">    .pipe(dest(<span class="string">'dist'</span>))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="4-FIS"><a href="#4-FIS" class="headerlink" title="4. FIS"></a>4. FIS</h3>
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>Vincent
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://wzw1016.ml/2021/10/03/%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%8C%96%E4%B9%8B%E4%BA%8C%EF%BC%9A%E8%87%AA%E5%8A%A8%E5%8C%96%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7/" title="前端工程化之二：自动化构建工具">http://wzw1016.ml/2021/10/03/前端工程化之二：自动化构建工具/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%87%AA%E5%8A%A8%E5%8C%96%E6%9E%84%E5%BB%BA/" rel="tag"><i class="fa fa-tag"></i> 自动化构建</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/09/16/%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%8C%96%E4%B9%8B%E4%B8%80%EF%BC%9A%E8%84%9A%E6%89%8B%E6%9E%B6%E5%B7%A5%E5%85%B7/" rel="prev" title="前端工程化之一：脚手架工具">
+      <i class="fa fa-chevron-left"></i> 前端工程化之一：脚手架工具
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/10/12/%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%8C%96%E4%B9%8B%E4%B8%89%EF%BC%9A%E6%A8%A1%E5%9D%97%E5%8C%96%E5%BC%80%E5%8F%91/" rel="next" title="前端工程化之三：模块化开发">
+      前端工程化之三：模块化开发 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-使用npm-scripts"><span class="nav-number">1.</span> <span class="nav-text">1. 使用npm scripts</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-常用的构建工具"><span class="nav-number">2.</span> <span class="nav-text">2. 常用的构建工具</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Grunt"><span class="nav-number">2.1.</span> <span class="nav-text">1. Grunt</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Gulp"><span class="nav-number">2.2.</span> <span class="nav-text">2. Gulp</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#工作原理"><span class="nav-number">2.2.1.</span> <span class="nav-text">工作原理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#基本使用"><span class="nav-number">2.2.2.</span> <span class="nav-text">基本使用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#任务组合使用"><span class="nav-number">2.2.3.</span> <span class="nav-text">任务组合使用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#异步任务方式（gulp-中的任务都是异步任务）"><span class="nav-number">2.2.4.</span> <span class="nav-text">异步任务方式（gulp 中的任务都是异步任务）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#文件操作-API-插件使用"><span class="nav-number">2.2.5.</span> <span class="nav-text">文件操作 API + 插件使用</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-FIS"><span class="nav-number">2.3.</span> <span class="nav-text">4. FIS</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Vincent"
+      src="/uploads/avatar.png">
+  <p class="site-author-name" itemprop="name">Vincent</p>
+  <div class="site-description" itemprop="description">逝者如斯夫 不舍昼夜</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">28</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/wzw1016" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;wzw1016" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:wzw487923438@gmail.com" title="E-Mail → mailto:wzw487923438@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/Vincent__1016" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;Vincent__1016" rel="noopener" target="_blank"><i class="fa fa-fw fa-twitter"></i>Twitter</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/u/5598935126" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;u&#x2F;5598935126" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Vincent</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="站点总字数">79k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">1:12</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.7.0
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/velocity-animate@1/velocity.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/velocity-animate@1/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el: '#valine-comments',
+      verify: false,
+      notify: false,
+      appId: 'FPfwWzvC6DoA6NUDXKg40nvO-gzGzoHsz',
+      appKey: 'th1fjs8n4fIsjn7UKzST5HHd',
+      placeholder: "ヾﾉ≧∀≦)o 来呀！吐槽一番吧！",
+      avatar: 'mm',
+      meta: guest,
+      pageSize: '10' || 10,
+      visitor: false,
+      lang: '' || 'zh-cn',
+      path: location.pathname,
+      recordIP: false,
+      serverURLs: ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

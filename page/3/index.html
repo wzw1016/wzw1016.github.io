@@ -228,6 +228,504 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://wzw1016.ml/2020/03/25/%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AE%9E%E7%8E%B0%E6%95%B0%E7%BB%84%E7%9A%84difference%E6%96%B9%E6%B3%95%E4%B8%8Emerge%E6%96%B9%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/avatar.png">
+      <meta itemprop="name" content="Vincent">
+      <meta itemprop="description" content="逝者如斯夫 不舍昼夜">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Wang's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/03/25/%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AE%9E%E7%8E%B0%E6%95%B0%E7%BB%84%E7%9A%84difference%E6%96%B9%E6%B3%95%E4%B8%8Emerge%E6%96%B9%E6%B3%95/" class="post-title-link" itemprop="url">自定义实现数组的difference方法与merge方法</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-03-25 13:44:08" itemprop="dateCreated datePublished" datetime="2020-03-25T13:44:08+08:00">2020-03-25</time>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">评论：</span>
+    
+    <a title="valine" href="/2020/03/25/%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AE%9E%E7%8E%B0%E6%95%B0%E7%BB%84%E7%9A%84difference%E6%96%B9%E6%B3%95%E4%B8%8Emerge%E6%96%B9%E6%B3%95/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/03/25/%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AE%9E%E7%8E%B0%E6%95%B0%E7%BB%84%E7%9A%84difference%E6%96%B9%E6%B3%95%E4%B8%8Emerge%E6%96%B9%E6%B3%95/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>898</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="difference-arr"><a href="#difference-arr" class="headerlink" title="difference(arr)"></a>difference(arr)</h2><h3 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h3><p>得到一个当前数组中所有不与指定数组 <code>arr</code> 中元素相同的数组（改方法不会改变原数组）。</p>
+<p>举个例子，假设数组有一个名为 <code>difference</code> 的方法，可以实现上述功能，那么：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> array = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">5</span>, <span class="number">8</span>]</span><br><span class="line"><span class="built_in">console</span>.log(array.difference([<span class="number">5</span>, <span class="number">7</span>])) <span class="comment">// (3) [1, 2, 5]</span></span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/03/25/%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AE%9E%E7%8E%B0%E6%95%B0%E7%BB%84%E7%9A%84difference%E6%96%B9%E6%B3%95%E4%B8%8Emerge%E6%96%B9%E6%B3%95/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://wzw1016.ml/2020/03/22/%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AE%9E%E7%8E%B0Lodash%E4%B8%AD%E6%95%B0%E7%BB%84%E7%9A%84chunk%E6%96%B9%E6%B3%95%E4%B8%8Ecompact%E6%96%B9%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/avatar.png">
+      <meta itemprop="name" content="Vincent">
+      <meta itemprop="description" content="逝者如斯夫 不舍昼夜">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Wang's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/03/22/%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AE%9E%E7%8E%B0Lodash%E4%B8%AD%E6%95%B0%E7%BB%84%E7%9A%84chunk%E6%96%B9%E6%B3%95%E4%B8%8Ecompact%E6%96%B9%E6%B3%95/" class="post-title-link" itemprop="url">自定义实现Lodash中数组的chunk方法与compact方法</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-03-22 14:19:59" itemprop="dateCreated datePublished" datetime="2020-03-22T14:19:59+08:00">2020-03-22</time>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">评论：</span>
+    
+    <a title="valine" href="/2020/03/22/%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AE%9E%E7%8E%B0Lodash%E4%B8%AD%E6%95%B0%E7%BB%84%E7%9A%84chunk%E6%96%B9%E6%B3%95%E4%B8%8Ecompact%E6%96%B9%E6%B3%95/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/03/22/%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AE%9E%E7%8E%B0Lodash%E4%B8%AD%E6%95%B0%E7%BB%84%E7%9A%84chunk%E6%96%B9%E6%B3%95%E4%B8%8Ecompact%E6%96%B9%E6%B3%95/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.1k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="chunk-size"><a href="#chunk-size" class="headerlink" title="chunk(size)"></a>chunk(size)</h2><h3 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h3><p>将数组（array）拆分成多个 <code>size</code> 长度的区块，并将这些区块组成一个新数组。 如果 <code>array</code>  无法被分割成全部等长的区块，那么最后剩余的元素将组成一个区块。  </p>
+<p>举个例子，假设数组有一个名为 <code>chunk</code> 的方法，可以实现上述功能，那么：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> arr = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>]</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(arr.chunk(<span class="number">2</span>)) <span class="comment">// [[1, 2], [3, 4], [5, 6], [7]]</span></span><br><span class="line"><span class="built_in">console</span>.log(arr.chunk(<span class="number">3</span>)) <span class="comment">// [[1, 2, 3], [4, 5, 6], [7]]</span></span><br></pre></td></tr></table></figure>
+
+<p>参数 <code>size</code> 的默认值为 1。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/03/22/%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AE%9E%E7%8E%B0Lodash%E4%B8%AD%E6%95%B0%E7%BB%84%E7%9A%84chunk%E6%96%B9%E6%B3%95%E4%B8%8Ecompact%E6%96%B9%E6%B3%95/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://wzw1016.ml/2020/03/04/%E6%95%B0%E7%BB%84%E6%89%81%E5%B9%B3%E5%8C%96/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/avatar.png">
+      <meta itemprop="name" content="Vincent">
+      <meta itemprop="description" content="逝者如斯夫 不舍昼夜">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Wang's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/03/04/%E6%95%B0%E7%BB%84%E6%89%81%E5%B9%B3%E5%8C%96/" class="post-title-link" itemprop="url">数组扁平化</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-03-04 17:09:41" itemprop="dateCreated datePublished" datetime="2020-03-04T17:09:41+08:00">2020-03-04</time>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">评论：</span>
+    
+    <a title="valine" href="/2020/03/04/%E6%95%B0%E7%BB%84%E6%89%81%E5%B9%B3%E5%8C%96/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/03/04/%E6%95%B0%E7%BB%84%E6%89%81%E5%B9%B3%E5%8C%96/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="何为数组扁平化？"><a href="#何为数组扁平化？" class="headerlink" title="何为数组扁平化？"></a>何为数组扁平化？</h2><p><strong>数组扁平化是指将一个多维数组转化为一维数组</strong>。</p>
+<p>举个例子，假设有个名为 <code>flatten</code> 的函数，接受一个数组作为参数，并将之扁平化：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> arr = [<span class="number">1</span>, <span class="number">2</span>, [<span class="number">3</span>, [<span class="number">4</span>, <span class="number">5</span>]]]</span><br><span class="line"><span class="built_in">console</span>.log(flatten(arr)) <span class="comment">// [1, 2, 3, 4, 5]</span></span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/03/04/%E6%95%B0%E7%BB%84%E6%89%81%E5%B9%B3%E5%8C%96/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://wzw1016.ml/2020/02/23/promise.then()%E7%9A%84%E8%BF%94%E5%9B%9E%E5%80%BC/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/avatar.png">
+      <meta itemprop="name" content="Vincent">
+      <meta itemprop="description" content="逝者如斯夫 不舍昼夜">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Wang's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/02/23/promise.then()%E7%9A%84%E8%BF%94%E5%9B%9E%E5%80%BC/" class="post-title-link" itemprop="url">promise.then()的返回值</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-02-23 13:25:26" itemprop="dateCreated datePublished" datetime="2020-02-23T13:25:26+08:00">2020-02-23</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaScript/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaScript</span>
+                  </a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">评论：</span>
+    
+    <a title="valine" href="/2020/02/23/promise.then()%E7%9A%84%E8%BF%94%E5%9B%9E%E5%80%BC/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/02/23/promise.then()%E7%9A%84%E8%BF%94%E5%9B%9E%E5%80%BC/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.8k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Promise 实例具有 <code>then</code> 方法，也就是说，<code>then</code> 方法是定义在原型对象 <code>Promise.prototype</code> 上的。它的作用是为 Promise 实例添加状态改变时的回调函数。</p>
+<p><code>Promise.prototype.then()</code> 方法返回的是一个<strong>新的 Promise 实例对象</strong>，因此可以采用<strong>链式写法</strong>。</p>
+<p>本文主要记录 <code>promise.then()</code> 返回值的不同情况。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/02/23/promise.then()%E7%9A%84%E8%BF%94%E5%9B%9E%E5%80%BC/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://wzw1016.ml/2020/02/20/JS%E4%B8%AD%E7%9A%84%E9%94%99%E8%AF%AFError%E4%B8%8E%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/avatar.png">
+      <meta itemprop="name" content="Vincent">
+      <meta itemprop="description" content="逝者如斯夫 不舍昼夜">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Wang's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/02/20/JS%E4%B8%AD%E7%9A%84%E9%94%99%E8%AF%AFError%E4%B8%8E%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/" class="post-title-link" itemprop="url">JS中的错误Error与错误处理</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-02-20 10:51:17" itemprop="dateCreated datePublished" datetime="2020-02-20T10:51:17+08:00">2020-02-20</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaScript/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaScript</span>
+                  </a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">评论：</span>
+    
+    <a title="valine" href="/2020/02/20/JS%E4%B8%AD%E7%9A%84%E9%94%99%E8%AF%AFError%E4%B8%8E%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/02/20/JS%E4%B8%AD%E7%9A%84%E9%94%99%E8%AF%AFError%E4%B8%8E%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="Error实例对象"><a href="#Error实例对象" class="headerlink" title="Error实例对象"></a>Error实例对象</h2><p><code>Error</code> 是 JavaScript 中的错误类，它同时也是一个构造函数，可以用来创建一个错误对象。<code>Error</code> 的实例会在运行发生错误时抛出，<code>Error</code> 对象像其它对象一样，也可以由用户自定义创建。 </p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> err = <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'error message'</span>)</span><br><span class="line"><span class="built_in">console</span>.log(err) <span class="comment">// Error: error message</span></span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/02/20/JS%E4%B8%AD%E7%9A%84%E9%94%99%E8%AF%AFError%E4%B8%8E%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://wzw1016.ml/2020/02/15/%E8%AF%A6%E8%A7%A3state%E4%B8%8EsetState/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -621,7 +1119,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">23</span>
+          <span class="site-state-item-count">28</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -634,7 +1132,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-count">21</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -676,7 +1174,7 @@
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2020</span>
+  <span itemprop="copyrightYear">2021</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
@@ -685,12 +1183,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-area-chart"></i>
     </span>
-    <span title="站点总字数">53k</span>
+    <span title="站点总字数">79k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">48 分钟</span>
+    <span title="站点阅读时长">1:12</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
   </div>

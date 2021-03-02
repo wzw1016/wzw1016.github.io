@@ -1,8 +1,1052 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>前端工程化之四：模块化打包工具</title>
+    <url>/2021/11/20/%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%8C%96%E4%B9%8B%E5%9B%9B%EF%BC%9A%E6%A8%A1%E5%9D%97%E5%8C%96%E6%89%93%E5%8C%85%E5%B7%A5%E5%85%B7/</url>
+    <content><![CDATA[<h2 id="1-使用模块打包工具的原因"><a href="#1-使用模块打包工具的原因" class="headerlink" title="1. 使用模块打包工具的原因"></a>1. 使用模块打包工具的原因</h2><h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><ol>
+<li>ES Modules 存在环境兼容性问题</li>
+<li>模块文件过多，网络请求频繁</li>
+<li>所有的前端资源都需要模块化</li>
+</ol>
+<h3 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h3><ol>
+<li><p>新特性编译，解决兼容性</p>
+</li>
+<li><p>将模块文件打包，以减少生产环境的请求次数</p>
+<p>(HTTP 1.1 版本的缺陷，如：同域并行请求限制、请求延迟、请求的 Header 浪费带宽流量)</p>
+</li>
+<li><p>支持不同种类的前端资源类型（js、css、scss、hbs、png、ts、font）</p>
+</li>
+</ol>
+<p>需求1与2可通过构建系统配合编译工具实现，而需求3难以实现</p>
+<a id="more"></a>
+
+<h2 id="2-概述"><a href="#2-概述" class="headerlink" title="2. 概述"></a>2. 概述</h2><p>Webpack、Parcel、Rollup 等</p>
+<p>主要功能：</p>
+<ul>
+<li>模块打包器（Module Bundler）</li>
+<li>模块加载器（Loader）</li>
+<li>代码拆分（Code Splitting）</li>
+<li>资源模块（Asset Module）</li>
+</ul>
+<p><strong>打包工具解决的是前端整体的模块化，并不单指 Javascript 模块化</strong></p>
+<h2 id="3-Webpack"><a href="#3-Webpack" class="headerlink" title="3. Webpack"></a>3. Webpack</h2><ul>
+<li>Webpack 只是打包工具（默认只会处理 import 和 export）</li>
+<li>可以使用加载器（loader）进行代码的编译转换</li>
+</ul>
+<p>安装</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">yarn add webpack webpack-cli --dev</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="1-配置文件"><a href="#1-配置文件" class="headerlink" title="1. 配置文件"></a>1. 配置文件</h3><p><code>webpack.config.js</code> </p>
+<p>运行在 node 环境，使用 CommonJS 规范</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> path = <span class="built_in">require</span>(<span class="string">'path'</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">  entry: <span class="string">'./src/index.js'</span>, <span class="comment">// 入口文件，相对路径不可省略 ./</span></span><br><span class="line">  output: &#123;</span><br><span class="line">    filename: <span class="string">'bundle.js'</span>,</span><br><span class="line">    path：path.join(__dirname, <span class="string">'output'</span>), <span class="comment">// 必须为绝对路径, 默认在项目根目录下的 dist 文件夹</span></span><br><span class="line">  &#125;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="2-工作模式"><a href="#2-工作模式" class="headerlink" title="2. 工作模式"></a>2. 工作模式</h3><p>可通过 cli 命令</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">webpack --mode development</span><br></pre></td></tr></table></figure>
+
+<p>默认为 production，会启动一些插件进行代码优化</p>
+<p>development，优化打包速度，添加调试辅助</p>
+<p>none，默认打包，不做处理</p>
+<p>或</p>
+<p>webpack.config.js</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  ...</span><br><span class="line">  mode: <span class="string">'development'</span>,</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="3-打包结果运行原理"><a href="#3-打包结果运行原理" class="headerlink" title="3. 打包结果运行原理"></a>3. 打包结果运行原理</h3><p>mode 设置为 none 后运行 webapck，打包后的文件可以清晰看到 webpack 的运行过程（webpackBootstrap函数）</p>
+<h3 id="4-资源模块加载"><a href="#4-资源模块加载" class="headerlink" title="4. 资源模块加载"></a>4. 资源模块加载</h3><p>js files =&gt; bundle.js（by default loader）</p>
+<p>other files =&gt; bundle.js（by other loader）</p>
+<p> <strong>Loader 是 Webpack 实现前端模块化的核心，通过不同的 Loader 可以加载任何类型的资源文件</strong></p>
+<p>使用示例：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  ...</span><br><span class="line">  <span class="built_in">module</span>: &#123;</span><br><span class="line">    rules: [</span><br><span class="line">      &#123;</span><br><span class="line">        test: <span class="regexp">/.css$/</span>,</span><br><span class="line">        use: [</span><br><span class="line">          <span class="string">'style-loader'</span>,</span><br><span class="line">          <span class="string">'css-loader'</span>,</span><br><span class="line">        ],</span><br><span class="line">      &#125;,</span><br><span class="line">    ],</span><br><span class="line">  &#125;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>根据代码的需要动态引入资源</strong></p>
+<p>需要资源的不是应用，而是代码</p>
+<p>JavaScript 驱动整个前端应用，在 js 中引入资源文件：</p>
+<ul>
+<li>逻辑合理，JS 确实需要这些资源文件</li>
+<li>保证上线资源不确实，都是必要的</li>
+</ul>
+<h3 id="5-常用-loader"><a href="#5-常用-loader" class="headerlink" title="5. 常用 loader"></a>5. 常用 loader</h3><ul>
+<li>编译转换类（convert to JavaScript module（bundle.js））<ul>
+<li>css-loader</li>
+<li>babel-loader</li>
+<li>…</li>
+</ul>
+</li>
+<li>文件操作类（将加载到的资源拷贝到输出目录，在 bundle.js 中的模块中输出对应的访问路径）<ul>
+<li>file-loader</li>
+<li>…</li>
+</ul>
+</li>
+<li>代码检查类（对代码语法、风格进行检查，保证生产质量）<ul>
+<li>eslint-loader</li>
+<li>…</li>
+</ul>
+</li>
+</ul>
+<h3 id="6-webpack-加载资源的方式（尽量较少混用）"><a href="#6-webpack-加载资源的方式（尽量较少混用）" class="headerlink" title="6. webpack 加载资源的方式（尽量较少混用）"></a>6. webpack 加载资源的方式（尽量较少混用）</h3><ol>
+<li><p>遵循 ESM 标准的 import 声明</p>
+</li>
+<li><p>遵循 CMJ 标准的 require 函数</p>
+<p>注意：当使用 require 函数导入 ESM 模块时，对于 ESM 的默认导出，需使用 require 函数返回值的 default 属性获取模块。如下：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> createHeader = <span class="built_in">require</span>(<span class="string">'./createHeader'</span>).default</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>遵循 AMD 标准的 define 函数和 require 函数</p>
+</li>
+</ol>
+<ol start="4">
+<li><p>Loader 加载的非 JavaScript 也会触发资源加载</p>
+<p>如：</p>
+<ul>
+<li>样式文件中的 @import 指令和 url 函数</li>
+<li>HTML 文件中图片标签的 src 属性</li>
+<li>…</li>
+</ul>
+</li>
+</ol>
+<h3 id="7-webpack-核心工作原理"><a href="#7-webpack-核心工作原理" class="headerlink" title="7. webpack 核心工作原理"></a>7. webpack 核心工作原理</h3><p>Webpack 会根据配置，从入口文件开始，找到 import 或 require 之类加载文件或资源的语句，解析对应的资源模块，并解析每一个资源模块对应的依赖。构建出项目中文件（模块）之间依赖关系的依赖树。</p>
+<p>随后递归此依赖树，找到依赖树中每个节点所加载的的资源文件，根据配置文件中的 rules 属性，使用指定的的加载器（loader）加载该模块。</p>
+<p>最后将 loader 加载后的结果放入打包后的结果（bundle.js）中，从而实现整个项目的打包。</p>
+<h3 id="8-自定义-loader"><a href="#8-自定义-loader" class="headerlink" title="8. 自定义 loader"></a>8. 自定义 loader</h3><ul>
+<li><strong>source</strong> 为接收文件内容</li>
+<li>无论使用了几个 loader 处理资源，最终 loader 导出函数的返回值必须为 js 代码（因为 webpack 会在打包后的文件（bundle.js）中对其进行简单的字符串拼接）</li>
+</ul>
+<p><strong>例：markdown-loader</strong></p>
+<p>方式一：</p>
+<p>markdown-loader.js</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> marked = <span class="built_in">require</span>(<span class="string">'marked'</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = <span class="function"><span class="params">source</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> html = marked(source)</span><br><span class="line">  <span class="keyword">return</span> <span class="string">`export default <span class="subst">$&#123;<span class="built_in">JSON</span>.stringify(html)&#125;</span>`</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>webpack.config.js</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  ...</span><br><span class="line">  <span class="built_in">module</span>: &#123;</span><br><span class="line">    rules: [</span><br><span class="line">      &#123;</span><br><span class="line">        test: <span class="regexp">/\.md$/</span>,</span><br><span class="line">        use: <span class="string">'./markdown-loader'</span>,</span><br><span class="line">      &#125;</span><br><span class="line">    ]</span><br><span class="line">  &#125;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<p>方式二：</p>
+<p>markdown-loader.js</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> marked = <span class="built_in">require</span>(<span class="string">'marked'</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = <span class="function"><span class="params">source</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> html = marked(source)</span><br><span class="line">  <span class="keyword">return</span> html</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>webpack.config.js</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  ...</span><br><span class="line">  <span class="built_in">module</span>: &#123;</span><br><span class="line">    rules: [</span><br><span class="line">      &#123;</span><br><span class="line">        test: <span class="regexp">/\.md$/</span>,</span><br><span class="line">        use: [</span><br><span class="line">          <span class="string">'html-loader'</span>,</span><br><span class="line">          <span class="string">'./markdown-loader'</span></span><br><span class="line">        ]</span><br><span class="line">      &#125;</span><br><span class="line">    ]</span><br><span class="line">  &#125;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>类似处理的管道：file=====&gt; 由 markdown-loader 处理 ==&gt; 由 html-loader 处理  =====&gt; 最终输出到 bundle.js</p>
+<h3 id="9-插件（plugin）"><a href="#9-插件（plugin）" class="headerlink" title="9. 插件（plugin）"></a>9. 插件（plugin）</h3><p>使用插件的目的：<strong>为了增强 webpack 的自动化能力</strong></p>
+<p>如：</p>
+<ul>
+<li>清除 dist 目录</li>
+<li>拷贝静态文件</li>
+<li>压缩输出代码</li>
+<li>…</li>
+</ul>
+<p>webpack + <strong>plugin</strong> 的确实现了大多数的前端工程化</p>
+<h3 id="10-常用插件"><a href="#10-常用插件" class="headerlink" title="10. 常用插件"></a>10. 常用插件</h3><ul>
+<li>clean-webpack-plugin（清除 dist ）</li>
+<li>html-webpack-plugin（自动生成 bundle.js 的 HTML，通过 webpack 输出 HTML，自动引用 bundle.js )</li>
+<li>copy-webpack-plugin（复制静态文件）</li>
+<li>mini-css-extract-plugin（将 css 代码从打包结果中提取出来，从而可以实现 css 的按需加载）<ul>
+<li>若 css 样式体积并不是很大，为了减少网络请求，则无需使用该插件提取为单独文件（150kb以下）</li>
+</ul>
+</li>
+<li>optimize-css-assets-webpack-plugin（压缩样式文件）<ul>
+<li>webpack 建议将压缩类的插件添加到 optimization 中的 minimizer 属性数组中（若配置在 plugins 数组中，则该插件任何情况下都会工作，而配置在 minimizer 数组中只会在 minimize 特性开启时才会工作。production 模式下 minimize 默认会自动开启）</li>
+<li>webpack 生产模式下内置的压缩器只支持 js 文件的压缩</li>
+</ul>
+</li>
+<li>terser-webpack-plugin (webpack 内置 js 压缩文件)<ul>
+<li>在自定义 optimization.minimizer 时，webpack 内置的压缩器插件将会被自定义的optimization.minimizer 覆盖，所以需要在 optimization.minimizer 中手动重新添加该插件。</li>
+</ul>
+</li>
+</ul>
+<p>使用示例： </p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> &#123; CleanWebpackPlugin &#125; = <span class="built_in">require</span>(<span class="string">'clean-webpack-plugin'</span>)</span><br><span class="line"><span class="keyword">const</span> HtmlWebpakPlugin = <span class="built_in">require</span>(<span class="string">'html-webpack-plugin'</span>)</span><br><span class="line"><span class="keyword">const</span> MiniCssExtractPlugin = <span class="built_in">require</span>(<span class="string">'mini-css-extract-plugin'</span>)</span><br><span class="line"><span class="keyword">const</span> OptimizeCssAssetsWebpackPlugin = <span class="built_in">require</span>(<span class="string">'optimize-css-assets-webpack-plugin'</span>)</span><br><span class="line"><span class="keyword">const</span> terserWebpackPlugin = reuqire(<span class="string">'terser-webpack-plugin'</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">  ...</span><br><span class="line">  <span class="built_in">module</span>: &#123;</span><br><span class="line">    rules: [</span><br><span class="line">      &#123;</span><br><span class="line">        test: <span class="regexp">/.css$/</span>,</span><br><span class="line">        use: [</span><br><span class="line">          MiniCssExtractPlugin.loader,</span><br><span class="line">          <span class="string">'css-loader'</span>,</span><br><span class="line">        ],</span><br><span class="line">      &#125;,</span><br><span class="line">    ],</span><br><span class="line">  &#125;,</span><br><span class="line">  optimization: &#123;</span><br><span class="line">    minimizer: [</span><br><span class="line">      <span class="keyword">new</span> terserWebpackPlugin(),</span><br><span class="line">      <span class="keyword">new</span> OptimizeCssAssetsWebpackPlugin(),</span><br><span class="line">    ]</span><br><span class="line">  &#125;,</span><br><span class="line">  pulgins: [</span><br><span class="line">    <span class="keyword">new</span> CleanWebpackPlugin(),</span><br><span class="line">    <span class="keyword">new</span> HtmlWebpakPlugin(&#123; <span class="comment">// 若HTML需大量定制，可以使用模板</span></span><br><span class="line">      title: <span class="string">'webpack plugin sample'</span> <span class="comment">// 生成HTML的titlt</span></span><br><span class="line">      meta: &#123; <span class="comment">// 生成HTML的meta</span></span><br><span class="line">        viewport: <span class="string">'width=device-width'</span></span><br><span class="line">      &#125;,</span><br><span class="line">      ...</span><br><span class="line">    &#125;),</span><br><span class="line">    <span class="keyword">new</span> MiniCssExtractPlugin(&#123;</span><br><span class="line">      filename: <span class="string">'[name].bundle.css'</span></span><br><span class="line">    &#125;),</span><br><span class="line">    ...</span><br><span class="line">  ],</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>绝大多数 plugin 模块导出的都是一个类型。</p>
+<h3 id="11-自定义-plugin"><a href="#11-自定义-plugin" class="headerlink" title="11. 自定义 plugin"></a>11. 自定义 plugin</h3><p><strong>plugin 通过钩子（Hooks）机制实现</strong>（在 webpack 不同的生命周期钩子上挂载不同的任务）</p>
+<ul>
+<li>plugin 必须为一个函数或者是一个包含 apply 方法的对象</li>
+</ul>
+<p>示例：去除打包后的文件 bundle.js 中注释的插件</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyPlugin</span> </span>&#123;</span><br><span class="line">  </span><br><span class="line">  apply(compiler) &#123;</span><br><span class="line">    compiler.hooks.emit.tap(<span class="string">'MyPlugin'</span>, compilation =&gt; &#123; <span class="comment">// emit 为 webpack 钩子</span></span><br><span class="line">      <span class="comment">// compilation 此次打包的上下文</span></span><br><span class="line">      <span class="keyword">for</span>(<span class="keyword">const</span> name <span class="keyword">in</span> compilation.assets) &#123;</span><br><span class="line">        <span class="keyword">if</span>(name.endWidth(<span class="string">'.js'</span>)) &#123;</span><br><span class="line">          <span class="keyword">const</span> contents = compilation.assets[name].source()</span><br><span class="line">          <span class="keyword">const</span> withoutComments = contents.replace(<span class="regexp">/\/\*\*+\*\//g</span>, <span class="string">''</span>)</span><br><span class="line">          compilation.assets[name] = &#123;</span><br><span class="line">            source: <span class="function"><span class="params">()</span> =&gt;</span> withoutComments,</span><br><span class="line">            size: <span class="function"><span class="params">()</span> =&gt;</span> withoutComments.length</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"> <span class="built_in">module</span>.exports = &#123;</span><br><span class="line">   ...</span><br><span class="line">   plugins: [</span><br><span class="line">     <span class="keyword">new</span> MyPlugin()</span><br><span class="line">   ]</span><br><span class="line">   ...</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="12-增强开发体验"><a href="#12-增强开发体验" class="headerlink" title="12. 增强开发体验"></a>12. 增强开发体验</h3><p><strong>目标：</strong></p>
+<ol>
+<li>以 HTTP server 运行（更加接近生产环境，并且文件方式打开 ajax 请求不能发送 ）</li>
+<li>自动编译、自动刷新</li>
+<li>source Map</li>
+</ol>
+<p><strong>方案一</strong></p>
+<p>实现自动编译</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">webpack --watch</span><br></pre></td></tr></table></figure>
+
+<p>实现自动刷新</p>
+<p>使用 browser-sync 模块</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">yarn add browser-sync</span><br><span class="line"></span><br><span class="line">browser-sync dist --file &quot;**&#x2F;*&quot;</span><br></pre></td></tr></table></figure>
+
+<p>弊端：较为麻烦、频繁磁盘读写</p>
+<h4 id="Webpack-dev-server"><a href="#Webpack-dev-server" class="headerlink" title="Webpack dev server"></a>Webpack dev server</h4><ul>
+<li>提供 HTTP server </li>
+<li>集成 自动编译、自动刷新 等功能</li>
+</ul>
+<p>使用：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">yarn add webpack-dev-server --dev</span><br><span class="line"></span><br><span class="line">yarn webpack-dev-server</span><br><span class="line">yarn webpack-dev-server --open &#x2F;&#x2F; 自动打开浏览器</span><br></pre></td></tr></table></figure>
+
+<p>将打包后的文件放在内存中，减少了磁盘读写，提高开发效率 </p>
+<p>配置：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">  ...</span><br><span class="line">  devServer: &#123;</span><br><span class="line">    contentBase: <span class="string">'./public'</span>, <span class="comment">// 访问静态资源路径</span></span><br><span class="line">    proxy: &#123;</span><br><span class="line">      <span class="string">'/api'</span>: &#123;</span><br><span class="line">        <span class="comment">// http://localhost:8080/api/users =&gt; https://api.github.com/api/users</span></span><br><span class="line">        target: <span class="string">'https://api.github.com'</span>,</span><br><span class="line">        <span class="comment">// http://localhost:8080/api/users =&gt; https://api.github.com/users</span></span><br><span class="line">        pathRewrite: &#123;</span><br><span class="line">          <span class="string">'^/api'</span>: <span class="string">''</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="comment">// 不使用 localhost:8080 作为请求 Github 的主机名</span></span><br><span class="line">        changeOrigin: <span class="literal">true</span>,</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">  &#125;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>webpack-cli 4版本后：webpack serve</p>
+<h4 id="Source-Map"><a href="#Source-Map" class="headerlink" title="Source Map"></a>Source Map</h4><p>问题：经过编译后的运行代码，难以调试，故障排查苦难。</p>
+<p><strong>映射源代码与转换之后代码之间的关系</strong></p>
+<p>解决了源代码与运行代码不一致产生的问题</p>
+<h4 id="Webpack-多任务"><a href="#Webpack-多任务" class="headerlink" title="Webpack 多任务"></a>Webpack 多任务</h4><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = [</span><br><span class="line">  &#123;</span><br><span class="line">    entry: <span class="string">'./src/main.js'</span>,</span><br><span class="line">    output: &#123;</span><br><span class="line">      filename: <span class="string">'a.js'</span></span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;,</span><br><span class="line">  &#123;</span><br><span class="line">    entry: <span class="string">'./src/main.js'</span>,</span><br><span class="line">    output: &#123;</span><br><span class="line">      filename: <span class="string">'a.js'</span></span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<p>会分别执行 module.exports 导出数组中的每个任务。</p>
+<h4 id="Webpack-Source-Map-配置"><a href="#Webpack-Source-Map-配置" class="headerlink" title="Webpack Source Map 配置"></a>Webpack Source Map 配置</h4><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">  ...</span><br><span class="line">  devtool: <span class="string">'source-map'</span>,</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="devtool-模式"><a href="#devtool-模式" class="headerlink" title="devtool 模式"></a>devtool 模式</h4><p>devtool 的多种模式（<a href="https://webpack.js.org/configuration/devtool/#devtool）" target="_blank" rel="noopener">https://webpack.js.org/configuration/devtool/#devtool）</a></p>
+<p><strong>各标识含义</strong></p>
+<ul>
+<li><strong>eval</strong>：是否使用 eval() 执行模块代码 </li>
+<li><strong>cheap</strong>：source map 是否包含列信息（cheap 只包含行信息，不包含列）</li>
+<li><strong>module</strong>：是否能够得到 loader 处理之前的源代码</li>
+</ul>
+<ol>
+<li>eval：不生成 source map 文件，通过在 eval 函数的字符串参数最后添加 sourceUrl=./foo/bar.js 这种方式，标注模块文件的路径</li>
+<li>eval-source-map：生成 source map 文件，可以定位到文件、行、列信息 </li>
+<li>cheap-eval-source-map：与 eval-source-map 相比，无列信息，为 loader 处理后的代码</li>
+<li>cheap-module-eval-source-map：与 cheap-eval-source-map 相比，可以得到未经 loader 处理的源代码</li>
+<li>cheap-source-map：未使用 eval() 执行模块代码，得到 loader 处理后的代码</li>
+<li>inline-source-map：将 source-map 在代码中以data url 方式嵌入（不推荐使用，增大代码体积）</li>
+<li>hidden-source-map：生成，但不引入 source-map 文件（开发第三方包）</li>
+<li>nosources-source-map：提供文件、行、列信息，但无源代码（生产环境保护源代码）</li>
+</ol>
+<h4 id="选择-webpack-的-source-map-模式"><a href="#选择-webpack-的-source-map-模式" class="headerlink" title="选择 webpack 的 source map 模式"></a>选择 webpack 的 source map 模式</h4><ul>
+<li><p>开发环境：cheap-module-eval-source-map</p>
+</li>
+<li><p>生产环境：none / nosources-source-map</p>
+</li>
+</ul>
+<p>具体以实际业务需求为准</p>
+<h4 id="dev-server-自动刷新的问题"><a href="#dev-server-自动刷新的问题" class="headerlink" title="dev server 自动刷新的问题"></a>dev server 自动刷新的问题</h4><p>问题核心：<strong>自动刷新导致的页面状态丢失</strong></p>
+<p>需求：页面不刷新的前提下，及时更新所修改的模块</p>
+<p>解决办法：</p>
+<ol>
+<li>在编辑器中写死状态或内容</li>
+<li>额外代码实现刷新前保存、刷新后读取（如存入 localStorage 中）</li>
+<li><strong>HMR</strong></li>
+</ol>
+<h4 id="HMR（Hot-Module-Replacement-模块热替换）"><a href="#HMR（Hot-Module-Replacement-模块热替换）" class="headerlink" title="HMR（Hot Module Replacement 模块热替换）"></a>HMR（Hot Module Replacement 模块热替换）</h4><p>​    <strong>热插拔</strong>：在正在运行的设备上随时插拔设备（如电脑的 USB 端口）</p>
+<p>定义：应用程序运行过程中，实时替换掉某个模块，应用运行状态不受影响</p>
+<p>集成在 webpack-dev-server 中</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">webpack-dev-server --hot</span><br></pre></td></tr></table></figure>
+
+<p>或进行配置：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> webpack = <span class="built_in">require</span>(<span class="string">'webpack'</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">  ...</span><br><span class="line">  devServer: &#123;</span><br><span class="line">    hot: <span class="literal">true</span></span><br><span class="line">  &#125;</span><br><span class="line">  ...</span><br><span class="line">  plugins: [</span><br><span class="line">    ...</span><br><span class="line">  	<span class="keyword">new</span> webpack.HotModuleReplacement(),</span><br><span class="line">    ...</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>样式文件就可以实现热模块替换了（因为 <code>style-loader</code> 已经内部实现了 <code>HMR</code>）</p>
+<p>脚本文件<strong>需手动替换模块热替换逻辑</strong></p>
+<p>还有 <code>js</code> 文件，假设有一个 <code>print.js</code> 模块，向外暴露函数对象 <code>print</code>。</p>
+<p>若需要为其实现热模块替换，则需在入口文件中新增如下代码：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line"><span class="comment">// 判断HMR是否开启</span></span><br><span class="line"><span class="keyword">if</span> (<span class="built_in">module</span>.hot) &#123;</span><br><span class="line">  <span class="comment">// 监听print.js文件的变化，一旦其发生变化，不会重新打包，而是执行后续的回调函数</span></span><br><span class="line">  <span class="built_in">module</span>.hot.accept(<span class="string">'./print.js'</span>, () =&gt; &#123;</span><br><span class="line">    print()</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>因为 js 文件较为复杂，而样式文件只需替换即可</p>
+<p>通过脚手架创建的项目内部都集成了 HMR 方案</p>
+<h4 id="HMR-注意事项"><a href="#HMR-注意事项" class="headerlink" title="HMR 注意事项"></a>HMR 注意事项</h4><ol>
+<li><p>处理 HMR 的代码报错会导致页面自动刷新</p>
+<p>因为 hot 方式，当热替换失败出现错误时，将回退到刷新页面的方式，页面刷新后错误信息将不容易找到。</p>
+<p>解决办法：使用 <strong>hotOnly</strong></p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">devServer: &#123;</span><br><span class="line">	hotOnly: <span class="literal">true</span>,</span><br><span class="line">&#125;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>将不会刷新页面</p>
+</li>
+</ol>
+<ol start="2">
+<li><p>没开启 HMR，HMR API 报错</p>
+<p>解决办法：先进行判断</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="built_in">module</span>.hot) &#123;</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>因为 module.hot 对象是 webpack 的 HMR 插件提供的</p>
+</li>
+</ol>
+<ol start="3">
+<li><p>代码中多出了与业务功能无关的代码</p>
+<p>处理热替换的代码将不会被打包（无需处理）</p>
+</li>
+</ol>
+<h3 id="13-生产环境优化"><a href="#13-生产环境优化" class="headerlink" title="13. 生产环境优化"></a>13. 生产环境优化</h3><p>生产环境注重运行效率、开发环境注重开发效率</p>
+<p>配置方式 <strong>mode</strong></p>
+<p>可以为不同的环境创建不同的配置</p>
+<p>webpack 4 中的 production 模式下默认会开启一些优化</p>
+<p>如（DefinePlugin、tree shaking）</p>
+<h4 id="配置方式"><a href="#配置方式" class="headerlink" title="配置方式"></a>配置方式</h4><ul>
+<li><p>配置文件根据环境不同导出不同配置（适用于中小型项目）</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// env 为通过 cli 运行提供的环境名参数，argv 为运行 cli 过程中提供的所有参数</span></span><br><span class="line"><span class="built_in">module</span>.exports = <span class="function">(<span class="params">env, argv</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> config = &#123;&#125;</span><br><span class="line">  <span class="keyword">if</span>(env = <span class="string">'production'</span>) &#123;</span><br><span class="line">    config.mode = <span class="string">'production'</span></span><br><span class="line">    config.devtool = <span class="literal">false</span></span><br><span class="line">    config.plugin = [</span><br><span class="line">      ...config.plugin,</span><br><span class="line">      <span class="keyword">new</span> CleanWebpackPlugin(),</span><br><span class="line">      <span class="keyword">new</span> CopyWebpackPlugin([ <span class="string">'plublic'</span> ]),</span><br><span class="line">    ]</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">return</span> config</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>webpack 可导出一个返回配置的函数</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">webpack --env production</span><br></pre></td></tr></table></figure>
+
+<p>webpack 默认以开发方式运行</p>
+<p>或直接判断环境变量导出对应配置</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">let</span> config = &#123;&#125;</span><br><span class="line"></span><br><span class="line">process.env.NODE_ENV === <span class="string">'production'</span></span><br><span class="line">? config = &#123;...&#125;</span><br><span class="line">: config = &#123;...&#125;</span><br><span class="line">            </span><br><span class="line"><span class="built_in">module</span>.exports = config</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<ul>
+<li><p>不同环境对应不同配置文件</p>
+<p>一般为三个配置：开发环境配置、生产环境配置、二者公共配置</p>
+<ul>
+<li>webpack.common.js</li>
+<li>webpack.production.js</li>
+<li>webpack.development.js</li>
+</ul>
+</li>
+</ul>
+<p> webpack.production.js</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> common = <span class="built_in">require</span>(<span class="string">'./webpack.common'</span>)</span><br><span class="line"><span class="keyword">const</span> merge = <span class="built_in">require</span>(<span class="string">'webpack-merge'</span>)</span><br><span class="line"><span class="keyword">const</span> &#123; CleanWebpackPlugin &#125; = requie(<span class="string">'clean-webpack-plugin'</span>)</span><br><span class="line"><span class="keyword">const</span> CopyWebpackPlugin = <span class="built_in">require</span>(<span class="string">'copy-webpack-plugin'</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = merge(common, &#123;</span><br><span class="line">  mode: <span class="string">'production'</span>，</span><br><span class="line">  plugins: [</span><br><span class="line">  	<span class="keyword">new</span> CleanWebpackPlugin(),</span><br><span class="line">    <span class="keyword">new</span> CopyWebpackPlugin([ <span class="string">'plublic'</span> ]),</span><br><span class="line">  ]</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>使用 webpack-merge 模块提供的 merge 函数代替 Object.assign() 方法，因为  Object.assign() 方法会默认替换掉同名属性，而 merge 方法自动处理合并逻辑。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">webpack --config webpack.production.js</span><br></pre></td></tr></table></figure>
+
+<p>运行 webpack 打包</p>
+<p>或定义到 npm script 中</p>
+<p>webpack.development.js 同理</p>
+<h4 id="DefinePlugin"><a href="#DefinePlugin" class="headerlink" title="DefinePlugin"></a>DefinePlugin</h4><p>作用：<strong>为代码注入全局成员</strong></p>
+<p>在 production 模式下默认会启，为 webpack 内置插件</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> webpack = <span class="built_in">require</span>(<span class="string">'webpack'</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">	...</span><br><span class="line">	plugins: [</span><br><span class="line">		<span class="keyword">new</span> webpack.DefinePlugin(&#123;</span><br><span class="line">			API_BASE_URL: <span class="built_in">JSON</span>.stringify(<span class="string">'https://api.example.com'</span>), <span class="comment">// 值要求为 js 代码片段</span></span><br><span class="line">		&#125;)</span><br><span class="line">	]</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>在 main.js 中使用</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(API_BASE_URL)</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="Tree-Shaking"><a href="#Tree-Shaking" class="headerlink" title="Tree Shaking"></a>Tree Shaking</h4><p><strong>移除未引用代码</strong>（dead code）</p>
+<p>在 production 模式下默认会启。</p>
+<p>Tree Shaking 并非某一插件，而是一组功能搭配使用后的优化效果。</p>
+<p>模拟使用 tree shaking</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">  ...</span><br><span class="line">  optimization: &#123;</span><br><span class="line">    usedExports: <span class="literal">true</span>, <span class="comment">// 只导出外部使用的成员</span></span><br><span class="line">    minimize: <span class="literal">true</span>, <span class="comment">// 代码压缩（会自动去除未引用代码）</span></span><br><span class="line">  &#125;,</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>usedExports 负责标记“枯树叶”，minimize 负责“摇掉”它们</p>
+<h4 id="Scope-Hoisting（作用域提升）"><a href="#Scope-Hoisting（作用域提升）" class="headerlink" title="Scope Hoisting（作用域提升）"></a>Scope Hoisting（作用域提升）</h4><p>目的：<strong>合并模块函数</strong></p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">  ...</span><br><span class="line">  optimization: &#123;</span><br><span class="line">    usedExports: <span class="literal">true</span>,</span><br><span class="line">    concatenateModules: <span class="literal">true</span>, <span class="comment">// 尽可能的将所有的模块合并输出到同一个函数中</span></span><br><span class="line">    minimize: <span class="literal">true</span>,</span><br><span class="line">  &#125;,</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>若模块过多，打包后的模块函数会比较多，</p>
+<p>concatenateModules 可以<strong>尽可能的将所有的模块合并输出到同一个函数中</strong>，</p>
+<p>以此<strong>提升运行效率，减少代码体积</strong></p>
+<p>在 webpack 3 中添加</p>
+<h4 id="Tree-shaking-amp-Babel"><a href="#Tree-shaking-amp-Babel" class="headerlink" title="Tree-shaking &amp; Babel"></a>Tree-shaking &amp; Babel</h4><p><strong>Tree-shaking 前提是 ES Module</strong></p>
+<p>babel-loader 并非无法与 tree shaking 共存，而是当 babel-loader 将 ESM 代码转换为 CMJ 代码后，tree shaking 无法工作。</p>
+<p>若关闭 @babel/preset-env 预设中转换 ESM 的插件，则 tree-shaking 则一定会正常工作</p>
+<p>如下：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">  ...</span><br><span class="line">  <span class="built_in">module</span>: &#123;</span><br><span class="line">  	rules: [</span><br><span class="line">      &#123;</span><br><span class="line">        test: <span class="regexp">/\.js$/</span>,</span><br><span class="line">        use: &#123;</span><br><span class="line">          loader: <span class="string">'babel-loader'</span>,</span><br><span class="line">          options: &#123;</span><br><span class="line">            presets: [</span><br><span class="line">              [<span class="string">'@babel/preset-env'</span>, &#123; <span class="attr">module</span>: <span class="literal">false</span> &#125;] <span class="comment">// 转换 ESM 的插件</span></span><br><span class="line">            ]</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    ]</span><br><span class="line">  &#125;,</span><br><span class="line">  optimization: &#123;</span><br><span class="line">    usedExports: <span class="literal">true</span>,</span><br><span class="line">    concatenateModules: <span class="literal">true</span>,</span><br><span class="line">    minimize: <span class="literal">true</span>,</span><br><span class="line">  &#125;,</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="sideEffects"><a href="#sideEffects" class="headerlink" title="sideEffects"></a>sideEffects</h4><p>webpack 4</p>
+<p>允许通过配置的方式标识代码是否有副作用，从而<strong>为 tree shaking 提供更大的压缩空间</strong></p>
+<p>此处的<strong>副作用</strong>：模块执行时除了导出成员之外所做的事情</p>
+<p>sideEffects 一般用于标记 npm 包是否有副作用</p>
+<p><strong>应用场景</strong>：</p>
+<p>若 components 目录下有 button.js、heading.js、link.js 等模块，并在 index.js 中重导出（聚合）</p>
+<p>index.js：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">export</span> &#123; <span class="keyword">default</span> <span class="keyword">as</span> Button &#125; <span class="keyword">from</span> <span class="string">'./button.js'</span></span><br><span class="line"><span class="keyword">export</span> &#123; <span class="keyword">default</span> <span class="keyword">as</span> Heading &#125; <span class="keyword">from</span> <span class="string">'./heading.js'</span></span><br><span class="line"><span class="keyword">export</span> &#123; <span class="keyword">default</span> <span class="keyword">as</span> Link &#125; <span class="keyword">from</span> <span class="string">'./link.js'</span></span><br></pre></td></tr></table></figure>
+
+<p>而在 main.js  中：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Button &#125; <span class="keyword">from</span> <span class="string">'./components'</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">document</span>.body.appendChild(Button())</span><br></pre></td></tr></table></figure>
+
+<p>只引入了 button 一个模块。</p>
+<p>但此时，所有的组件模块都会被加载执行。</p>
+<p><strong>使用 sideEffects</strong>：</p>
+<p>webpack.config.js</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">  ...</span><br><span class="line">  optimization: &#123;</span><br><span class="line">    sideEffects: <span class="literal">true</span>,</span><br><span class="line">    usedExports: <span class="literal">true</span>,</span><br><span class="line">    minimize: <span class="literal">true</span>,</span><br><span class="line">  &#125;,</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>package.json</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  ...</span><br><span class="line">  <span class="string">"sideEffects"</span>: <span class="literal">false</span>, <span class="comment">// 表明所有模块都没有副作用</span></span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>开启 sideEffects 后，打包时 webpack 会检查 package.json 中是否存在 sideEffects 标识，以此判断模块是否有副作用。</p>
+<p>若模块没有副作用，则模块将不再会打包。</p>
+<p><strong>注意事项：</strong></p>
+<p>使用 sideEffects  的前提，就是确保代码真的没有副作用。</p>
+<p>为了防止 webpack 在打包时漏掉代码中所需模块，需谨慎开启副作用；</p>
+<p>或是在 package.json 中标识有副作用的模块，如下：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  ...</span><br><span class="line">  <span class="string">"sideEffects"</span>: [</span><br><span class="line">    <span class="string">"src/extend.js"</span>,</span><br><span class="line">    <span class="string">"*.css"</span>,</span><br><span class="line">    ...</span><br><span class="line">  ],</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="14-代码分割（Code-Splitting）"><a href="#14-代码分割（Code-Splitting）" class="headerlink" title="14. 代码分割（Code Splitting）"></a>14. 代码分割（Code Splitting）</h3><p><strong>面临的问题</strong>：通过 webpack 打包过后的所有代码都会被打包到一起。如应用复杂，模块过多，打包出的 bundle.js 将会体积较大。然而应用开始工作时，并不是每个模块在启动时都是必要的，因此出现浪费流量和带宽的情况。</p>
+<p><strong>解决办法</strong>：<strong>分包，按需加载</strong>。</p>
+<p>具体实现途径有两种：</p>
+<h4 id="1-多入口打包（Muti-Entry）"><a href="#1-多入口打包（Muti-Entry）" class="headerlink" title="1. 多入口打包（Muti Entry）"></a>1. 多入口打包（Muti Entry）</h4><p>一般适用于传统的 <strong>多页面应用</strong>，通常一个页面对应一个入口（entry），公共部分单独提取</p>
+<p>webpack.config.js</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">  ...</span><br><span class="line">  entry: &#123;</span><br><span class="line">    index: <span class="string">'./src/index.js'</span>,</span><br><span class="line">    album: <span class="string">'./src/album.js'</span>,</span><br><span class="line">  &#125;,</span><br><span class="line">  output: &#123;</span><br><span class="line">    filename: <span class="string">'[name].bundle.js'</span>,</span><br><span class="line">  &#125;,</span><br><span class="line">  pulgins: [</span><br><span class="line">    <span class="keyword">new</span> CleanWebpackPlugin(),</span><br><span class="line">    <span class="keyword">new</span> HtmlWebpakPlugin(&#123;</span><br><span class="line">      title: <span class="string">'Muti Entry'</span>,</span><br><span class="line">      template: <span class="string">'./src/index.html'</span>,</span><br><span class="line">      filename: <span class="string">'index.html'</span>,</span><br><span class="line">      <span class="comment">// 指定 HtmlWebpakPlugin 在生成 hmtl 页面是自动引入的 js 文件。如不指定，会默认加载所有 js 文件</span></span><br><span class="line">      chunks: [<span class="string">'index'</span>],</span><br><span class="line">    &#125;),</span><br><span class="line">    <span class="keyword">new</span> HtmlWebpakPlugin(&#123;</span><br><span class="line">      title: <span class="string">'Muti Entry'</span>,</span><br><span class="line">      template: <span class="string">'./src/album.html'</span>,</span><br><span class="line">      filename: <span class="string">'album.html'</span>,</span><br><span class="line">      chunks: [<span class="string">'album'</span>],</span><br><span class="line">    &#125;),</span><br><span class="line">    ...</span><br><span class="line">  ],</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意 entry 为一个对象（entry 为数组是将文件打包到一起）</p>
+<p><strong>公共模块提取</strong></p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">  ...</span><br><span class="line">  optimization: &#123;</span><br><span class="line">    splitChunks: &#123;</span><br><span class="line">      chunks: <span class="string">'all'</span>, <span class="comment">// 标识把所有的公共模块都提取到单独的打包文件中</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>打包后将在输出目录下生成公共的模块打包文件</p>
+<h4 id="2-动态导入（-import-）"><a href="#2-动态导入（-import-）" class="headerlink" title="2. 动态导入（ import() ）"></a>2. 动态导入（ import() ）</h4><p>动态导入的模块会被自动分包</p>
+<p>使用 ES Module 模块化规范</p>
+<p><strong>Magic Comments（魔法注释）</strong></p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span>(<span class="comment">/* webpackChunkName: 'album' */</span><span class="string">'./src/album'</span>)</span><br><span class="line">	.then()</span><br><span class="line"></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>通过 import 函数的内联注释，为打包后生成的包名命名</p>
+<h3 id="15-输出文件名-Hash"><a href="#15-输出文件名-Hash" class="headerlink" title="15. 输出文件名 Hash"></a>15. 输出文件名 Hash</h3><p>目的：更好的控制前端静态资源的缓存</p>
+<p>方法：<strong>生产模式下，文件名使用 Hash</strong></p>
+<p>三种方式的 hash 值： </p>
+<ul>
+<li><p><code>filename: &#39;[name]-[hash].bundle.js&#39;</code></p>
+<p>项目级别的 hash 值。一旦项目任意一处发生改变，下一次打包的 hash 值都会变换</p>
+</li>
+<li><p><code>filename: &#39;[name]-[chunkHash].bundle.js&#39;</code></p>
+<p>chunk 级别的 hash 值。打包过程中，同一路的 chunk（如动态 import 生成的 chunk、多打包入口生成的 chunk ），hash 值相同。同一 chunk 的文件发生修改，打包重新生成的同一 chunk 的文件的 hash 就会发生改变。</p>
+</li>
+<li><p><code>filename: &#39;[name]-[contentHash].bundle.js&#39;</code></p>
+<p>文件级别的 hash 值。根据输出文件的内容生成 hash，文件内容发生变化，hash 值就会发生改变。</p>
+</li>
+</ul>
+<p>指定 hash 的长度：<code>filename: &#39;[name]-[hash:8].bundle.js&#39;</code>。默认 20 位。</p>
+<p>使用方式：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">  ...</span><br><span class="line">  output: &#123;</span><br><span class="line">    filename: <span class="string">'[name]-[hash].bundle.css'</span>,</span><br><span class="line">  &#125;</span><br><span class="line">  pulgins: [</span><br><span class="line">    <span class="keyword">new</span> CleanWebpackPlugin(),</span><br><span class="line">    <span class="keyword">new</span> HtmlWebpakPlugin(),</span><br><span class="line">    <span class="keyword">new</span> MiniCssExtractPlugin(&#123;</span><br><span class="line">      filename: <span class="string">'[name]-[hash].bundle.css'</span>,</span><br><span class="line">    &#125;),</span><br><span class="line">    ...</span><br><span class="line">  ],</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>综合考虑，若以控制缓存为目的，<strong>8 位 contentHash 较为优选</strong></p>
+]]></content>
+      <categories>
+        <category>前端工程化</category>
+      </categories>
+      <tags>
+        <tag>webpack</tag>
+        <tag>模块化</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>前端工程化之三：模块化开发</title>
+    <url>/2021/10/12/%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%8C%96%E4%B9%8B%E4%B8%89%EF%BC%9A%E6%A8%A1%E5%9D%97%E5%8C%96%E5%BC%80%E5%8F%91/</url>
+    <content><![CDATA[<p>模块化一直是前端工程化中的重大问题，在标准化的 ES Module 推出之前，前端开发人员为了进行模块化开发，创造多样的模块化规范，如 CommonJS、AMD 等社区模块化规范。本文从记录模块化演变过程为开始，以加深本人在对模块化的理解，并着重记录现代的模块化规范（ ES Module、CommonJS ）。</p>
+<a id="more"></a>
+
+<h2 id="内容概要"><a href="#内容概要" class="headerlink" title="内容概要"></a>内容概要</h2><ul>
+<li>模块化演变过程</li>
+<li>模块化规范</li>
+<li>常用的模块化打包工具</li>
+<li>基于模块化工具构建现代 Web 工具</li>
+<li>打包工具的优化技巧</li>
+</ul>
+<h2 id="1-模块化概述"><a href="#1-模块化概述" class="headerlink" title="1. 模块化概述"></a>1. 模块化概述</h2><p><strong>模块化</strong>就是，通过将复杂代码按照功能的不同划分成不同的模块来单独维护的一种方式。以此提高开发效率，降低维护成本。</p>
+<p>模块化仅仅是思想。</p>
+<h2 id="3-模块化演变过程"><a href="#3-模块化演变过程" class="headerlink" title="3. 模块化演变过程"></a>3. 模块化演变过程</h2><p>stage1 - 3：早期在没有工具和规范的情况下，以原始的模块系统未基础，通过约定，对模块化的落地方式。</p>
+<p>stage4：模块化规范</p>
+<h3 id="stage-1：文件划分方式"><a href="#stage-1：文件划分方式" class="headerlink" title="stage-1：文件划分方式"></a>stage-1：文件划分方式</h3><p>划分 js 文件，通过 script 分别引入</p>
+<ul>
+<li>弊端<ul>
+<li>污染全局作用域</li>
+<li>命名冲突问题</li>
+<li>无法管理模块依赖关系</li>
+</ul>
+</li>
+</ul>
+<h3 id="stage-2：命名空间方式"><a href="#stage-2：命名空间方式" class="headerlink" title="stage-2：命名空间方式"></a>stage-2：命名空间方式</h3><p>每个模块值暴露一个对象，所有模块成员都挂载到这个对象上</p>
+<ul>
+<li>弊端<ul>
+<li>仍然没有私有空间，模块内部仍可能被修改</li>
+<li>仍然无法管理模块依赖关系</li>
+</ul>
+</li>
+</ul>
+<h3 id="stage-3：IIFE"><a href="#stage-3：IIFE" class="headerlink" title="stage-3：IIFE"></a>stage-3：IIFE</h3><p>将模块成员在 IIFE 中挂在到 全局对象 window 上</p>
+<ul>
+<li><p>优点</p>
+<ul>
+<li><p>每个模块有了自己的私有空间，模块内部不被外部修改了</p>
+</li>
+<li><p>可以将 IIFE 的参数作为依赖声明来使用。相对于文件划分和命名空间方式，模块间的依赖方式便更加明显，如下：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// module a</span></span><br><span class="line">;(<span class="function"><span class="keyword">function</span>(<span class="params">$</span>) </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">method1</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    $(<span class="string">'body'</span>).animate(&#123; <span class="attr">margin</span>: <span class="string">'200px'</span> &#125;)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="built_in">window</span>.moduleA = &#123; method1 &#125;</span><br><span class="line">&#125;)(jQuery)</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="stage-4：模块化规范的出现"><a href="#stage-4：模块化规范的出现" class="headerlink" title="stage-4：模块化规范的出现"></a>stage-4：模块化规范的出现</h3><p>模块化规范 + 模块加载器</p>
+<h4 id="CommonJS-规范（NodeJs标准）"><a href="#CommonJS-规范（NodeJs标准）" class="headerlink" title="CommonJS 规范（NodeJs标准）"></a>CommonJS 规范（NodeJs标准）</h4><ul>
+<li>一个文件就是一个模块</li>
+<li>每个模块都有单独的作用域</li>
+<li>通过 module.exports 导出成员</li>
+<li>通过 require 函数载入模块</li>
+</ul>
+<p><strong>以同步方式加载模块</strong>，启动时加载模块，在浏览器中效率较低（每一次页面加载，都会进行大量的同步请求）</p>
+<h4 id="AMD（Asynchronous-Module-Definition）"><a href="#AMD（Asynchronous-Module-Definition）" class="headerlink" title="AMD（Asynchronous Module Definition）"></a>AMD（Asynchronous Module Definition）</h4><p><strong>Require.js</strong> 实现了 AMD 规范</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">define() <span class="comment">// 定义</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">require</span>() <span class="comment">// 载入</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>当加载一个模块时，会自动创建 script 标签请求对应的 js 文件，并且去执行对应的模块代码</strong></p>
+<p>目前绝大多数的额第三方库都支持 AMD 规范。</p>
+<p>但 AMD 使用起来相对复杂；</p>
+<p>而且，当项目中模块划分过于细致，会导致模块 JS 文件请求频繁。</p>
+<h4 id="CMD（Common-Module-Definition）"><a href="#CMD（Common-Module-Definition）" class="headerlink" title="CMD（Common Module Definition）"></a>CMD（Common Module Definition）</h4><p>Sea.js</p>
+<p>类似 CommonJS 规范</p>
+<h4 id="ES-Module"><a href="#ES-Module" class="headerlink" title="ES Module"></a>ES Module</h4><h2 id="4-模块化标准规范"><a href="#4-模块化标准规范" class="headerlink" title="4. 模块化标准规范"></a>4. 模块化标准规范</h2><p><strong>CommonJS</strong> in Node.js（为内置模块系统，无兼容性问题）</p>
+<p><strong>ES Modules</strong> in Browsers</p>
+<p>ES Modules（ES2015中语言层面的模块化规范）</p>
+<h2 id="5-ES-Modules"><a href="#5-ES-Modules" class="headerlink" title="5. ES Modules"></a>5. ES Modules</h2><p>两方面，一：特性、二：语法，三：兼容性</p>
+<h3 id="特性"><a href="#特性" class="headerlink" title="特性"></a>特性</h3><figure class="highlight html"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"module"</span>&gt;</span></span><br><span class="line">  	</span><br><span class="line">  <span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>自动采用严格模式，忽略 ‘use strict’</li>
+<li>每个 ES Module 都是独立运行在私有的作用域中</li>
+<li>ES Module 中，通过 CORS 的方式请求外部 JS 模块<ul>
+<li>因此若不在同一源下，请求的服务端地址的响应头中必须提供有效的 CORS 标头。</li>
+</ul>
+</li>
+<li>ES Module 中的 script 标签会自动延迟执行脚本（等同于 script 标签的 derfer 属性）<ul>
+<li>网页的加载过程中，采取 script 立即执行的机制。页面的渲染会等待脚本执行完成，再继续完成渲染。使用 ES Module 后，脚本延迟执行，不会阻塞页面渲染</li>
+</ul>
+</li>
+</ol>
+<p>ES Module 不支持文件形式访问，因此需使用 http server 的方式访问页面</p>
+<h3 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h3><p><strong>注意：</strong></p>
+<ul>
+<li><p><code>export {...}</code>、<code>import {...}</code> 为固定语法，并非对象字面量和解构语法</p>
+</li>
+<li><p><code>export {...}</code> 导出的为内部成员的引用。如下例：</p>
+<p>module1.js</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">let</span> foo = <span class="string">'foo'</span></span><br><span class="line"></span><br><span class="line">setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">  foo = <span class="string">'bar'</span></span><br><span class="line">&#125;, <span class="number">1000</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> &#123; foo &#125;</span><br></pre></td></tr></table></figure>
+
+<p>main.js</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; foo &#125; <span class="keyword">from</span> <span class="string">'./module1.js'</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(foo) <span class="comment">// 'foo'</span></span><br><span class="line"></span><br><span class="line">setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(foo) <span class="comment">// 'bar'</span></span><br><span class="line">&#125;, <span class="number">1000</span>)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>import {...}</code> 导入的成员为只读的常量</p>
+</li>
+</ul>
+<h4 id="export-导出"><a href="#export-导出" class="headerlink" title="export 导出"></a>export 导出</h4><p>module1.js</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> foo = <span class="string">'foo'</span></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">hello</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'Hello !'</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>main.js</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; foo, hello &#125; <span class="keyword">from</span> <span class="string">'./module1.js'</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(foo)</span><br><span class="line">hello()</span><br></pre></td></tr></table></figure>
+
+<p>如果在 html 中使用：</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"module"</span>&gt;</span></span><br><span class="line"><span class="javascript">  <span class="keyword">import</span> &#123; foo, hello &#125; <span class="keyword">from</span> <span class="string">'./module1.js'</span></span></span><br><span class="line"></span><br><span class="line"><span class="javascript">  <span class="built_in">console</span>.log(foo)</span></span><br><span class="line">  hello()</span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+
+
+<p>或者统一导出</p>
+<p>module1.js</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> foo = <span class="string">'foo'</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">hello</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'Hello !'</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> &#123; foo, hello &#125; <span class="comment">// 为固定语法，并非导出一个对象。应按下方形式引入</span></span><br></pre></td></tr></table></figure>
+
+<p>main.js</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; foo, hello &#125; <span class="keyword">from</span> <span class="string">'./module1.js'</span></span><br></pre></td></tr></table></figure>
+
+<p><code>export { foo, hello }</code>  并非对象字面量</p>
+<p>导出时重命名</p>
+<p>module1.js</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">export</span> &#123; </span><br><span class="line">	foo <span class="keyword">as</span> bar,</span><br><span class="line">	hello <span class="keyword">as</span> h</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>main.js</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; bar, h &#125; <span class="keyword">from</span> <span class="string">'./module1.js'</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p> 重命名的特殊情况</p>
+<p>module1.js</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">export</span> &#123; </span><br><span class="line">	foo <span class="keyword">as</span> <span class="keyword">default</span>, <span class="comment">// default</span></span><br><span class="line">	hello</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>main.js</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; <span class="keyword">default</span> <span class="keyword">as</span> foo, hello &#125; <span class="keyword">from</span> <span class="string">'./module1.js'</span></span><br></pre></td></tr></table></figure>
+
+<p>default 为 JS 关键字，不可作为变量直接使用，引入时需重命名</p>
+<p>默认导出</p>
+<p>module1.js</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123; foo, hello &#125; <span class="comment">// 此时导出为一个对象，即 &#123; foo: foo, hello: hello &#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>main.js</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 不可以直接解构，因为 import &#123; ... &#125; = '...' 为对单独导出所设定的特殊语法</span></span><br><span class="line"><span class="keyword">import</span> module1 <span class="keyword">from</span> <span class="string">'./module1.js'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> &#123; foo, hello &#125; = module1</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="import-导入"><a href="#import-导入" class="headerlink" title="import 导入"></a>import 导入</h4><p><strong>注意：</strong></p>
+<ul>
+<li>原生 ES Module 引入时，需完整填写文件路径。不可省略 .js 扩展名，不可省略目录下的 index.js</li>
+<li>文件相对路径开头不可省略 <code>./</code>，省略 <code>./</code> 会被误判为加载第三方模块（绝对路径写法：<code>&#39;/src/components/commont/index.js&#39;</code>，从项目根目录开始）（或可以使用完整的 URL ，引用 CDN 资源）</li>
+</ul>
+<p>若只需要执行某个模块，而不需要引用该模块的成员，可以如下写法</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123;&#125; <span class="keyword">from</span> <span class="string">'./module1.js'</span></span><br></pre></td></tr></table></figure>
+
+<p>或：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="string">'./module1.js'</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>将模块导出的成员全部提取：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> * <span class="keyword">as</span> allMumber <span class="keyword">from</span> <span class="string">'./module1.js'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> &#123; foo, hello &#125; = allMumber</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>使用 import() 函数动态加载模块（该函数返回一个 promise）</strong></p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span>(<span class="string">'./module1.js'</span>).then(<span class="function"><span class="params">module1</span> =&gt;</span> &#123;</span><br><span class="line">  </span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+
+
+<p>同时存在 <code>export {...}</code> 和 <code>export ...</code> 时</p>
+<p>module1.js</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> foo = <span class="string">'foo'</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">hello</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'Hello !'</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> &#123; foo, hello &#125; </span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="string">'default export'</span></span><br></pre></td></tr></table></figure>
+
+<p>main.js</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; foo, hello, <span class="keyword">default</span> <span class="keyword">as</span> title &#125; <span class="keyword">from</span> <span class="string">'./module1.js'</span></span><br></pre></td></tr></table></figure>
+
+<p>或者：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> title, &#123; foo, hello &#125; <span class="keyword">from</span> <span class="string">'./module1.js'</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="导出导入成员"><a href="#导出导入成员" class="headerlink" title="导出导入成员"></a>导出导入成员</h4><p>index.js</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">export</span> &#123; Button &#125; <span class="keyword">from</span> <span class="string">'./component/button/index.js'</span></span><br><span class="line"><span class="keyword">export</span> &#123; Avatar &#125; <span class="keyword">from</span> <span class="string">'./component/avatar/index.js'</span></span><br></pre></td></tr></table></figure>
+
+<p>若导入的模块中采取 <code>export default</code>, 则需：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">export</span> &#123; <span class="keyword">default</span> <span class="keyword">as</span> Button &#125; <span class="keyword">from</span> <span class="string">'./component/button/index.js'</span></span><br></pre></td></tr></table></figure>
+
+<p>直接导出导入成员时，导入的成员在当前模块中不可访问</p>
+<h3 id="ES-Module-in-Node-js"><a href="#ES-Module-in-Node-js" class="headerlink" title="ES Module in Node.js"></a>ES Module in Node.js</h3><h4 id="支持情况"><a href="#支持情况" class="headerlink" title="支持情况"></a>支持情况</h4><p>node 8.5 之后，开始实验性的支持 ES Module</p>
+<p>使用准备：</p>
+<ol>
+<li><p>需将文件扩展名由 .js 文件改为 .mjs</p>
+</li>
+<li><p>执行时，需如下命令：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">node --experimental-modules index.mjs</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+<p>使用</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> fs <span class="keyword">from</span> <span class="string">'fs'</span></span><br><span class="line"><span class="keyword">import</span> _ <span class="keyword">from</span> <span class="string">'lodash'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> &#123; writeFileSync &#125; <span class="keyword">from</span> <span class="string">'fs'</span> <span class="comment">// 内置模块兼容了 ESM 提取成员的方式</span></span><br><span class="line"><span class="keyword">import</span> &#123; cameCase &#125; <span class="keyword">from</span> <span class="string">'lodash'</span> <span class="comment">// 报错</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="与-CommonJS-交互"><a href="#与-CommonJS-交互" class="headerlink" title="与 CommonJS 交互"></a>与 CommonJS 交互</h4><ul>
+<li>ESM 中可以导入 CommonJS 模块，且 CommonJS 模块始终只会导出一个默认成员，ESM 中只会导入默认成员，不能直接提取成员（即 import { … }）</li>
+<li>不能在原生 CommonJS 模块中使用 require() 函数载入 ESM</li>
+</ul>
+<h4 id="与-CommonJS-的差异"><a href="#与-CommonJS-的差异" class="headerlink" title="与 CommonJS 的差异"></a>与 CommonJS 的差异</h4><p>ESM 中没有 CommonJS 中的一些模块全局成员，如下：</p>
+<table>
+<thead>
+<tr>
+<th align="center">ES Modules</th>
+<th align="center">CommonJS</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">import</td>
+<td align="center">require</td>
+</tr>
+<tr>
+<td align="center">export</td>
+<td align="center">module</td>
+</tr>
+<tr>
+<td align="center">如下</td>
+<td align="center">__filename</td>
+</tr>
+<tr>
+<td align="center">如下</td>
+<td align="center">__dirname</td>
+</tr>
+</tbody></table>
+<p>ES Modules 中 得到 __filename 的方法：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; fileURLToPath &#125; <span class="keyword">from</span> <span class="string">'url'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> url = <span class="keyword">import</span>.meta.url</span><br><span class="line"><span class="keyword">const</span> __filename = fileURLToPath(url)</span><br></pre></td></tr></table></figure>
+
+<p>得到 <em>\</em>filename后，获取 __dirname：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; dirname &#125; <span class="keyword">from</span> <span class="string">'path'</span> </span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> __dirname = dirname(__filename)</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="Node-新版本对-ESM-的进一步支持"><a href="#Node-新版本对-ESM-的进一步支持" class="headerlink" title="Node 新版本对 ESM 的进一步支持"></a>Node 新版本对 ESM 的进一步支持</h4><p>只需在项目下新建 package.json 中新增 type 字段，</p>
+<p>package.json</p>
+<figure class="highlight"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	...</span><br><span class="line">	"type": "module",</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>就不需要再修改 js 文件的后缀名。</p>
+<p>此时，若某个文件需要使用 CommonJS 语法，需将文件扩展名改为 <code>.cjs</code></p>
+<h4 id="Babel-兼容方案"><a href="#Babel-兼容方案" class="headerlink" title="Babel 兼容方案"></a>Babel 兼容方案</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">yarn add @babel&#x2F;node @babel&#x2F;core @babel&#x2F;preset-env --dev</span><br></pre></td></tr></table></figure>
+
+<p>@babel/core：babel 核心模块</p>
+<p>@babel/preset-env：babel 预设集合（包含了最新的 JS 规范中的所有新特性）</p>
+<p>module1.js</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> foo = <span class="string">'hello'</span></span><br><span class="line"><span class="keyword">const</span> bar = <span class="string">'world'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> &#123; foo, bar &#125;</span><br></pre></td></tr></table></figure>
+
+<p>index.js</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; foo, bar &#125; <span class="keyword">from</span> <span class="string">'module.js'</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(foo, bar)</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">yarn babel-node index.js --presets&#x3D;@babel&#x2F;preset-env</span><br></pre></td></tr></table></figure>
+
+<p>启用 node 执行 index.js </p>
+<p>或项目根目录下新建 babel 配置文件  <code>.babelrc</code> ，简化命令，如下：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	<span class="attr">"presets"</span>: [<span class="string">"@babel/preset-env"</span>]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>执行只需：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">yarn babel-node index.js</span><br></pre></td></tr></table></figure>
+
+
+
+<p>或使用单独的插件（transforms ES2015 modules to CommonJS）进行转换：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">yarn add @babel&#x2F;plugin-transform-modules-commonjs --dev</span><br></pre></td></tr></table></figure>
+
+<p>使用该插件处理 ESM 的兼容问题</p>
+<p>.babelrc</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"plugins"</span>: [</span><br><span class="line">    <span class="string">"@babel/plugin-transform-modules-commonjs"</span></span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">yarn babel-node index.js</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>前端工程化</category>
+      </categories>
+      <tags>
+        <tag>模块化</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>前端工程化之二：自动化构建工具</title>
+    <url>/2021/10/03/%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%8C%96%E4%B9%8B%E4%BA%8C%EF%BC%9A%E8%87%AA%E5%8A%A8%E5%8C%96%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7/</url>
+    <content><![CDATA[<p>本文记录在前端的自动化构建中常用的方法和工具，如使用 npm scripts，或使用 grunt、gulp、fis 这类工具来简化开发流程，将项目开发中机械式的任务进行自动化。</p>
+<a id="more"></a>
+
+<h2 id="1-使用npm-scripts"><a href="#1-使用npm-scripts" class="headerlink" title="1. 使用npm scripts"></a>1. 使用npm scripts</h2><p>package.json</p>
+<figure class="highlight"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">"scripts": &#123;</span><br><span class="line">	"serve": "...",</span><br><span class="line">  "build": "...",</span><br><span class="line">  "start": "..."</span><br><span class="line">&#125;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>可以解决一部分简单的构建任务</p>
+<h2 id="2-常用的构建工具"><a href="#2-常用的构建工具" class="headerlink" title="2. 常用的构建工具"></a>2. 常用的构建工具</h2><ul>
+<li>Grunt</li>
+<li>Gulp</li>
+<li>FIS</li>
+</ul>
+<h3 id="1-Grunt"><a href="#1-Grunt" class="headerlink" title="1. Grunt"></a>1. Grunt</h3><p>安装依赖：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">yarn add grunt --dev</span><br></pre></td></tr></table></figure>
+
+
+
+<p>项目根目录下创建 gruntfile.js 文件：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = <span class="function"><span class="params">grunt</span> =&gt;</span> &#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>该文件向外暴露一个函数，接收一个参数，该参数上定义了一些关于 grunt 任务的方法。</p>
+<p>基本使用，创建任务：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = <span class="function"><span class="params">grunt</span> =&gt;</span> &#123;</span><br><span class="line">  grunt.registerTask(<span class="string">'foo'</span>, () =&gt; &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'foo task run'</span>)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以在终端中运行 yarn grunt foo，执行定义的任务。</p>
+<p>定义异步任务：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = <span class="function"><span class="params">grunt</span> =&gt;</span> &#123;</span><br><span class="line">  grunt.registerTask(<span class="string">'async-task'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> done = <span class="keyword">this</span>.async()</span><br><span class="line">    setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="built_in">console</span>.log(<span class="string">'async-task run()'</span>)</span><br><span class="line">      done()</span><br><span class="line">    &#125;, <span class="number">2000</span>)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>对失败任务进行标记：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = <span class="function"><span class="params">grunt</span> =&gt;</span> &#123;</span><br><span class="line">  grunt.registerTask(<span class="string">'bad'</span>, () =&gt; &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'bad task run'</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对异步失败任务进行标记：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = <span class="function"><span class="params">grunt</span> =&gt;</span> &#123;</span><br><span class="line">  grunt.registerTask(<span class="string">'bad-async-task'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> done = <span class="keyword">this</span>.async()</span><br><span class="line">    setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="built_in">console</span>.log(<span class="string">'bad-async-task run()'</span>)</span><br><span class="line">      done(<span class="literal">false</span>)</span><br><span class="line">    &#125;, <span class="number">2000</span>)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>定义组合任务列表：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = <span class="function"><span class="params">grunt</span> =&gt;</span> &#123;</span><br><span class="line">  grunt.registerTask(<span class="string">'compose'</span>, [<span class="string">'foo'</span>, <span class="string">'bad'</span>, <span class="string">'bar'</span>])</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>组合任务列表中失败任务的后续任务不会执行</p>
+<p>如需要让失败任务的后续任务执行，运行：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">yarn grunt bad-tasks --force</span><br></pre></td></tr></table></figure>
+
+
+
+<p>定义多目标任务：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = <span class="function"><span class="params">grunt</span> =&gt;</span> &#123;</span><br><span class="line">  grunt.initConfig(&#123;</span><br><span class="line">    build: &#123;</span><br><span class="line">      css: <span class="string">'test1'</span>,</span><br><span class="line">      js: <span class="string">'test2'</span>,</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line">  </span><br><span class="line">  grunt.registerMultiTask(<span class="string">'build'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="keyword">this</span>.options())</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">`target: <span class="subst">$&#123;<span class="keyword">this</span>.target&#125;</span>, data: <span class="subst">$&#123;<span class="keyword">this</span>.data&#125;</span>`</span>)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>使用 grunt <strong>插件</strong></p>
+<p>安装对应插件依赖，如 grunt-sass：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">yarn add grunt-sass sass --dev</span><br></pre></td></tr></table></figure>
+
+
+
+<p>在 gruntfile.js 中使用 grunt.loadNpmTasks() 方法加载插件：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = <span class="function"><span class="params">grunt</span> =&gt;</span> &#123;</span><br><span class="line">	...</span><br><span class="line">	grunt.loadNpmTasks(<span class="string">'grunt-sass'</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>或使用社区中提供的 ‘load-grunt-tasks’ 包自动加载NPM插件：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> loadGruntTasks = <span class="built_in">require</span>(<span class="string">'load-grunt-tasks'</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = <span class="function"><span class="params">grunt</span> =&gt;</span> &#123;</span><br><span class="line">	...</span><br><span class="line">	loadGruntTasks(grunt)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>为任务配置目标：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> sass = <span class="built_in">require</span>(<span class="string">'sass'</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = <span class="function"><span class="params">grunt</span> =&gt;</span> &#123;</span><br><span class="line">	grunt.initConfig(&#123;</span><br><span class="line">    sass: &#123;</span><br><span class="line">      options: &#123;</span><br><span class="line">        sourceMap: <span class="literal">true</span>,</span><br><span class="line">        implementation: sass,</span><br><span class="line">      &#125;,</span><br><span class="line">      main: &#123;</span><br><span class="line">        files: &#123;</span><br><span class="line">          <span class="string">'dist/css/main.css'</span>: <span class="string">'src/scss/main.scss'</span>,</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)  </span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>运行任务 yarn grunt sass</p>
+<p>…</p>
+<h3 id="2-Gulp"><a href="#2-Gulp" class="headerlink" title="2. Gulp"></a>2. Gulp</h3><h4 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h4><p><strong>输入（读取流） ==&gt; 加工（转换流） ==&gt; 输出（写入流）</strong></p>
+<h4 id="基本使用"><a href="#基本使用" class="headerlink" title="基本使用"></a>基本使用</h4><p>注册任务</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">exports.task1 = <span class="function"><span class="params">done</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'task1 run'</span>)</span><br><span class="line">  done()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行：yarn gulp task1</p>
+<p>default 未默认任务，yarn gulp 即可</p>
+<h4 id="任务组合使用"><a href="#任务组合使用" class="headerlink" title="任务组合使用"></a>任务组合使用</h4><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> &#123; series, parallel &#125; = <span class="built_in">require</span>(<span class="string">'gulp'</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> task1 = ...</span><br><span class="line"><span class="keyword">const</span> task2 = ...</span><br><span class="line"><span class="keyword">const</span> task3 = ...</span><br><span class="line"></span><br><span class="line">exports.foo = series(task1, task2, task3) <span class="comment">// 串行任务</span></span><br><span class="line"></span><br><span class="line">exports.bar = parallel(task1, task2, task3) <span class="comment">// 并行任务</span></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h4 id="异步任务方式（gulp-中的任务都是异步任务）"><a href="#异步任务方式（gulp-中的任务都是异步任务）" class="headerlink" title="异步任务方式（gulp 中的任务都是异步任务）"></a>异步任务方式（gulp 中的任务都是异步任务）</h4><p>1.</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">exports.task1 = <span class="function"><span class="params">done</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'task1 run'</span>)</span><br><span class="line">  done()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>失败：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">exports.error_task1 = <span class="function"><span class="params">done</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'error_task1 run'</span>)</span><br><span class="line">  done(<span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'task1 failed!'</span>))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>同样遵循错误优先原则</p>
+<p>失败失败时会中断任务队列</p>
+<ol start="2">
+<li>Promise</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">exports.task2 = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'task2 run'</span>)</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">Promise</span>.resolve() <span class="comment">// resolve的值会被忽略</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>失败：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">exports.task2 = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'task2 run'</span>)</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">Promise</span>.resolve() <span class="comment">// resolve的值会被忽略</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>使用 async…await…</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> time = <span class="function"><span class="params">time</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function"><span class="params">resolvee</span> =&gt;</span> &#123;</span><br><span class="line">    setTimeout(resolve, time)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">exports.task3 = <span class="keyword">async</span> () =&gt; &#123;</span><br><span class="line">  <span class="keyword">await</span> timeout(<span class="number">1000</span>)</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'task3 run'</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>Stream</li>
+</ol>
+<p>返回 stream 对象</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>)</span><br><span class="line"></span><br><span class="line">exports.task4 = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> readStream = fs.createReadStream(<span class="string">'package.json'</span>)</span><br><span class="line">  <span class="keyword">const</span> writeStream = fs.createWriteStream(<span class="string">'temp.txt'</span>)</span><br><span class="line">  readStream.pipe(writeStream)</span><br><span class="line">  <span class="keyword">return</span> readStream</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>等同于：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">exports.task4 = <span class="function"><span class="params">done</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> readStream = fs.createReadStream(<span class="string">'package.json'</span>)</span><br><span class="line">  <span class="keyword">const</span> writeStream = fs.createWriteStream(<span class="string">'temp.txt'</span>)</span><br><span class="line">  readStream.pipe(writeStream)</span><br><span class="line">  readStream.on(<span class="string">'end'</span>, () =&gt; &#123;</span><br><span class="line">    done()</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>实际上 gulp 中注册了 end 事件，监听流的结束</p>
+<h4 id="文件操作-API-插件使用"><a href="#文件操作-API-插件使用" class="headerlink" title="文件操作 API + 插件使用"></a>文件操作 API + 插件使用</h4><p><strong>使用 gulp 实现构建任务的常用流程</strong>：</p>
+<p>①. 使用 gulp 提供的 src 方法创建读取流 </p>
+<p>②. 借助插件实现文件加工（或自己转换） </p>
+<p>③. 使用 gulp 提供的 dest方法创建写入流，写入目标文件</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> &#123; src, dest &#125; = <span class="built_in">require</span>(<span class="string">'gulp'</span>)</span><br><span class="line"><span class="keyword">const</span> cleanCss = <span class="built_in">require</span>(<span class="string">'gulp-clean-css'</span>)</span><br><span class="line"><span class="keyword">const</span> rename = <span class="built_in">require</span>(<span class="string">'gulp-rename'</span>)</span><br><span class="line"></span><br><span class="line">exports.default = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> src(<span class="string">'src/normalize.css'</span>)</span><br><span class="line">  	.pipe(cleanCss()) <span class="comment">// 使用插件压缩css</span></span><br><span class="line">  	.pipe(rename(&#123; <span class="attr">extends</span>: <span class="string">'min.css'</span> &#125;)) <span class="comment">// 使用插件重命名扩展名</span></span><br><span class="line">    .pipe(dest(<span class="string">'dist'</span>))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="4-FIS"><a href="#4-FIS" class="headerlink" title="4. FIS"></a>4. FIS</h3>]]></content>
+      <categories>
+        <category>前端工程化</category>
+      </categories>
+      <tags>
+        <tag>自动化构建</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>前端工程化之一：脚手架工具</title>
+    <url>/2021/09/16/%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%8C%96%E4%B9%8B%E4%B8%80%EF%BC%9A%E8%84%9A%E6%89%8B%E6%9E%B6%E5%B7%A5%E5%85%B7/</url>
+    <content><![CDATA[<p>本文从脚手架的作用、常用的脚手架工具、通用脚手架工具剖析、开发一款脚手架几方面内容着手。记录本人在前端工程化中脚手架工具的学习</p>
+<a id="more"></a>
+
+<h2 id="1-作用"><a href="#1-作用" class="headerlink" title="1.作用"></a>1.作用</h2><p>创建项目基础结构、提供项目规范和约定</p>
+<p>（快速创建项目骨架）</p>
+<p>（在开发相同类型的项目时，它们的组织结构、开发范式、模块依赖、工具配置、基础代码很可能相同。通过脚手架工具解决创建项目时大量重复工作的问题）</p>
+<h2 id="2-常用的脚手架工具"><a href="#2-常用的脚手架工具" class="headerlink" title="2. 常用的脚手架工具"></a>2. 常用的脚手架工具</h2><p>Yeoman 通用型，根据模板生成通用的项目结构</p>
+<p>Plop 开发过程中创建特定类型的文件。</p>
+<h2 id="3-Yeoman"><a href="#3-Yeoman" class="headerlink" title="3. Yeoman"></a>3. Yeoman</h2><p>The web’s scaffolding(脚手架) tool for modern webapps</p>
+<p>可以通过 Yeoman 搭配 不同的generator 创建任何类型的项目</p>
+<h3 id="基本使用"><a href="#基本使用" class="headerlink" title="基本使用"></a>基本使用</h3><ol>
+<li>全局安装yo</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">yarn global add yo</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>安装所需的generator，例：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">yarn global add generator-node</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>通过 yo 运行 generator</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mkdir my-module</span><br><span class="line">cd my-module</span><br><span class="line"></span><br><span class="line">yo node</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="1-创建-Generator"><a href="#1-创建-Generator" class="headerlink" title="1. 创建 Generator"></a>1. 创建 Generator</h4><ol>
+<li>创建一个包名为 generator-name（generator-开头，name：自定义名称）的项目</li>
+<li>安装基类依赖</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">yarn add yeoman-generator</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>目录结构</li>
+</ol>
+<ul>
+<li>结构一</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">├───package.json</span><br><span class="line">└───generators&#x2F;</span><br><span class="line">    ├───app&#x2F;</span><br><span class="line">    │   └───index.js</span><br><span class="line">    └───router&#x2F;</span><br><span class="line">        └───index.js</span><br></pre></td></tr></table></figure>
+
+<p>/app 下的 generator 为使用 yo 命令运行时的默认 generator（此例中指令为 yo name）。</p>
+<p>其他文件夹下的 generator 为 sub-generator（此例中指令为 yo name:router）</p>
+<ul>
+<li>结构二</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">├───package.json</span><br><span class="line">├───app&#x2F;</span><br><span class="line">│   └───index.js</span><br><span class="line">└───router&#x2F;</span><br><span class="line">    └───index.js</span><br></pre></td></tr></table></figure>
+
+<p>此目录结构时，需确保 package.json 中包含如下字段：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;files&quot;: [</span><br><span class="line">    &quot;app&quot;,</span><br><span class="line">    &quot;router&quot;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<ol start="4">
+<li>定义 generator</li>
+</ol>
+<ul>
+<li><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> Generator = <span class="built_in">require</span>(<span class="string">'yeoman-generator'</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = <span class="class"><span class="keyword">class</span> <span class="keyword">extends</span> <span class="title">Generator</span> </span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>Yeoman（yeoman-generator） 提供了一个基类，其中实现一些实用的函数。</p>
+<p>使用 CommonJS 模块化规范定义一个继承自此基类的类，可以在定义的这个类中实现定义所需的功能。</p>
+<ul>
+<li>重写 constructor</li>
+<li>定义所需的自定义原型方法</li>
+</ul>
+<ol start="5">
+<li>关联项目到全局命令</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">yarn link</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="2-运行时上下文（Running-Context）"><a href="#2-运行时上下文（Running-Context）" class="headerlink" title="2. 运行时上下文（Running Context）"></a>2. 运行时上下文（Running Context）</h4><h5 id="定义私有方法"><a href="#定义私有方法" class="headerlink" title="定义私有方法"></a>定义私有方法</h5><ol>
+<li>下划线前缀 编写方法名</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="keyword">extends</span> <span class="title">Generator</span> </span>&#123;</span><br><span class="line">  method1() &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'hey 1'</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  _method2() &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'private hey'</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>实例方法</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="keyword">extends</span> <span class="title">Generator</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>(args, opts) &#123;</span><br><span class="line">    <span class="keyword">super</span>(args, opts)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">this</span>.helperMethod = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">      <span class="built_in">console</span>.log(<span class="string">'won\'t be called automatically'</span>);</span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>继承自父 generator</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyBase</span> <span class="keyword">extends</span> <span class="title">Generator</span> </span>&#123;</span><br><span class="line">  helper() &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'methods on the parent generator won\'t be called automatically'</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = <span class="class"><span class="keyword">class</span> <span class="keyword">extends</span> <span class="title">MyBase</span> </span>&#123;</span><br><span class="line">  exec() &#123;</span><br><span class="line">    <span class="keyword">this</span>.helper();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="运行循环方法（类似生命周期）"><a href="#运行循环方法（类似生命周期）" class="headerlink" title="运行循环方法（类似生命周期）"></a>运行循环方法（类似生命周期）</h5><ol>
+<li><strong><code>initializing</code></strong></li>
+<li><strong><code>prompting</code></strong>：yo name 后在终端中询问信息。使用 this.prompt() 调用</li>
+<li><strong><code>configuring</code></strong></li>
+<li><strong><code>default</code></strong></li>
+<li><strong><code>writing</code></strong></li>
+<li><strong><code>conflicts</code></strong></li>
+<li><strong><code>install</code></strong>：安装依赖</li>
+<li><strong><code>end</code></strong></li>
+</ol>
+<h5 id="异步任务"><a href="#异步任务" class="headerlink" title="异步任务"></a>异步任务</h5><p>在方法中返回一个 promise 对象，resolved 时继续执行，异常时失败并停止。</p>
+<p>如果方法不会返回 promise 对象，可以使用 this.async() 方法，this.async() 返回一个函数，可以在完成任务后调用，如下：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">asyncTask() &#123;</span><br><span class="line">  <span class="keyword">var</span> done = <span class="keyword">this</span>.async();</span><br><span class="line"></span><br><span class="line">  getUserEmail(<span class="function"><span class="keyword">function</span> (<span class="params">err, name</span>) </span>&#123;</span><br><span class="line">    done(err);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果 done 函数参数为 Error 对象，则失败并停止。</p>
+<h4 id="3-用户交互（User-Interactions）"><a href="#3-用户交互（User-Interactions）" class="headerlink" title="3. 用户交互（User Interactions）"></a>3. 用户交互（User Interactions）</h4><ul>
+<li><strong>prompt</strong></li>
+</ul>
+<p>prompt 模块内部使用 <a href="https://github.com/SBoudrias/Inquirer.js" target="_blank" rel="noopener">Inquire.js</a> 实现</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = <span class="class"><span class="keyword">class</span> <span class="keyword">extends</span> <span class="title">Generator</span> </span>&#123;</span><br><span class="line">  <span class="keyword">async</span> prompting() &#123;</span><br><span class="line">    <span class="keyword">const</span> answers = <span class="keyword">await</span> <span class="keyword">this</span>.prompt([</span><br><span class="line">      &#123;</span><br><span class="line">        type: <span class="string">"input"</span>,</span><br><span class="line">        name: <span class="string">"name"</span>,</span><br><span class="line">        message: <span class="string">"Your project name"</span>,</span><br><span class="line">        <span class="keyword">default</span>: <span class="keyword">this</span>.appname <span class="comment">// Default to current folder name</span></span><br><span class="line">      &#125;,</span><br><span class="line">      &#123;</span><br><span class="line">        type: <span class="string">"confirm"</span>,</span><br><span class="line">        name: <span class="string">"cool"</span>,</span><br><span class="line">        message: <span class="string">"Would you like to enable the Cool feature?"</span></span><br><span class="line">      &#125;</span><br><span class="line">    ]);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">this</span>.log(<span class="string">"app name"</span>, answers.name);</span><br><span class="line">    <span class="keyword">this</span>.log(<span class="string">"cool feature"</span>, answers.cool);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>此实例中，在执行yo name指令之后，会发出命令行询问。</p>
+<p>可以获取到用户输入，在 wring() 执行时使用，如下：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = <span class="class"><span class="keyword">class</span> <span class="keyword">extends</span> <span class="title">Generator</span> </span>&#123;</span><br><span class="line">  <span class="keyword">async</span> prompting() &#123;</span><br><span class="line">    <span class="keyword">this</span>.answers = <span class="keyword">await</span> <span class="keyword">this</span>.prompt([</span><br><span class="line">      &#123;</span><br><span class="line">        type: <span class="string">"confirm"</span>,</span><br><span class="line">        name: <span class="string">"cool"</span>,</span><br><span class="line">        message: <span class="string">"Would you like to enable the Cool feature?"</span>,</span><br><span class="line">        store: <span class="literal">true</span>,</span><br><span class="line">      &#125;</span><br><span class="line">    ]);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  writing() &#123;</span><br><span class="line">    <span class="keyword">this</span>.log(<span class="string">"cool feature"</span>, <span class="keyword">this</span>.answers.cool); <span class="comment">// user answer `cool` used</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>store: true 记住先前的输入作为新的默认输入。</p>
+<h3 id="Sub-Generator"><a href="#Sub-Generator" class="headerlink" title="Sub Generator"></a>Sub Generator</h3><p>用来生成特定文件的 generator 特性</p>
+<h3 id="使用-Yeoman-的步骤总结"><a href="#使用-Yeoman-的步骤总结" class="headerlink" title="使用 Yeoman 的步骤总结"></a>使用 Yeoman 的步骤总结</h3><ol>
+<li>明确需求</li>
+<li>找到合适的 Generator（ <a href="https://yeoman.io/" target="_blank" rel="noopener">https://yeoman.io/</a> ）</li>
+<li>全局安装对应的 Generator</li>
+<li>通过 Yo 运行对应的 Generator</li>
+<li>填写选项</li>
+<li>生成项目结构</li>
+</ol>
+<h2 id="4-Plop"><a href="#4-Plop" class="headerlink" title="4. Plop"></a>4. Plop</h2><p>一个小而美的脚手架工具</p>
+<h3 id="使用-Plop-的步骤总结"><a href="#使用-Plop-的步骤总结" class="headerlink" title="使用 Plop 的步骤总结"></a>使用 Plop 的步骤总结</h3><ol>
+<li>将 plop 模块作为项目开发依赖安装</li>
+<li>在项目根目录下创建一个 plopfile.js 文件</li>
+<li>在 plopfile.js 文件中定义脚手架任务</li>
+<li>编写用于生成特定类型文件的模板</li>
+<li>通过 Plop 提供的 CLI 运行脚手架任务</li>
+</ol>
+<h2 id="5-自定义脚手架"><a href="#5-自定义脚手架" class="headerlink" title="5. 自定义脚手架"></a>5. 自定义脚手架</h2><p>package.json 中定义 bin 字段为启动目录，其开头为：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#!&#x2F;usr&#x2F;bin&#x2F;env node</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>前端工程化</category>
+      </categories>
+      <tags>
+        <tag>脚手架</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>前端工程化概述</title>
+    <url>/2020/09/06/%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%8C%96%E6%A6%82%E8%BF%B0/</url>
+    <content><![CDATA[<p>最近在学习前端工程化相关的内容。本文从前端工程化的原因、表现开始，对前端工程化进行整体的描述，以加深自身对前端工程化的意义的体会。</p>
+<a id="more"></a>
+
+<h2 id="1-进行前端工程化的原因"><a href="#1-进行前端工程化的原因" class="headerlink" title="1. 进行前端工程化的原因"></a>1. 进行前端工程化的原因</h2><p>解决当下面临的问题，如：</p>
+<ol>
+<li>传统语言或语法的弊端</li>
+<li>无法使用模块化 / 组件化</li>
+<li>重复的机械式工作</li>
+<li>代码风格的统一、质量的保证</li>
+<li>依赖后端服务接口支持</li>
+<li>整体依赖后端项目</li>
+</ol>
+<h2 id="2-工程化的表现"><a href="#2-工程化的表现" class="headerlink" title="2. 工程化的表现"></a>2. 工程化的表现</h2><p>一切以提高效率、降低成本、保证质量为目的的手段都属于工程化</p>
+<p>从 创建项目 =&gt; 编码 =&gt; 预览 / 测试 =&gt; 提交 =&gt; 部署，一切都应该被自动化</p>
+<ul>
+<li>创建项目：创建项目结构；创建特定类型文件</li>
+<li>编码：格式化代码；代码风格校验；编译/构建/打包</li>
+<li>预览 / 测试：Web Server；Live Reloading；HMR；Mock；Source Map</li>
+<li>提交：Git Hooks；Lint-staged；持续集成</li>
+<li>部署：CI/CD；自动发布</li>
+</ul>
+<h2 id="3-工程化不等于工具"><a href="#3-工程化不等于工具" class="headerlink" title="3. 工程化不等于工具"></a>3. 工程化不等于工具</h2><p>像 create-react-app、vue-cli、angular-cli、gatsby-cli 此类工具，其实是特定类型的项目，官方给出的 <strong>集成式工程化方案</strong>。</p>
+<h2 id="4-Node-js-驱动了前端工程化的进步"><a href="#4-Node-js-驱动了前端工程化的进步" class="headerlink" title="4. Node.js 驱动了前端工程化的进步"></a>4. Node.js 驱动了前端工程化的进步</h2><p>Node.js 是前端工程化的基础，前端工程化的很多工具，都是基于 Node.js 开发的</p>
+]]></content>
+      <categories>
+        <category>前端工程化</category>
+      </categories>
+      <tags>
+        <tag>前端工程化</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>JavaScript粗略实现散列表</title>
-    <url>/2020/09/06/JavaScript%E7%B2%97%E7%95%A5%E5%AE%9E%E7%8E%B0%E6%95%A3%E5%88%97%E8%A1%A8/</url>
+    <url>/2020/08/06/JavaScript%E7%B2%97%E7%95%A5%E5%AE%9E%E7%8E%B0%E6%95%A3%E5%88%97%E8%A1%A8/</url>
     <content><![CDATA[<p>使用 <code>JavaScript</code> 的数组（Array）结构简单地实现一个采用<strong>链地址法</strong>处理<strong>冲突</strong>（碰撞）的<strong>散列表</strong>（<strong><code>hashTable</code></strong>，或称为<strong>哈希表</strong>）。</p>
 <p>利用<strong>霍纳法则</strong>（秦九韶算法）将计算 <code>hashCode</code> 的时间复杂度由O(N^2)降低到O(N)。</p>
 <p>并当<strong>装填因子</strong>（<strong><code>loadFactory</code></strong>，散列表内元素个数 / 散列表容量）大于<strong>0.75</strong>时，进行<strong>扩容</strong>；当装填因子小于<strong>0.25</strong>时，进行减容。并使其容量恒为质数，以减少散列化后造成的的冲突。</p>
@@ -71,7 +1115,7 @@
 <p>一些原因，很久没有写博客了，以后一定抽时间多进行输出！</p>
 ]]></content>
       <categories>
-        <category>构建工具</category>
+        <category>前端工程化</category>
       </categories>
       <tags>
         <tag>性能优化</tag>
